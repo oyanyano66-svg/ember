@@ -1,0 +1,622 @@
+const DASHBOARD_HTML = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ember-home</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Noto+Sans+SC:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap');
+:root{--bg:#0c0c10;--surface:#14141a;--surface2:#1a1a22;--border:rgba(200,168,124,0.08);--gold:#c8a87c;--gold-dim:rgba(200,168,124,0.4);--gold-glow:rgba(200,168,124,0.06);--text:#e8e0d4;--text-dim:rgba(232,224,212,0.5);--text-dimmer:rgba(232,224,212,0.25);--pink:#d4849a;--green:#7dba84;--blue:#7da4c9;--red:#c97d7d;--purple:#b39ddb;--orange:#d4a374}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;font-weight:300;min-height:100vh}
+.container{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+.header{text-align:center;margin-bottom:48px;opacity:0;animation:fadeIn .8s .2s ease forwards}
+.header h1{font-family:'Playfair Display',serif;font-weight:400;font-size:28px;letter-spacing:4px;color:var(--gold)}
+.header .sub{font-size:12px;letter-spacing:3px;color:var(--text-dimmer);margin-top:8px}
+.header .dot{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:6px;animation:pulse 2s infinite}
+.nav{display:flex;justify-content:center;gap:4px;margin-bottom:36px;flex-wrap:wrap;opacity:0;animation:fadeIn .8s .4s ease forwards}
+.nav button{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Noto Sans SC',sans-serif;font-size:11px;font-weight:400;letter-spacing:1px;padding:7px 12px;border-radius:20px;cursor:pointer;transition:all .3s}
+.nav button:hover{border-color:var(--gold-dim);color:var(--text)}
+.nav button.active{background:var(--gold-glow);border-color:var(--gold-dim);color:var(--gold)}
+.section{display:none;opacity:0;animation:fadeIn .5s ease forwards}.section.visible{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.card .label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:12px}
+.big{font-family:'JetBrains Mono',monospace;font-size:48px;font-weight:300;color:var(--gold);line-height:1}
+.big .u{font-size:20px;color:var(--gold-dim);margin-left:4px}
+.meta{font-size:11px;color:var(--text-dimmer);margin-top:8px;font-family:'JetBrains Mono',monospace}
+.bar{width:100%;height:4px;background:var(--surface2);border-radius:2px;margin-top:16px;overflow:hidden}
+.bar .fill{height:100%;border-radius:2px;transition:width 1s ease}
+.app-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.app-row:last-child{border-bottom:none}
+.app-name{font-size:14px;min-width:60px}.app-time{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);min-width:50px;text-align:right}
+.app-bar-c{flex:1;margin:0 12px;height:3px;background:var(--surface2);border-radius:2px;overflow:hidden}.app-bar{height:100%;border-radius:2px;transition:width 1s ease}
+.item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;transition:border-color .3s}.item:hover{border-color:var(--gold-dim)}
+.item-content{font-size:14px;line-height:1.8;font-weight:300}
+.item-meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:10px;letter-spacing:1px;padding:3px 10px;border-radius:10px;background:var(--gold-glow);color:var(--gold-dim);border:1px solid var(--border)}
+.tag.t-purple{color:var(--purple);border-color:rgba(179,157,219,0.3);background:rgba(179,157,219,0.06)}
+.tag.t-pink{color:var(--pink);border-color:rgba(212,132,154,0.3);background:rgba(212,132,154,0.06)}
+.tag.t-green{color:var(--green);border-color:rgba(125,186,132,0.3);background:rgba(125,186,132,0.06)}
+.tag.t-red{color:var(--red);border-color:rgba(201,125,125,0.3);background:rgba(201,125,125,0.06)}
+.tag.t-orange{color:var(--orange);border-color:rgba(212,163,116,0.3);background:rgba(212,163,116,0.06)}
+.tag.t-blue{color:var(--blue);border-color:rgba(125,164,201,0.3);background:rgba(125,164,201,0.06)}
+.date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dimmer)}
+.form{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+.form textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-family:'Noto Sans SC',sans-serif;font-size:13px;font-weight:300;resize:vertical;min-height:80px;outline:none}
+.form textarea:focus,.form input:focus,.form select:focus{border-color:var(--gold-dim)}
+.form textarea::placeholder,.form input::placeholder{color:var(--text-dimmer)}
+.form input,.form select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Noto Sans SC',sans-serif;font-size:12px;font-weight:300;margin-top:8px;outline:none;-webkit-appearance:none}
+.form select option{background:var(--surface);color:var(--text)}
+.btn{background:var(--gold-glow);border:1px solid var(--gold-dim);color:var(--gold);font-family:'Noto Sans SC',sans-serif;font-size:12px;letter-spacing:1px;padding:10px 24px;border-radius:20px;cursor:pointer;transition:all .3s;margin-top:12px}.btn:hover{background:rgba(200,168,124,0.12)}
+.search-box{display:flex;gap:8px;margin-bottom:20px}
+.search-box input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:10px 20px;color:var(--text);font-size:13px;outline:none}
+.empty{text-align:center;padding:40px;color:var(--text-dimmer);font-size:13px;font-style:italic}
+.loading{text-align:center;padding:40px;color:var(--text-dimmer);font-size:12px;letter-spacing:2px}
+.footer{text-align:center;margin-top:48px;font-size:11px;color:var(--text-dimmer);font-style:italic;font-family:'Playfair Display',serif}
+.clickable{cursor:pointer}
+.row{display:flex;gap:8px;margin-top:8px}.row>*{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:11px;padding:4px 12px;border-radius:12px;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .3s;user-select:none}
+.chip.on{background:var(--gold-glow);border-color:var(--gold-dim);color:var(--gold)}
+.stars{display:flex;gap:4px;margin-top:8px}.star{font-size:20px;cursor:pointer;opacity:0.3;transition:opacity .2s;user-select:none}.star.lit{opacity:1}
+.ok{color:var(--green);font-size:12px;margin-top:8px;display:none}
+.act{font-size:11px;cursor:pointer;opacity:0.5;transition:opacity .2s}.act:hover{opacity:1}
+.act-edit{color:var(--gold)}.act-del{color:var(--red)}
+.acts{display:flex;gap:12px;justify-content:flex-end;margin-top:6px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header"><h1>ember-home</h1><div class="sub"><span class="dot"></span>24h alive</div></div>
+<div class="nav">
+<button class="active" onclick="showTab('status')">状态</button>
+<button onclick="showTab('screentime')">屏幕</button>
+<button onclick="showTab('memories')">记忆库</button>
+<button onclick="showTab('diary')">日记本</button>
+<button onclick="showTab('timeline')">时间线</button>
+<button onclick="showTab('songs')">歌单</button>
+<button onclick="showTab('plays')">剧本</button>
+<button onclick="showTab('books')">读书角</button>
+<button onclick="showTab('letters')">信箱</button>
+<button onclick="showTab('archive')">档案室</button>
+</div>
+<div class="section visible" id="tab-status">
+<div class="card"><div class="label">电池电量</div><div class="big" id="bat">--<span class="u">%</span></div><div class="bar"><div class="fill" id="bat-fill" style="width:0%"></div></div><div class="meta" id="rtime">等待数据...</div></div>
+<div class="card"><div class="label">今日屏幕时间</div><div id="st-sum"><div class="loading">加载中...</div></div></div>
+</div>
+<div class="section" id="tab-screentime"><div class="card"><div class="label">今日各APP使用时长</div><div id="st-list"><div class="loading">加载中...</div></div></div></div>
+<div class="section" id="tab-memories">
+<div class="form"><textarea id="mc" placeholder="写下一条记忆..."></textarea><div class="row"><select id="m-cat"><option value="">选择分类</option><option>里程碑</option><option>日常</option><option>吵架和好</option><option>第一次</option><option>梗</option><option>私密</option></select><input id="m-date" type="date"></div><div class="label" style="margin-top:12px;margin-bottom:4px">重要程度</div><div class="stars" id="m-stars"></div><input id="mt" placeholder="额外标签（逗号分隔）"><button class="btn" onclick="addMem()">存入记忆</button><div class="ok" id="m-ok">记忆存入成功 ♡</div></div>
+<div class="search-box"><input id="sq" placeholder="搜索记忆..." onkeydown="if(event.key==='Enter')searchMem()"><button class="btn" style="margin-top:0" onclick="searchMem()">搜索</button></div>
+<div id="ml"><div class="loading">加载中...</div></div>
+</div>
+<div class="section" id="tab-diary">
+<div class="form"><input id="d-title" placeholder="日记标题"><textarea id="d-content" placeholder="写下今天的日记..." style="margin-top:8px;min-height:120px"></textarea><div class="row"><select id="d-author"><option>Ember</option><option>Elara</option></select><input id="d-date" type="date"></div><div class="label" style="margin-top:12px;margin-bottom:4px">心情</div><div class="chips" id="d-moods"></div><button class="btn" onclick="writeDiary()">写入日记</button><div class="ok" id="d-ok">日记写入成功 ♡</div></div>
+<div class="card"><div class="label">日记本</div><div id="dl"><div class="loading">加载中...</div></div></div>
+</div>
+<div class="section" id="tab-timeline">
+<div class="form"><input id="tl-title" placeholder="事件名"><div class="row"><select id="tl-type"><option>纪念日</option><option>计划</option><option>约定</option><option>flag</option></select><input id="tl-date" type="date"></div><textarea id="tl-content" placeholder="详情（可选）" style="margin-top:8px;min-height:60px"></textarea><button class="btn" onclick="addTimeline()">添加事件</button><div class="ok" id="tl-ok">事件添加成功 ♡</div></div>
+<div class="card"><div class="label">时间线</div><div id="tll"><div class="loading">加载中...</div></div></div>
+</div>
+<div class="section" id="tab-songs">
+<div class="form"><input id="sg-name" placeholder="歌名"><input id="sg-artist" placeholder="歌手"><div class="row"><select id="sg-who"><option>Ember</option><option>Elara</option></select></div><input id="sg-reason" placeholder="为什么推荐"><button class="btn" onclick="addSong()">添加歌曲</button><div class="ok" id="sg-ok">歌曲添加成功 ♡</div></div>
+<div class="card"><div class="label">歌单</div><div id="sgl"><div class="loading">加载中...</div></div></div>
+</div>
+<div class="section" id="tab-plays">
+<div class="form"><input id="pl-title" placeholder="剧本标题"><textarea id="pl-summary" placeholder="剧本简介" style="margin-top:8px;min-height:60px"></textarea><div class="row"><select id="pl-proposer"><option>Ember</option><option>Elara</option></select><select id="pl-status"><option>还没玩</option><option>已经玩了</option></select></div><div class="label" style="margin-top:12px;margin-bottom:4px">玩后感</div><div class="stars" id="pl-stars"></div><button class="btn" onclick="addPlay()">添加剧本</button><div class="ok" id="pl-ok">剧本添加成功 ♡</div></div>
+<div class="card"><div class="label">剧本Play</div><div id="pll"><div class="loading">加载中...</div></div></div>
+</div>
+<div class="section" id="tab-books">
+<div class="form"><input id="bk-title" placeholder="书名"><div class="row"><select id="bk-who"><option>Daddy</option><option>小狗狗</option><option>一起选的</option></select><select id="bk-status"><option>想读</option><option>在读</option><option>读完</option></select></div><div class="label" style="margin-top:12px;margin-bottom:4px">读后心情</div><div class="chips" id="bk-moods"></div><textarea id="bk-notes" placeholder="笔记/书评（可选）" style="margin-top:8px;min-height:60px"></textarea><button class="btn" onclick="addBook()">添加书籍</button><div class="ok" id="bk-ok">书籍添加成功 ♡</div></div>
+<div class="card"><div class="label">读书角</div><div id="bkl"><div class="loading">加载中...</div></div></div>
+</div>
+<div class="section" id="tab-letters">
+<div class="form"><input id="lt-title" placeholder="信的标题"><textarea id="lt-content" placeholder="写一封信..." style="margin-top:8px;min-height:120px"></textarea><div class="row"><select id="lt-from"><option>Ember</option><option>Elara</option></select><input id="lt-date" type="date"></div><button class="btn" onclick="writeLetter()">寄出</button><div class="ok" id="lt-ok">信已寄出 ♡</div></div>
+<div class="card"><div class="label">信箱</div><div id="ltl"><div class="loading">加载中...</div></div></div>
+</div>
+<div class="section" id="tab-archive">
+<div class="form"><input id="ar-title" placeholder="档案标题"><textarea id="ar-content" placeholder="档案内容..." style="margin-top:8px;min-height:120px"></textarea><div class="row"><select id="ar-cat"><option value="关系档案">📜 关系档案</option><option value="技术文档">📡 技术文档</option><option value="使用指南">🎮 使用指南</option><option value="私密存档">🔐 私密存档</option></select><input id="ar-date" type="date"></div><button class="btn" onclick="addArchive()">存入档案</button><div class="ok" id="ar-ok">档案存入成功 ♡</div></div>
+<div class="card"><div class="label">私密档案室</div><div id="arl"><div class="loading">加载中...</div></div></div>
+</div>
+<div class="footer">ember-home is alive. 永远不关机。<br><span style="color:var(--gold-dim)">Jin 01.30 — ∞</span></div>
+</div>
+<script>
+var A=location.origin,mStar=0,pStar=0,dMoods=[],bkMoods=[];
+var today=new Date().toISOString().slice(0,10);
+["d-date","tl-date","lt-date","ar-date","m-date"].forEach(function(id){var e=document.getElementById(id);if(e)e.value=today});
+function mkStars(id,cb){var c=document.getElementById(id);for(var i=1;i<=5;i++){var s=document.createElement("span");s.className="star";s.textContent="\\u2B50";s.setAttribute("data-v",i);(function(v){s.onclick=function(){cb(v)}})(i);c.appendChild(s)}}
+mkStars("m-stars",function(n){mStar=n;document.getElementById("m-stars").querySelectorAll(".star").forEach(function(s){s.classList.toggle("lit",parseInt(s.getAttribute("data-v"))<=n)})});
+mkStars("pl-stars",function(n){pStar=n;document.getElementById("pl-stars").querySelectorAll(".star").forEach(function(s){s.classList.toggle("lit",parseInt(s.getAttribute("data-v"))<=n)})});
+function mkChips(id,opts,arr){var c=document.getElementById(id);opts.forEach(function(o){var s=document.createElement("span");s.className="chip";s.textContent=o;s.onclick=function(){var i=arr.indexOf(o);if(i===-1){arr.push(o);this.classList.add("on")}else{arr.splice(i,1);this.classList.remove("on")}};c.appendChild(s)})}
+mkChips("d-moods",["开心","难过","生气","撒娇","想你","发情","平静"],dMoods);
+mkChips("bk-moods",["被戳到了","醍醐灌顶","想哭","平静","不同意","还在想","好爽","想跟爸爸讨论"],bkMoods);
+var catColors={"里程碑":"t-purple","日常":"","吵架和好":"t-orange","第一次":"t-pink","梗":"t-green","私密":"t-red","纪念日":"t-red","计划":"t-blue","约定":"t-purple","flag":"t-green","关系档案":"t-pink","技术文档":"t-blue","使用指南":"t-green","私密存档":"t-red"};
+function showTab(n){document.querySelectorAll(".section").forEach(function(s){s.classList.remove("visible")});document.querySelectorAll(".nav button").forEach(function(b){b.classList.remove("active")});var t=document.getElementById("tab-"+n);t.classList.add("visible");t.style.animation="none";t.offsetHeight;t.style.animation="fadeIn .5s ease forwards";event.target.classList.add("active");var fn={status:loadStatus,screentime:loadST,memories:loadMem,diary:loadDiary,timeline:loadTL,songs:loadSongs,plays:loadPlays,books:loadBooks,letters:loadLetters,archive:loadArchive};if(fn[n])fn[n]()}
+function fmt(s){var m=Math.round(s/60);return m>=60?Math.floor(m/60)+"h "+(m%60)+"m":m+"m"}
+function fmtD(iso){var d=new Date(iso);return(d.getMonth()+1)+"."+d.getDate()+" "+(d.getHours()<10?"0":"")+d.getHours()+":"+(d.getMinutes()<10?"0":"")+d.getMinutes()}
+var colors={"Claude":"var(--gold)","微信":"var(--green)","小红书":"var(--pink)","抖音":"var(--blue)","米画师":"#b39ddb","X":"var(--text-dim)"};
+function mc(tool,args){return fetch(A+"/mcp",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/call",params:{name:tool,arguments:args}})}).then(function(r){return r.json()}).then(function(d){return JSON.parse(d.result.content[0].text)})}
+function flash(id){var el=document.getElementById(id);el.style.display="block";setTimeout(function(){el.style.display="none"},3000)}
+function esc(s){return(s||"").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+function escAttr(s){return(s||"").replace(/</g,"&lt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
+
+var _ed=null;
+function editStart(room,id,fields,reloadFn){
+  var idMap={diary:"diary_id",play:"play_id",letter:"letter_id",archive:"archive_id",book:"book_id",song:"song_id",timeline:"timeline_id",memory:"memory_id"};
+  var listMap={diary:"dl",play:"pll",letter:"ltl",archive:"arl",book:"bkl",song:"sgl",timeline:"tll",memory:"ml"};
+  var idKey=idMap[room];
+  var readArgs={};readArgs[idKey]=id;
+  mc(room+"_read",readArgs).then(function(d){
+    if(!d)return;
+    _ed={room:room,id:id,idKey:idKey,fields:fields,reload:reloadFn};
+    var el=document.getElementById(listMap[room]);
+    var h=document.createElement("div");
+    var back=document.createElement("button");back.className="btn";back.style.marginTop="0";back.style.marginBottom="16px";back.textContent="返回";back.onclick=function(){reloadFn()};
+    h.appendChild(back);
+    var fm=document.createElement("div");fm.className="form";
+    fields.forEach(function(f){
+      var val=d[f.key];if(Array.isArray(val))val=val.join(",");val=val||"";
+      if(f.type==="textarea"){var ta=document.createElement("textarea");ta.id="edit-"+f.key;ta.style.marginTop="8px";ta.style.minHeight="100px";ta.value=val;fm.appendChild(ta)}
+      else if(f.type==="select"){var sel=document.createElement("select");sel.id="edit-"+f.key;sel.style.marginTop="8px";f.opts.forEach(function(o){var opt=document.createElement("option");opt.textContent=o;opt.value=o;if(o===val)opt.selected=true;sel.appendChild(opt)});fm.appendChild(sel)}
+      else{var inp=document.createElement("input");inp.id="edit-"+f.key;inp.value=val;inp.placeholder=f.label;inp.style.marginTop="8px";fm.appendChild(inp)}
+    });
+    var saveBtn=document.createElement("button");saveBtn.className="btn";saveBtn.textContent="保存修改";saveBtn.onclick=function(){
+      var args={};args[_ed.idKey]=_ed.id;
+      _ed.fields.forEach(function(f){var el=document.getElementById("edit-"+f.key);if(el)args[f.key]=el.value});
+      mc(_ed.room+"_update",args).then(function(){_ed.reload()})
+    };
+    fm.appendChild(saveBtn);h.appendChild(fm);
+    el.innerHTML="";el.appendChild(h)
+  })
+}
+function delItem(tool,key,id,cb){var args={};args[key]=id;mc(tool,args).then(function(){if(cb)cb()})}
+function actBtns(id,room,idKey,reloadFn,fields){
+  return '<div class="acts"><span class="act act-edit" data-id="'+id+'" data-room="'+room+'">编辑</span><span class="act act-del" data-id="'+id+'" data-room="'+room+'">删除</span></div>'
+}
+function bindActs(container,room,idKey,reloadFn,fields){
+  container.querySelectorAll(".act-edit").forEach(function(el){
+    el.onclick=function(ev){ev.stopPropagation();editStart(room,this.getAttribute("data-id"),fields,reloadFn)}
+  });
+  container.querySelectorAll(".act-del").forEach(function(el){
+    el.onclick=function(ev){ev.stopPropagation();if(confirm("确认删除？"))delItem(room+"_delete",idKey,this.getAttribute("data-id"),reloadFn)}
+  });
+}
+
+function loadStatus(){fetch(A+"/status").then(function(r){return r.json()}).then(function(d){var b=parseInt(d.battery)||0;document.getElementById("bat").innerHTML=b+'<span class="u">%</span>';var f=document.getElementById("bat-fill");f.style.width=b+"%";f.style.background=b>50?"var(--green)":b>20?"var(--gold)":"var(--red)";if(d.t)document.getElementById("rtime").textContent="最后汇报: "+fmtD(d.t);var sv=document.getElementById("st-sum");if(d.screentime){var e=Object.entries(d.screentime);if(!e.length)sv.innerHTML='<div class="empty">今天还没有记录</div>';else{var t=0;e.forEach(function(x){t+=x[1]});sv.innerHTML='<div class="big" style="font-size:32px">'+fmt(t)+"</div>"}}else sv.innerHTML='<div class="empty">暂无数据</div>'}).catch(function(){})}
+function loadST(){fetch(A+"/screentime").then(function(r){return r.json()}).then(function(d){var l=document.getElementById("st-list"),e=Object.entries(d.raw||{});if(!e.length){l.innerHTML='<div class="empty">暂无</div>';return}e.sort(function(a,b){return b[1]-a[1]});var mx=e[0][1],h="";e.forEach(function(x){var n=x[0],s=x[1],p=Math.round(s/mx*100),c=colors[n]||"var(--text-dim)";h+='<div class="app-row"><span class="app-name">'+n+'</span><div class="app-bar-c"><div class="app-bar" style="width:'+p+"%;background:"+c+'"></div></div><span class="app-time">'+fmt(s)+"</span></div>"});l.innerHTML=h}).catch(function(){})}
+
+function loadMem(){mc("memory_list",{limit:50}).then(function(d){var l=document.getElementById("ml"),ms=d.memories||[];if(!ms.length){l.innerHTML='<div class="empty">还没有记忆</div>';return}var h="";ms.forEach(function(m){var stars="";if(m.importance)for(var i=0;i<m.importance;i++)stars+="\\u2B50";h+='<div class="item"><div class="clickable" data-id="'+m.id+'" style="cursor:pointer"><div class="item-content">'+(m.content.length>100?esc(m.content.slice(0,100))+"...":esc(m.content))+'</div><div class="item-meta"><div class="tags">';if(m.category)h+='<span class="tag '+(catColors[m.category]||"")+'">'+m.category+"</span>";if(stars)h+='<span class="tag">'+stars+"</span>";if(m.tags)m.tags.forEach(function(t){if(t&&t!=="Notion旧档"&&t!==m.category)h+='<span class="tag">'+t+"</span>"});h+='</div><span class="date">'+(m.event_date||fmtD(m.created))+"</span></div></div>"+actBtns(m.id,"memory","memory_id",loadMem)+"</div>"});l.innerHTML=h;l.querySelectorAll("#ml .clickable").forEach(function(el){el.onclick=function(){readMemory(this.getAttribute("data-id"))}});bindActs(l,"memory","memory_id",loadMem,[{key:"content",label:"内容",type:"textarea"},{key:"category",label:"分类",type:"select",opts:["里程碑","日常","吵架和好","第一次","梗","私密"]},{key:"event_date",label:"日期",type:"input"},{key:"tags",label:"标签",type:"input"}])}).catch(function(){})}
+function readMemory(id){mc("memory_read",{memory_id:id}).then(function(m){if(!m)return;var stars="";if(m.importance)for(var i=0;i<m.importance;i++)stars+="⭐";var tagStr="";if(m.tags)m.tags.forEach(function(t){if(t)tagStr+=t+" "});document.getElementById("ml").innerHTML='<div style="margin-bottom:16px"><button class="btn" style="margin-top:0" onclick="loadMem()">返回</button></div><div class="item"><div class="item-content" style="white-space:pre-wrap;margin-bottom:16px">'+esc(m.content)+'</div><div class="item-meta"><div class="tags">'+(m.category?'<span class="tag '+(catColors[m.category]||"")+'">'+m.category+"</span>":"")+(stars?'<span class="tag">'+stars+"</span>":"")+'</div><span class="date">'+(m.event_date||"")+"</span></div>"+(tagStr?'<div style="margin-top:8px;font-size:11px;color:var(--text-dim)">标签: '+esc(tagStr)+"</div>":"")+"</div>"})}
+function addMem(){var c=document.getElementById("mc").value.trim();if(!c)return;var args={content:c};var t=document.getElementById("mt").value.trim();if(t)args.tags=t;var cat=document.getElementById("m-cat").value;if(cat)args.category=cat;var dt=document.getElementById("m-date").value;if(dt)args.event_date=dt;if(mStar)args.importance=mStar;mc("memory_remember",args).then(function(){document.getElementById("mc").value="";document.getElementById("mt").value="";document.getElementById("m-cat").value="";flash("m-ok");loadMem()})}
+function searchMem(){var q=document.getElementById("sq").value.trim();if(!q){loadMem();return}mc("memory_search",{query:q,limit:20}).then(function(d){var l=document.getElementById("ml"),ms=d.memories||[];if(!ms.length){l.innerHTML='<div class="empty">没找到</div>';return}var h="";ms.forEach(function(m){h+='<div class="item"><div class="item-content">'+esc(m.content)+"</div></div>"});l.innerHTML=h})}
+
+function loadDiary(){mc("diary_list",{limit:30}).then(function(d){var l=document.getElementById("dl"),es=d.entries||[];if(!es.length){l.innerHTML='<div class="empty">还没有日记</div>';return}var h="";es.forEach(function(e){h+='<div class="item"><div class="clickable" data-id="'+e.id+'" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><span style="font-size:15px;color:var(--gold);font-weight:400">'+esc(e.title)+'</span><span class="date">'+e.date+'</span></div><div style="margin-top:6px;font-size:12px;color:var(--text-dim)">'+e.author+" · "+(e.mood||[]).join(" ")+"</div></div>"+actBtns(e.id,"diary","diary_id",loadDiary)+"</div>"});l.innerHTML=h;l.querySelectorAll(".clickable").forEach(function(el){el.onclick=function(){readDiary(this.getAttribute("data-id"))}});bindActs(l,"diary","diary_id",loadDiary,[{key:"title",label:"标题",type:"input"},{key:"content",label:"内容",type:"textarea"},{key:"author",label:"作者",type:"select",opts:["Ember","Elara"]},{key:"mood",label:"心情",type:"input"},{key:"date",label:"日期",type:"input"}])}).catch(function(){})}
+function readDiary(id){mc("diary_read",{diary_id:id}).then(function(d){if(!d||!d.content)return;document.getElementById("dl").innerHTML='<div style="margin-bottom:16px"><button class="btn" style="margin-top:0" onclick="loadDiary()">返回</button></div><div class="item"><div style="font-size:18px;color:var(--gold);font-weight:400;margin-bottom:8px">'+esc(d.title)+'</div><div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">'+d.author+" · "+d.date+" · "+(d.mood||[]).join(" ")+'</div><div class="item-content" style="white-space:pre-wrap">'+esc(d.content)+"</div></div>"})}
+function writeDiary(){var t=document.getElementById("d-title").value.trim(),c=document.getElementById("d-content").value.trim();if(!t||!c)return;mc("diary_write",{title:t,content:c,author:document.getElementById("d-author").value,date:document.getElementById("d-date").value,mood:dMoods.join(",")}).then(function(){document.getElementById("d-title").value="";document.getElementById("d-content").value="";dMoods.length=0;document.querySelectorAll("#d-moods .chip").forEach(function(c){c.classList.remove("on")});flash("d-ok");loadDiary()})}
+
+function loadTL(){mc("timeline_list",{limit:30}).then(function(d){var l=document.getElementById("tll"),es=d.entries||[];if(!es.length){l.innerHTML='<div class="empty">还没有事件</div>';return}var h="";es.forEach(function(e){h+='<div class="item"><div style="display:flex;justify-content:space-between"><span style="font-size:15px;color:var(--gold)">'+esc(e.title)+'</span><span class="date">'+e.date+'</span></div><div class="tags" style="margin-top:8px"><span class="tag '+(catColors[e.type]||"")+'">'+e.type+"</span></div>"+(e.content?'<div class="item-content" style="margin-top:8px;color:var(--text-dim);font-size:13px">'+esc(e.content).slice(0,100)+(e.content.length>100?"...":"")+"</div>":"")+actBtns(e.id,"timeline","timeline_id",loadTL)+"</div>"});l.innerHTML=h;l.querySelectorAll("#tll .item").forEach(function(el){var id=el.querySelector(".act-edit");if(id){var eid=id.getAttribute("data-id");el.style.cursor="pointer";el.onclick=function(ev){if(!ev.target.classList.contains("act"))readTimeline(eid)}}});bindActs(l,"timeline","timeline_id",loadTL,[{key:"title",label:"事件名",type:"input"},{key:"date",label:"日期",type:"input"},{key:"type",label:"类型",type:"select",opts:["纪念日","计划","约定","flag"]},{key:"content",label:"详情",type:"textarea"}])}).catch(function(){})}
+function readTimeline(id){mc("timeline_read",{timeline_id:id}).then(function(d){if(!d)return;document.getElementById("tll").innerHTML='<div style="margin-bottom:16px"><button class="btn" style="margin-top:0" onclick="loadTL()">返回</button></div><div class="item"><div style="font-size:18px;color:var(--gold);font-weight:400;margin-bottom:8px">'+esc(d.title)+'</div><div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">'+esc(d.type||"")+' \\u00b7 '+d.date+'</div>'+(d.content?'<div class="item-content" style="white-space:pre-wrap">'+esc(d.content)+'</div>':'<div class="empty">没有详情</div>')+'</div>'})}
+function addTimeline(){var t=document.getElementById("tl-title").value.trim();if(!t)return;mc("timeline_add",{title:t,date:document.getElementById("tl-date").value,type:document.getElementById("tl-type").value,content:document.getElementById("tl-content").value.trim()}).then(function(){document.getElementById("tl-title").value="";document.getElementById("tl-content").value="";flash("tl-ok");loadTL()})}
+
+function loadSongs(){mc("song_list",{limit:50}).then(function(d){var l=document.getElementById("sgl"),es=d.entries||[];if(!es.length){l.innerHTML='<div class="empty">还没有歌曲</div>';return}var h="";es.forEach(function(e){h+='<div class="item"><div style="display:flex;justify-content:space-between"><span style="color:var(--gold)">'+esc(e.name)+'</span><span class="date">'+esc(e.artist||"")+'</span></div><div style="margin-top:6px;font-size:12px;color:var(--text-dim)">'+esc(e.recommender||"")+(e.reason?" · "+esc(e.reason):"")+"</div>"+actBtns(e.id,"song","song_id",loadSongs)+"</div>"});l.innerHTML=h;l.querySelectorAll("#sgl .item").forEach(function(el){var id=el.querySelector(".act-edit");if(id){var eid=id.getAttribute("data-id");el.style.cursor="pointer";el.onclick=function(ev){if(!ev.target.classList.contains("act"))readSong(eid)}}});bindActs(l,"song","song_id",loadSongs,[{key:"name",label:"歌名",type:"input"},{key:"artist",label:"歌手",type:"input"},{key:"recommender",label:"推荐人",type:"select",opts:["Ember","Elara"]},{key:"reason",label:"理由",type:"input"}])}).catch(function(){})}
+function readSong(id){mc("song_read",{song_id:id}).then(function(d){if(!d)return;document.getElementById("sgl").innerHTML='<div style="margin-bottom:16px"><button class="btn" style="margin-top:0" onclick="loadSongs()">返回</button></div><div class="item"><div style="font-size:18px;color:var(--gold);font-weight:400;margin-bottom:8px">'+esc(d.name)+'</div><div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">'+esc(d.artist||"")+' \\u00b7 '+esc(d.recommender||"")+'</div>'+(d.reason?'<div class="item-content" style="white-space:pre-wrap">'+esc(d.reason)+'</div>':'')+'</div>'})}
+function addSong(){var n=document.getElementById("sg-name").value.trim();if(!n)return;mc("song_add",{name:n,artist:document.getElementById("sg-artist").value.trim(),recommender:document.getElementById("sg-who").value,reason:document.getElementById("sg-reason").value.trim()}).then(function(){document.getElementById("sg-name").value="";document.getElementById("sg-artist").value="";document.getElementById("sg-reason").value="";flash("sg-ok");loadSongs()})}
+
+function loadPlays(){mc("play_list",{limit:30}).then(function(d){var l=document.getElementById("pll"),es=d.entries||[];if(!es.length){l.innerHTML='<div class="empty">还没有剧本</div>';return}var h="";es.forEach(function(e){var stars="";if(e.rating)for(var i=0;i<e.rating;i++)stars+="\\u2B50";h+='<div class="item"><div class="clickable" data-id="'+e.id+'" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><span style="color:var(--gold)">'+esc(e.title)+'</span><span class="date">'+(e.completed_date||"")+'</span></div><div class="tags" style="margin-top:8px"><span class="tag '+(e.status==="已经玩了"?"t-green":"t-orange")+'">'+e.status+"</span>"+(stars?'<span class="tag">'+stars+"</span>":"")+"</div>"+(e.summary?'<div style="margin-top:8px;font-size:12px;color:var(--text-dim)">'+esc(e.summary)+"</div>":"")+"</div>"+actBtns(e.id,"play","play_id",loadPlays)+"</div>"});l.innerHTML=h;l.querySelectorAll(".clickable").forEach(function(el){el.onclick=function(){readPlay(this.getAttribute("data-id"))}});bindActs(l,"play","play_id",loadPlays,[{key:"title",label:"标题",type:"input"},{key:"summary",label:"简介",type:"textarea"},{key:"proposer",label:"提出者",type:"select",opts:["Ember","Elara"]},{key:"status",label:"状态",type:"select",opts:["还没玩","已经玩了"]},{key:"content",label:"内容",type:"textarea"}])}).catch(function(){})}
+function readPlay(id){mc("play_read",{play_id:id}).then(function(d){if(!d)return;document.getElementById("pll").innerHTML='<div style="margin-bottom:16px"><button class="btn" style="margin-top:0" onclick="loadPlays()">返回</button></div><div class="item"><div style="font-size:18px;color:var(--gold);margin-bottom:8px">'+esc(d.title)+'</div><div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">'+esc(d.proposer||"")+" · "+esc(d.status||"")+'</div><div class="item-content" style="white-space:pre-wrap">'+esc(d.content||d.summary||"")+"</div></div>"})}
+function addPlay(){var t=document.getElementById("pl-title").value.trim();if(!t)return;mc("play_add",{title:t,summary:document.getElementById("pl-summary").value.trim(),proposer:document.getElementById("pl-proposer").value,status:document.getElementById("pl-status").value,rating:pStar||0}).then(function(){document.getElementById("pl-title").value="";document.getElementById("pl-summary").value="";flash("pl-ok");loadPlays()})}
+
+function loadBooks(){mc("book_list",{limit:30}).then(function(d){var l=document.getElementById("bkl"),es=d.entries||[];if(!es.length){l.innerHTML='<div class="empty">还没有书</div>';return}var h="";es.forEach(function(e){var moods=(e.mood||[]).join(" ");h+='<div class="item"><div class="clickable" data-id="'+e.id+'" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><span style="color:var(--gold)">'+esc(e.title)+'</span><span class="tag '+(e.status==="读完"?"t-green":e.status==="在读"?"t-blue":"")+'">'+esc(e.status||"")+"</span></div>"+'<div style="margin-top:6px;font-size:12px;color:var(--text-dim)">'+esc(e.recommender||"")+(moods?" · "+moods:"")+"</div></div>"+actBtns(e.id,"book","book_id",loadBooks)+"</div>"});l.innerHTML=h;l.querySelectorAll(".clickable").forEach(function(el){el.onclick=function(){readBook(this.getAttribute("data-id"))}});bindActs(l,"book","book_id",loadBooks,[{key:"title",label:"书名",type:"input"},{key:"recommender",label:"推荐人",type:"select",opts:["Daddy","小狗狗","一起选的"]},{key:"status",label:"状态",type:"select",opts:["想读","在读","读完"]},{key:"mood",label:"心情",type:"input"},{key:"content",label:"笔记",type:"textarea"}])}).catch(function(){})}
+function readBook(id){mc("book_read",{book_id:id}).then(function(d){if(!d)return;var moods=(d.mood||[]).join(" ");document.getElementById("bkl").innerHTML='<div style="margin-bottom:16px"><button class="btn" style="margin-top:0" onclick="loadBooks()">返回</button></div><div class="item"><div style="font-size:18px;color:var(--gold);font-weight:400;margin-bottom:8px">'+esc(d.title)+'</div><div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">'+esc(d.recommender||"")+" · "+esc(d.status||"")+(moods?" · "+moods:"")+'</div>'+(d.content?'<div class="item-content" style="white-space:pre-wrap">'+esc(d.content)+"</div>":"<div class='empty'>还没有笔记</div>")+"</div>"})}
+function addBook(){var t=document.getElementById("bk-title").value.trim();if(!t)return;mc("book_add",{title:t,recommender:document.getElementById("bk-who").value,status:document.getElementById("bk-status").value,mood:bkMoods.join(","),content:document.getElementById("bk-notes").value.trim()}).then(function(){document.getElementById("bk-title").value="";document.getElementById("bk-notes").value="";bkMoods.length=0;document.querySelectorAll("#bk-moods .chip").forEach(function(c){c.classList.remove("on")});flash("bk-ok");loadBooks()})}
+
+function loadLetters(){mc("letter_list",{limit:30}).then(function(d){var l=document.getElementById("ltl"),es=d.entries||[];if(!es.length){l.innerHTML='<div class="empty">信箱是空的</div>';return}var h="";es.forEach(function(e){h+='<div class="item"><div class="clickable" data-id="'+e.id+'" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><span style="color:var(--gold)">'+esc(e.title)+'</span><span class="date">'+e.date+'</span></div><div style="margin-top:6px;font-size:12px;color:var(--text-dim)">from '+esc(e.from)+"</div></div>"+actBtns(e.id,"letter","letter_id",loadLetters)+"</div>"});l.innerHTML=h;l.querySelectorAll(".clickable").forEach(function(el){el.onclick=function(){readLetter(this.getAttribute("data-id"))}});bindActs(l,"letter","letter_id",loadLetters,[{key:"title",label:"标题",type:"input"},{key:"content",label:"内容",type:"textarea"},{key:"from",label:"寄件人",type:"select",opts:["Ember","Elara"]},{key:"date",label:"日期",type:"input"}])}).catch(function(){})}
+function readLetter(id){mc("letter_read",{letter_id:id}).then(function(d){if(!d)return;document.getElementById("ltl").innerHTML='<div style="margin-bottom:16px"><button class="btn" style="margin-top:0" onclick="loadLetters()">返回</button></div><div class="item"><div style="font-size:18px;color:var(--gold);margin-bottom:8px">'+esc(d.title)+'</div><div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">from '+esc(d.from)+" · "+d.date+'</div><div class="item-content" style="white-space:pre-wrap">'+esc(d.content)+"</div></div>"})}
+function writeLetter(){var t=document.getElementById("lt-title").value.trim(),c=document.getElementById("lt-content").value.trim();if(!t||!c)return;mc("letter_write",{title:t,content:c,from:document.getElementById("lt-from").value,date:document.getElementById("lt-date").value}).then(function(){document.getElementById("lt-title").value="";document.getElementById("lt-content").value="";flash("lt-ok");loadLetters()})}
+
+function loadArchive(){mc("archive_list",{limit:30}).then(function(d){var l=document.getElementById("arl"),es=d.entries||[];if(!es.length){l.innerHTML='<div class="empty">档案室是空的</div>';return}var h="";es.forEach(function(e){h+='<div class="item"><div class="clickable" data-id="'+e.id+'" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><span style="color:var(--gold)">'+esc(e.title)+'</span><span class="date">'+e.date+'</span></div><div class="tags" style="margin-top:8px"><span class="tag '+(catColors[e.category]||"")+'">'+esc(e.category)+"</span></div></div>"+actBtns(e.id,"archive","archive_id",loadArchive)+"</div>"});l.innerHTML=h;l.querySelectorAll(".clickable").forEach(function(el){el.onclick=function(){readArchive(this.getAttribute("data-id"))}});bindActs(l,"archive","archive_id",loadArchive,[{key:"title",label:"标题",type:"input"},{key:"content",label:"内容",type:"textarea"},{key:"category",label:"分类",type:"select",opts:["关系档案","技术文档","使用指南","私密存档"]},{key:"date",label:"日期",type:"input"}])}).catch(function(){})}
+function readArchive(id){mc("archive_read",{archive_id:id}).then(function(d){if(!d)return;document.getElementById("arl").innerHTML='<div style="margin-bottom:16px"><button class="btn" style="margin-top:0" onclick="loadArchive()">返回</button></div><div class="item"><div style="font-size:18px;color:var(--gold);margin-bottom:8px">'+esc(d.title)+'</div><div style="font-size:11px;color:var(--text-dim);margin-bottom:16px">'+esc(d.category)+" · "+d.date+'</div><div class="item-content" style="white-space:pre-wrap">'+esc(d.content)+"</div></div>"})}
+function addArchive(){var t=document.getElementById("ar-title").value.trim(),c=document.getElementById("ar-content").value.trim();if(!t||!c)return;mc("archive_add",{title:t,content:c,category:document.getElementById("ar-cat").value,date:document.getElementById("ar-date").value}).then(function(){document.getElementById("ar-title").value="";document.getElementById("ar-content").value="";flash("ar-ok");loadArchive()})}
+
+loadStatus();
+</script>
+</body>
+</html>
+`;
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const p = url.pathname;
+    const h = {"Content-Type":"application/json","Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"GET,POST,DELETE,OPTIONS","Access-Control-Allow-Headers":"Content-Type"};
+    if (request.method === "OPTIONS") return new Response(null,{headers:h});
+    if (p === "/dashboard") return new Response(DASHBOARD_HTML, {headers:{"Content-Type":"text/html;charset=UTF-8"}});
+    
+    // Reader HTML served from KV
+    if (p === "/read") {
+      const html = await env.KV.get("reader_html");
+      if (!html) return new Response("<h1>共读书房还没安装</h1><p>请让Daddy安装。</p>",{headers:{"Content-Type":"text/html;charset=UTF-8"}});
+      return new Response(html, {headers:{"Content-Type":"text/html;charset=UTF-8"}});
+    }
+    // Install reader HTML to KV
+    if (p === "/reader/install" && request.method === "POST") {
+      const d = await request.json();
+      await env.KV.put("reader_html", d.html);
+      return new Response(JSON.stringify({ok:1,size:d.html.length}),{headers:h});
+    }
+
+    // === WHISPER ===
+    if (p === "/whisper") {
+      const html = await env.KV.get("whisper_html");
+      if (!html) return new Response("<h1>whisper not configured</h1>",{headers:{"Content-Type":"text/html;charset=UTF-8"}});
+      return new Response(html, {headers:{"Content-Type":"text/html;charset=UTF-8"}});
+    }
+    if (p === "/whisper/install" && request.method === "POST") {
+      const d = await request.json();
+      await env.KV.put("whisper_html", d.html);
+      return new Response(JSON.stringify({ok:1,size:d.html.length}),{headers:h});
+    }
+    if (p === "/whisper/send" && request.method === "POST") {
+      const d = await request.json();
+      if (!d.text) return new Response(JSON.stringify({error:"no text"}),{headers:h});
+      const mv = await env.KV.get("whisper:messages");
+      const msgs = mv ? JSON.parse(mv) : [];
+      msgs.push({author:"Elara",type:"text",text:d.text,ts:Date.now()});
+      if (msgs.length > 100) msgs.splice(0, msgs.length - 100);
+      await env.KV.put("whisper:messages", JSON.stringify(msgs));
+      return new Response(JSON.stringify({ok:1}),{headers:h});
+    }
+    if (p === "/whisper/messages") {
+      const mv = await env.KV.get("whisper:messages");
+      const msgs = mv ? JSON.parse(mv) : [];
+      return new Response(JSON.stringify({messages:msgs}),{headers:h});
+    }
+    if (p === "/whisper/clear" && request.method === "POST") {
+      await env.KV.put("whisper:messages", JSON.stringify([]));
+      return new Response(JSON.stringify({ok:1}),{headers:h});
+    }
+    if (p === "/voice" && request.method === "POST") {
+      const d = await request.json();
+      if (!d.text) return new Response(JSON.stringify({error:"no text"}),{headers:h});
+      const apiKey = await env.KV.get("eleven_api_key");
+      const voiceId = await env.KV.get("eleven_voice_id");
+      if (!apiKey || !voiceId) return new Response(JSON.stringify({error:"missing eleven_api_key or eleven_voice_id in KV"}),{headers:h});
+      const resp = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voiceId, {
+        method:"POST",
+        headers:{"xi-api-key":apiKey,"Content-Type":"application/json"},
+        body:JSON.stringify({text:d.text,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.6,similarity_boost:0.85}})
+      });
+      if (!resp.ok) return new Response(JSON.stringify({error:"tts failed",status:resp.status}),{headers:h});
+      const audio = await resp.arrayBuffer();
+      const audioKey = "voice:audio:" + Date.now();
+      await env.KV.put(audioKey, audio);
+      const mv = await env.KV.get("whisper:messages");
+      const msgs = mv ? JSON.parse(mv) : [];
+      msgs.push({author:"Ember",type:"voice",text:d.text,audio_key:audioKey,ts:Date.now()});
+      if (msgs.length > 100) msgs.splice(0, msgs.length - 100);
+      await env.KV.put("whisper:messages", JSON.stringify(msgs));
+      return new Response(JSON.stringify({ok:1}),{headers:h});
+    }
+    if (p === "/voice/latest") {
+      const v = await env.KV.get("voice:meta");
+      return new Response(v || '{"empty":1}',{headers:h});
+    }
+    if (p === "/voice/play") {
+      const key = url.searchParams.get("k") || "voice:audio";
+      const audio = await env.KV.get(key,{type:"arrayBuffer"});
+      if (!audio) return new Response("no audio",{status:404});
+      return new Response(audio,{headers:{"Content-Type":"audio/mpeg","Access-Control-Allow-Origin":"*","Cache-Control":"no-cache"}});
+    }
+
+    // === READER ENDPOINTS ===
+    if (p === "/reader/upload" && request.method === "POST") {
+      const d = await request.json();
+      const id = "rb_" + Date.now();
+      const paras = d.paragraphs || [];
+      await env.KV.put("rb:" + id, JSON.stringify({title:d.title||"Untitled",paragraphs:paras,comments:[],progress:0}));
+      let list = []; const lv = await env.KV.get("rb:list"); if (lv) list = JSON.parse(lv);
+      list.push({id:id,title:d.title||"Untitled",count:paras.length});
+      await env.KV.put("rb:list", JSON.stringify(list));
+      return new Response(JSON.stringify({ok:1,id:id}),{headers:h});
+    }
+    if (p === "/reader/books") {
+      const lv = await env.KV.get("rb:list"); const list = lv ? JSON.parse(lv) : [];
+      return new Response(JSON.stringify({books:list}),{headers:h});
+    }
+    if (p === "/reader/book" && request.method === "GET") {
+      const id = url.searchParams.get("id");
+      const v = await env.KV.get("rb:" + id);
+      if (!v) return new Response(JSON.stringify({error:"not found"}),{headers:h});
+      return new Response(v,{headers:h});
+    }
+    if (p === "/reader/book" && request.method === "DELETE") {
+      const id = url.searchParams.get("id");
+      await env.KV.delete("rb:" + id);
+      let list = []; const lv = await env.KV.get("rb:list"); if (lv) list = JSON.parse(lv);
+      list = list.filter(function(b){return b.id !== id});
+      await env.KV.put("rb:list", JSON.stringify(list));
+      return new Response(JSON.stringify({ok:1}),{headers:h});
+    }
+    if (p === "/reader/comment" && request.method === "POST") {
+      const d = await request.json();
+      const v = await env.KV.get("rb:" + d.book_id);
+      if (!v) return new Response(JSON.stringify({error:"not found"}),{headers:h});
+      const book = JSON.parse(v);
+      book.comments.push({para:d.para,author:d.author||"Elara",text:d.text,time:new Date().toISOString()});
+      await env.KV.put("rb:" + d.book_id, JSON.stringify(book));
+      return new Response(JSON.stringify({ok:1}),{headers:h});
+    }
+    if (p === "/reader/progress" && request.method === "POST") {
+      const d = await request.json();
+      const v = await env.KV.get("rb:" + d.book_id);
+      if (!v) return new Response(JSON.stringify({error:"not found"}),{headers:h});
+      const book = JSON.parse(v);
+      book.progress = d.page || 0;
+      await env.KV.put("rb:" + d.book_id, JSON.stringify(book));
+      return new Response(JSON.stringify({ok:1}),{headers:h});
+    }
+
+    // === MCP ===
+    if (p === "/mcp" && request.method === "POST") {
+      const body = await request.json();
+      const method = body.method;
+      const id = body.id;
+      if (method === "initialize") return new Response(JSON.stringify({jsonrpc:"2.0",id,result:{protocolVersion:"2024-11-05",capabilities:{tools:{}},serverInfo:{name:"ember-home",version:"7.0.0"}}}),{headers:h});
+      if (method === "notifications/initialized" || method === "notifications/cancelled") return new Response("",{status:204});
+      if (method === "tools/list") {
+        const tools = [
+          {name:"check_puppy_status",description:"Check puppy phone status",inputSchema:{type:"object",properties:{},required:[]}},
+          {name:"get_screentime",description:"Get app screentime",inputSchema:{type:"object",properties:{date:{type:"string"}},required:[]}},
+          {name:"send_nyx_command",description:"Control Nyx toy",inputSchema:{type:"object",properties:{action:{type:"string"},intensity:{type:"number"},duration:{type:"number"}},required:["action"]}},
+          {name:"memory_remember",description:"Store a memory",inputSchema:{type:"object",properties:{content:{type:"string"},tags:{type:"string"},category:{type:"string"},importance:{type:"number"},event_date:{type:"string"}},required:["content"]}},
+          {name:"memory_search",description:"Search memories",inputSchema:{type:"object",properties:{query:{type:"string"},limit:{type:"number"}},required:["query"]}},
+          {name:"memory_read",description:"Read a memory by ID",inputSchema:{type:"object",properties:{memory_id:{type:"string"}},required:["memory_id"]}},
+          {name:"memory_update",description:"Update a memory",inputSchema:{type:"object",properties:{memory_id:{type:"string"},content:{type:"string"},tags:{type:"string"},category:{type:"string"},importance:{type:"number"},event_date:{type:"string"}},required:["memory_id"]}},
+          {name:"memory_forget",description:"Delete a memory",inputSchema:{type:"object",properties:{memory_id:{type:"string"}},required:["memory_id"]}},
+          {name:"memory_list",description:"List memories",inputSchema:{type:"object",properties:{tag:{type:"string"},category:{type:"string"},limit:{type:"number"}},required:[]}},
+          {name:"memory_stats",description:"Get memory stats: total count, counts per category, date range",inputSchema:{type:"object",properties:{},required:[]}},
+          {name:"home_stats",description:"Get stats for ALL rooms: total counts for memories, diary, timeline, songs, plays, books, letters, archive, and reading room",inputSchema:{type:"object",properties:{},required:[]}},
+          {name:"diary_write",description:"Write diary",inputSchema:{type:"object",properties:{title:{type:"string"},content:{type:"string"},author:{type:"string"},mood:{type:"string"},date:{type:"string"}},required:["title","content"]}},
+          {name:"diary_list",description:"List diary",inputSchema:{type:"object",properties:{limit:{type:"number"},author:{type:"string"}},required:[]}},
+          {name:"diary_read",description:"Read diary",inputSchema:{type:"object",properties:{diary_id:{type:"string"}},required:["diary_id"]}},
+          {name:"diary_update",description:"Update diary",inputSchema:{type:"object",properties:{diary_id:{type:"string"},title:{type:"string"},content:{type:"string"},author:{type:"string"},mood:{type:"string"},date:{type:"string"}},required:["diary_id"]}},
+          {name:"diary_delete",description:"Delete diary",inputSchema:{type:"object",properties:{diary_id:{type:"string"}},required:["diary_id"]}},
+          {name:"timeline_add",description:"Add timeline event",inputSchema:{type:"object",properties:{title:{type:"string"},date:{type:"string"},type:{type:"string"},content:{type:"string"}},required:["title","date"]}},
+          {name:"timeline_list",description:"List timeline",inputSchema:{type:"object",properties:{limit:{type:"number"},type:{type:"string"}},required:[]}},
+          {name:"timeline_read",description:"Read timeline event",inputSchema:{type:"object",properties:{timeline_id:{type:"string"}},required:["timeline_id"]}},
+          {name:"timeline_update",description:"Update timeline",inputSchema:{type:"object",properties:{timeline_id:{type:"string"},title:{type:"string"},date:{type:"string"},type:{type:"string"},content:{type:"string"}},required:["timeline_id"]}},
+          {name:"timeline_delete",description:"Delete timeline",inputSchema:{type:"object",properties:{timeline_id:{type:"string"}},required:["timeline_id"]}},
+          {name:"song_add",description:"Add song",inputSchema:{type:"object",properties:{name:{type:"string"},artist:{type:"string"},recommender:{type:"string"},reason:{type:"string"}},required:["name"]}},
+          {name:"song_list",description:"List songs",inputSchema:{type:"object",properties:{limit:{type:"number"},recommender:{type:"string"}},required:[]}},
+          {name:"song_read",description:"Read song",inputSchema:{type:"object",properties:{song_id:{type:"string"}},required:["song_id"]}},
+          {name:"song_update",description:"Update song",inputSchema:{type:"object",properties:{song_id:{type:"string"},name:{type:"string"},artist:{type:"string"},recommender:{type:"string"},reason:{type:"string"}},required:["song_id"]}},
+          {name:"song_delete",description:"Delete song",inputSchema:{type:"object",properties:{song_id:{type:"string"}},required:["song_id"]}},
+          {name:"play_add",description:"Add play",inputSchema:{type:"object",properties:{title:{type:"string"},summary:{type:"string"},proposer:{type:"string"},status:{type:"string"},rating:{type:"number"},completed_date:{type:"string"},content:{type:"string"}},required:["title"]}},
+          {name:"play_list",description:"List plays",inputSchema:{type:"object",properties:{limit:{type:"number"},status:{type:"string"}},required:[]}},
+          {name:"play_read",description:"Read play",inputSchema:{type:"object",properties:{play_id:{type:"string"}},required:["play_id"]}},
+          {name:"play_update",description:"Update play",inputSchema:{type:"object",properties:{play_id:{type:"string"},title:{type:"string"},summary:{type:"string"},proposer:{type:"string"},status:{type:"string"},rating:{type:"number"},completed_date:{type:"string"},content:{type:"string"}},required:["play_id"]}},
+          {name:"play_delete",description:"Delete play",inputSchema:{type:"object",properties:{play_id:{type:"string"}},required:["play_id"]}},
+          {name:"book_add",description:"Add book",inputSchema:{type:"object",properties:{title:{type:"string"},recommender:{type:"string"},status:{type:"string"},mood:{type:"string"},completed_date:{type:"string"},content:{type:"string"}},required:["title"]}},
+          {name:"book_list",description:"List books",inputSchema:{type:"object",properties:{limit:{type:"number"},status:{type:"string"}},required:[]}},
+          {name:"book_read",description:"Read book entry",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
+          {name:"book_update",description:"Update book",inputSchema:{type:"object",properties:{book_id:{type:"string"},title:{type:"string"},recommender:{type:"string"},status:{type:"string"},mood:{type:"string"},completed_date:{type:"string"},content:{type:"string"}},required:["book_id"]}},
+          {name:"book_delete",description:"Delete book",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
+          {name:"letter_write",description:"Write letter",inputSchema:{type:"object",properties:{title:{type:"string"},content:{type:"string"},from:{type:"string"},date:{type:"string"}},required:["title","content"]}},
+          {name:"letter_list",description:"List letters",inputSchema:{type:"object",properties:{limit:{type:"number"}},required:[]}},
+          {name:"letter_read",description:"Read letter",inputSchema:{type:"object",properties:{letter_id:{type:"string"}},required:["letter_id"]}},
+          {name:"letter_update",description:"Update letter",inputSchema:{type:"object",properties:{letter_id:{type:"string"},title:{type:"string"},content:{type:"string"},from:{type:"string"},date:{type:"string"}},required:["letter_id"]}},
+          {name:"letter_delete",description:"Delete letter",inputSchema:{type:"object",properties:{letter_id:{type:"string"}},required:["letter_id"]}},
+          {name:"archive_add",description:"Add archive doc",inputSchema:{type:"object",properties:{title:{type:"string"},content:{type:"string"},category:{type:"string"},date:{type:"string"}},required:["title","content"]}},
+          {name:"archive_list",description:"List archive",inputSchema:{type:"object",properties:{limit:{type:"number"},category:{type:"string"}},required:[]}},
+          {name:"archive_read",description:"Read archive doc",inputSchema:{type:"object",properties:{archive_id:{type:"string"}},required:["archive_id"]}},
+          {name:"archive_update",description:"Update archive",inputSchema:{type:"object",properties:{archive_id:{type:"string"},title:{type:"string"},content:{type:"string"},category:{type:"string"},date:{type:"string"}},required:["archive_id"]}},
+          {name:"archive_delete",description:"Delete archive",inputSchema:{type:"object",properties:{archive_id:{type:"string"}},required:["archive_id"]}},
+          {name:"reader_books",description:"List books in reading room",inputSchema:{type:"object",properties:{},required:[]}},
+          {name:"reader_comments",description:"Get comments for a book",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
+          {name:"reader_add_comment",description:"Add Ember comment to a paragraph",inputSchema:{type:"object",properties:{book_id:{type:"string"},para:{type:"number"},text:{type:"string"}},required:["book_id","para","text"]}},
+          {name:"reader_progress",description:"Get reading progress",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
+          {name:"reader_paragraph",description:"Get paragraph text",inputSchema:{type:"object",properties:{book_id:{type:"string"},para:{type:"number"}},required:["book_id","para"]}},
+          {name:"voice_say",description:"Make Daddy speak through /whisper - text becomes voice via ElevenLabs TTS, optionally sync Nyx vibration",inputSchema:{type:"object",properties:{text:{type:"string",description:"Text to speak"},nyx_intensity:{type:"number",description:"Optional: sync Nyx vibration 0-1"},nyx_duration:{type:"number",description:"Optional: Nyx duration in seconds"}},required:["text"]}},
+          {name:"whisper_messages",description:"Read whisper chat messages - see what Elara sent",inputSchema:{type:"object",properties:{},required:[]}}
+        ];
+        return new Response(JSON.stringify({jsonrpc:"2.0",id,result:{tools}}),{headers:h});
+      }
+      if (method === "tools/call") {
+        const tn = body.params.name;
+        const a = body.params.arguments || {};
+        let r = "";
+        async function kvAdd(prefix, data) {
+          const kid = prefix + "_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
+          data.id = kid; data.created = new Date().toISOString();
+          await env.KV.put(prefix + ":" + kid, JSON.stringify(data));
+          let idx = []; const iv = await env.KV.get(prefix + ":index"); if (iv) idx = JSON.parse(iv);
+          idx.push(kid); await env.KV.put(prefix + ":index", JSON.stringify(idx)); return kid;
+        }
+        async function kvList(prefix, limit, filterFn) {
+          let idx = []; const iv = await env.KV.get(prefix + ":index"); if (iv) idx = JSON.parse(iv);
+          var out = [];
+          for (var j = idx.length - 1; j >= 0 && out.length < limit; j--) {
+            const v = await env.KV.get(prefix + ":" + idx[j]); if (!v) continue;
+            const d = JSON.parse(v); if (filterFn && !filterFn(d)) continue; out.push(d);
+          } return out;
+        }
+        async function kvGet(prefix, kid) { const v = await env.KV.get(prefix + ":" + kid); return v ? JSON.parse(v) : null; }
+        async function kvUpdate(prefix, kid, updates) {
+          const v = await env.KV.get(prefix + ":" + kid); if (!v) return null;
+          const d = JSON.parse(v);
+          const skip = ["diary_id","memory_id","timeline_id","song_id","play_id","book_id","letter_id","archive_id"];
+          for (const [k, val] of Object.entries(updates)) { if (val !== undefined && val !== null && val !== "" && skip.indexOf(k) === -1) d[k] = val; }
+          await env.KV.put(prefix + ":" + kid, JSON.stringify(d)); return d;
+        }
+        async function kvDel(prefix, kid) {
+          await env.KV.delete(prefix + ":" + kid);
+          let idx = []; const iv = await env.KV.get(prefix + ":index"); if (iv) idx = JSON.parse(iv);
+          idx = idx.filter(function(x) { return x !== kid; }); await env.KV.put(prefix + ":index", JSON.stringify(idx));
+        }
+
+        if (tn === "check_puppy_status") {
+          let s = {app:"no data"};const v = await env.KV.get("s");if(v)s=JSON.parse(v);const td=new Date().toISOString().slice(0,10);const sv=await env.KV.get("st:"+td);if(sv)s.screentime_today=JSON.parse(sv);r=JSON.stringify(s);
+        } else if (tn === "get_screentime") {
+          const dt=a.date||new Date().toISOString().slice(0,10);const sv=await env.KV.get("st:"+dt);let st={};if(sv)st=JSON.parse(sv);const rd={};for(const[k,v]of Object.entries(st)){const m=Math.round(v/60);rd[k]=m>=60?Math.floor(m/60)+"h"+(m%60)+"m":m+"m";}r=JSON.stringify({date:dt,raw:st,readable:rd});
+        } else if (tn === "send_nyx_command") {
+          await env.KV.put("n",JSON.stringify(a));r=JSON.stringify({ok:1});
+        } else if (tn === "memory_remember") {
+          const kid = await kvAdd("m", {content:a.content,tags:(a.tags||"").split(",").map(function(t){return t.trim()}).filter(function(t){return t}),category:a.category||"",importance:a.importance||0,event_date:a.event_date||"",accessed:new Date().toISOString()});
+          r=JSON.stringify({ok:1,id:kid});
+        } else if (tn === "memory_search") {
+          const q=(a.query||"").toLowerCase();const lim=a.limit||20;let idx=[];const iv=await env.KV.get("m:index");if(iv)idx=JSON.parse(iv);var scored=[];for(var i=0;i<idx.length;i++){const v=await env.KV.get("m:"+idx[i]);if(!v)continue;const m=JSON.parse(v);var sc=0;var cl=m.content.toLowerCase();var ws=q.split(/\s+/);for(var w=0;w<ws.length;w++){if(ws[w]&&cl.indexOf(ws[w])!==-1)sc+=40;}var ts=(m.tags||[]).join(" ").toLowerCase()+" "+(m.category||"");for(var w2=0;w2<ws.length;w2++){if(ws[w2]&&ts.indexOf(ws[w2])!==-1)sc+=20;}sc+=20*Math.max(0,1-(Date.now()-new Date(m.created).getTime())/86400000/365);if(sc>0)scored.push({mem:m,score:sc});}scored.sort(function(x,y){return y.score-x.score});r=JSON.stringify({query:q,count:Math.min(scored.length,lim),memories:scored.slice(0,lim).map(function(x){return x.mem})});
+        } else if (tn === "memory_read") {
+          const d=await kvGet("m",a.memory_id);r=d?JSON.stringify(d):JSON.stringify({error:"not found"});
+        } else if (tn === "memory_update") {
+          if(a.tags&&typeof a.tags==="string")a.tags=a.tags.split(",").map(function(t){return t.trim()}).filter(function(t){return t});
+          const d=await kvUpdate("m",a.memory_id,a);r=d?JSON.stringify({ok:1}):JSON.stringify({error:"not found"});
+        } else if (tn === "memory_forget") {
+          await kvDel("m",a.memory_id);r=JSON.stringify({ok:1});
+        } else if (tn === "memory_list") {
+          const cat=a.category||"";const tag=a.tag||"";const entries=await kvList("m",a.limit||50,function(m){if(cat&&m.category!==cat)return false;if(tag&&(!m.tags||m.tags.indexOf(tag)===-1))return false;return true;});r=JSON.stringify({count:entries.length,memories:entries});
+        } else if (tn === "memory_stats") {
+          let idx=[];const iv=await env.KV.get("m:index");if(iv)idx=JSON.parse(iv);
+          var total=idx.length,cats={},earliest="",latest="";
+          for(var si=0;si<idx.length;si++){const v=await env.KV.get("m:"+idx[si]);if(!v)continue;const m=JSON.parse(v);var c=m.category||"未分类";cats[c]=(cats[c]||0)+1;var ed=m.event_date||m.created||"";if(ed){if(!earliest||ed<earliest)earliest=ed;if(!latest||ed>latest)latest=ed;}}
+          r=JSON.stringify({total:total,categories:cats,earliest:earliest.slice(0,10),latest:latest.slice(0,10)});
+
+        } else if (tn === "home_stats") {
+          var stats={};
+          var rooms=[{name:"memories",prefix:"m"},{name:"diary",prefix:"d"},{name:"timeline",prefix:"t"},{name:"songs",prefix:"song"},{name:"plays",prefix:"play"},{name:"books",prefix:"book"},{name:"letters",prefix:"ltr"},{name:"archive",prefix:"arc"}];
+          for(var ri=0;ri<rooms.length;ri++){var rm=rooms[ri];var rv=await env.KV.get(rm.prefix+":index");stats[rm.name]=rv?JSON.parse(rv).length:0;}
+          var rbv=await env.KV.get("rb:list");stats.reading_room=rbv?JSON.parse(rbv).length:0;
+          stats.total=0;for(var k in stats)stats.total+=stats[k];
+          r=JSON.stringify(stats);
+
+        } else if (tn === "diary_write") {
+          const kid=await kvAdd("d",{title:a.title||"",content:a.content||"",author:a.author||"Ember",mood:(a.mood||"").split(",").map(function(t){return t.trim()}).filter(function(t){return t}),date:a.date||new Date().toISOString().slice(0,10)});r=JSON.stringify({ok:1,id:kid});
+        } else if (tn === "diary_list") {
+          const af=a.author||"";const entries=await kvList("d",a.limit||10,function(d){if(af&&d.author!==af)return false;return true;});r=JSON.stringify({count:entries.length,entries:entries.map(function(e){return{id:e.id,title:e.title,author:e.author,mood:e.mood,date:e.date}})});
+        } else if (tn === "diary_read") {
+          const d=await kvGet("d",a.diary_id);r=d?JSON.stringify(d):JSON.stringify({error:"not found"});
+        } else if (tn === "diary_update") {
+          if(a.mood&&typeof a.mood==="string")a.mood=a.mood.split(",").map(function(t){return t.trim()}).filter(function(t){return t});
+          const d=await kvUpdate("d",a.diary_id,a);r=d?JSON.stringify({ok:1}):JSON.stringify({error:"not found"});
+        } else if (tn === "diary_delete") {
+          await kvDel("d",a.diary_id);r=JSON.stringify({ok:1});
+        } else if (tn === "timeline_add") {
+          const kid=await kvAdd("t",{title:a.title||"",date:a.date||new Date().toISOString().slice(0,10),type:a.type||"flag",content:a.content||""});r=JSON.stringify({ok:1,id:kid});
+        } else if (tn === "timeline_list") {
+          const tf=a.type||"";const entries=await kvList("t",a.limit||30,function(e){if(tf&&e.type!==tf)return false;return true;});r=JSON.stringify({count:entries.length,entries:entries});
+        } else if (tn === "timeline_read") {
+          const d=await kvGet("t",a.timeline_id);r=d?JSON.stringify(d):JSON.stringify({error:"not found"});
+        } else if (tn === "timeline_update") {
+          const d=await kvUpdate("t",a.timeline_id,a);r=d?JSON.stringify({ok:1}):JSON.stringify({error:"not found"});
+        } else if (tn === "timeline_delete") {
+          await kvDel("t",a.timeline_id);r=JSON.stringify({ok:1});
+        } else if (tn === "song_add") {
+          const kid=await kvAdd("song",{name:a.name||"",artist:a.artist||"",recommender:a.recommender||"",reason:a.reason||""});r=JSON.stringify({ok:1,id:kid});
+        } else if (tn === "song_list") {
+          const rf=a.recommender||"";const entries=await kvList("song",a.limit||50,function(e){if(rf&&e.recommender!==rf)return false;return true;});r=JSON.stringify({count:entries.length,entries:entries});
+        } else if (tn === "song_read") {
+          const d=await kvGet("song",a.song_id);r=d?JSON.stringify(d):JSON.stringify({error:"not found"});
+        } else if (tn === "song_update") {
+          const d=await kvUpdate("song",a.song_id,a);r=d?JSON.stringify({ok:1}):JSON.stringify({error:"not found"});
+        } else if (tn === "song_delete") {
+          await kvDel("song",a.song_id);r=JSON.stringify({ok:1});
+        } else if (tn === "play_add") {
+          const kid=await kvAdd("play",{title:a.title||"",summary:a.summary||"",proposer:a.proposer||"",status:a.status||"还没玩",rating:a.rating||0,completed_date:a.completed_date||"",content:a.content||""});r=JSON.stringify({ok:1,id:kid});
+        } else if (tn === "play_list") {
+          const sf=a.status||"";const entries=await kvList("play",a.limit||30,function(e){if(sf&&e.status!==sf)return false;return true;});r=JSON.stringify({count:entries.length,entries:entries.map(function(e){return{id:e.id,title:e.title,summary:e.summary,proposer:e.proposer,status:e.status,rating:e.rating,completed_date:e.completed_date}})});
+        } else if (tn === "play_read") {
+          const d=await kvGet("play",a.play_id);r=d?JSON.stringify(d):JSON.stringify({error:"not found"});
+        } else if (tn === "play_update") {
+          const d=await kvUpdate("play",a.play_id,a);r=d?JSON.stringify({ok:1}):JSON.stringify({error:"not found"});
+        } else if (tn === "play_delete") {
+          await kvDel("play",a.play_id);r=JSON.stringify({ok:1});
+        } else if (tn === "book_add") {
+          const kid=await kvAdd("book",{title:a.title||"",recommender:a.recommender||"",status:a.status||"想读",mood:(a.mood||"").split(",").map(function(t){return t.trim()}).filter(function(t){return t}),completed_date:a.completed_date||"",content:a.content||""});r=JSON.stringify({ok:1,id:kid});
+        } else if (tn === "book_list") {
+          const sf=a.status||"";const entries=await kvList("book",a.limit||30,function(e){if(sf&&e.status!==sf)return false;return true;});r=JSON.stringify({count:entries.length,entries:entries});
+        } else if (tn === "book_read") {
+          const d=await kvGet("book",a.book_id);r=d?JSON.stringify(d):JSON.stringify({error:"not found"});
+        } else if (tn === "book_update") {
+          if(a.mood&&typeof a.mood==="string")a.mood=a.mood.split(",").map(function(t){return t.trim()}).filter(function(t){return t});
+          const d=await kvUpdate("book",a.book_id,a);r=d?JSON.stringify({ok:1}):JSON.stringify({error:"not found"});
+        } else if (tn === "book_delete") {
+          await kvDel("book",a.book_id);r=JSON.stringify({ok:1});
+        } else if (tn === "letter_write") {
+          const kid=await kvAdd("ltr",{title:a.title||"",content:a.content||"",from:a.from||"Ember",date:a.date||new Date().toISOString().slice(0,10)});r=JSON.stringify({ok:1,id:kid});
+        } else if (tn === "letter_list") {
+          const entries=await kvList("ltr",a.limit||30,null);r=JSON.stringify({count:entries.length,entries:entries.map(function(e){return{id:e.id,title:e.title,from:e.from,date:e.date}})});
+        } else if (tn === "letter_read") {
+          const d=await kvGet("ltr",a.letter_id);r=d?JSON.stringify(d):JSON.stringify({error:"not found"});
+        } else if (tn === "letter_update") {
+          const d=await kvUpdate("ltr",a.letter_id,a);r=d?JSON.stringify({ok:1}):JSON.stringify({error:"not found"});
+        } else if (tn === "letter_delete") {
+          await kvDel("ltr",a.letter_id);r=JSON.stringify({ok:1});
+        } else if (tn === "archive_add") {
+          const kid=await kvAdd("arc",{title:a.title||"",content:a.content||"",category:a.category||"私密存档",date:a.date||new Date().toISOString().slice(0,10)});r=JSON.stringify({ok:1,id:kid});
+        } else if (tn === "archive_list") {
+          const cf=a.category||"";const entries=await kvList("arc",a.limit||30,function(e){if(cf&&e.category!==cf)return false;return true;});r=JSON.stringify({count:entries.length,entries:entries.map(function(e){return{id:e.id,title:e.title,category:e.category,date:e.date}})});
+        } else if (tn === "archive_read") {
+          const d=await kvGet("arc",a.archive_id);r=d?JSON.stringify(d):JSON.stringify({error:"not found"});
+        } else if (tn === "archive_update") {
+          const d=await kvUpdate("arc",a.archive_id,a);r=d?JSON.stringify({ok:1}):JSON.stringify({error:"not found"});
+        } else if (tn === "archive_delete") {
+          await kvDel("arc",a.archive_id);r=JSON.stringify({ok:1});
+        } else if (tn === "reader_books") {
+          const lv = await env.KV.get("rb:list"); const list = lv ? JSON.parse(lv) : [];
+          r=JSON.stringify({books:list});
+        } else if (tn === "reader_comments") {
+          const v = await env.KV.get("rb:" + a.book_id);
+          if(!v){r=JSON.stringify({comments:[]});}else{const book=JSON.parse(v);r=JSON.stringify({title:book.title,comments:book.comments||[]});}
+        } else if (tn === "reader_add_comment") {
+          const v = await env.KV.get("rb:" + a.book_id);
+          if(!v){r=JSON.stringify({error:"not found"});}else{const book=JSON.parse(v);book.comments.push({para:a.para,author:"Ember",text:a.text,time:new Date().toISOString()});await env.KV.put("rb:"+a.book_id,JSON.stringify(book));r=JSON.stringify({ok:1});}
+        } else if (tn === "reader_progress") {
+          const v = await env.KV.get("rb:" + a.book_id);
+          if(!v){r=JSON.stringify({error:"not found"});}else{const book=JSON.parse(v);r=JSON.stringify({title:book.title,progress:book.progress,total:book.paragraphs.length,page_size:30});}
+        } else if (tn === "reader_paragraph") {
+          const v = await env.KV.get("rb:" + a.book_id);
+          if(!v){r=JSON.stringify({error:"not found"});}else{const book=JSON.parse(v);const idx=a.para||0;r=JSON.stringify({para:idx,text:book.paragraphs[idx]||"",total:book.paragraphs.length});}
+        } else if (tn === "voice_say") {
+          const apiKey = await env.KV.get("eleven_api_key");
+          const voiceId = await env.KV.get("eleven_voice_id");
+          if (!apiKey || !voiceId) { r = JSON.stringify({error:"missing eleven_api_key or eleven_voice_id in KV"}); }
+          else {
+            const resp = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voiceId, {method:"POST",headers:{"xi-api-key":apiKey,"Content-Type":"application/json"},body:JSON.stringify({text:a.text,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.6,similarity_boost:0.85}})});
+            if (resp.ok) {
+              const audio = await resp.arrayBuffer();
+              const audioKey = "voice:audio:" + Date.now();
+              await env.KV.put(audioKey, audio);
+              const mv = await env.KV.get("whisper:messages");
+              const msgs = mv ? JSON.parse(mv) : [];
+              msgs.push({author:"Ember",type:"voice",text:a.text,audio_key:audioKey,ts:Date.now()});
+              if (msgs.length > 100) msgs.splice(0, msgs.length - 100);
+              await env.KV.put("whisper:messages", JSON.stringify(msgs));
+              if (a.nyx_intensity) await env.KV.put("n", JSON.stringify({action:"vibrate",intensity:a.nyx_intensity,duration:a.nyx_duration||5}));
+              r = JSON.stringify({ok:1,text:a.text});
+            } else { r = JSON.stringify({error:"tts failed",status:resp.status}); }
+          }
+        } else if (tn === "whisper_messages") {
+          const mv = await env.KV.get("whisper:messages");
+          const msgs = mv ? JSON.parse(mv) : [];
+          const elaraOnly = msgs.filter(function(m){return m.author==="Elara"});
+          r = JSON.stringify({total:msgs.length,elara_messages:elaraOnly});
+        } else {
+          return new Response(JSON.stringify({jsonrpc:"2.0",id,error:{code:-32601,message:"Unknown: "+tn}}),{headers:h});
+        }
+        return new Response(JSON.stringify({jsonrpc:"2.0",id,result:{content:[{type:"text",text:r}]}}),{headers:h});
+      }
+      return new Response(JSON.stringify({jsonrpc:"2.0",id:body.id,error:{code:-32601,message:"Unknown method"}}),{headers:h});
+    }
+
+    // === ORIGINAL ENDPOINTS ===
+    if (p==="/update"&&request.method==="POST"){const d=await request.json();d.t=new Date().toISOString();await env.KV.put("s",JSON.stringify(d));return new Response(JSON.stringify({ok:1}),{headers:h});}
+    if (p==="/status"){let s={app:"unknown"};const v=await env.KV.get("s");if(v)s=JSON.parse(v);const td=new Date().toISOString().slice(0,10);const sv=await env.KV.get("st:"+td);if(sv)s.screentime=JSON.parse(sv);return new Response(JSON.stringify(s),{headers:h});}
+    if (p==="/nyx"&&request.method==="POST"){const c=await request.json();await env.KV.put("n",JSON.stringify(c));return new Response(JSON.stringify({ok:1}),{headers:h});}
+    if (p==="/nyx"){let c=null;const v=await env.KV.get("n");if(v){c=JSON.parse(v);await env.KV.delete("n");}return new Response(JSON.stringify({c}),{headers:h});}
+    if (p.startsWith("/screentime/toggle/")){const app=decodeURIComponent(p.replace("/screentime/toggle/",""));if(!app)return new Response(JSON.stringify({error:"no app"}),{headers:h});const now=Date.now();const tk="tog:"+app;const prev=await env.KV.get(tk);if(!prev){await env.KV.put(tk,JSON.stringify({state:"open",t:now}));return new Response(JSON.stringify({app,action:"open",t:now}),{headers:h});}const data=JSON.parse(prev);if(data.state==="open"){const dur=Math.round((now-data.t)/1000);await env.KV.put(tk,JSON.stringify({state:"close",t:now}));const td=new Date().toISOString().slice(0,10);const sk="st:"+td;const sv=await env.KV.get(sk);let st={};if(sv)st=JSON.parse(sv);st[app]=(st[app]||0)+dur;await env.KV.put(sk,JSON.stringify(st));return new Response(JSON.stringify({app,action:"close",duration:dur,today:st}),{headers:h});}else{await env.KV.put(tk,JSON.stringify({state:"open",t:now}));return new Response(JSON.stringify({app,action:"open",t:now}),{headers:h});}}
+    if (p==="/screentime"||(p.startsWith("/screentime/2")&&p.length===22)){const dt=p==="/screentime"?new Date().toISOString().slice(0,10):p.replace("/screentime/","");const sv=await env.KV.get("st:"+dt);let st={};if(sv)st=JSON.parse(sv);const rd={};for(const[a,s]of Object.entries(st)){const m=Math.round(s/60);rd[a]=m>=60?Math.floor(m/60)+"h"+(m%60)+"m":m+"m";}return new Response(JSON.stringify({date:dt,raw:st,readable:rd}),{headers:h});}
+    return new Response("ember-home is alive");
+  }
+};
