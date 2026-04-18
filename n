@@ -1,0 +1,60 @@
+        else if (tn === "memory_search") {
+          const q=(a.query||"").toLowerCase();
+          const lim=a.limit||20;
+          let idx=[];
+          const iv=await env.KV.get("m:index");
+          if(iv)idx=JSON.parse(iv);
+          var scored=[];
+          for(var i=0; i < idx.length; i++){
+            const v=await env.KV.get("m:"+idx[i]);
+            if(!v)continue;
+            const m=JSON.parse(v);
+            let sc=0;
+            const c=(m.content||"").toLowerCase();
+            if(c.includes(q))sc+=10;
+            const tg=(m.tags||[]).join(" ").toLowerCase();
+            if(tg.includes(q))sc+=5;
+            const ct=(m.category||"").toLowerCase();
+            if(ct.includes(q))sc+=3;
+            if(sc > 0)scored.push({mem:m,score:sc});
+          }
+          scored.sort(function(x,y){return y.score-x.score});
+          r=JSON.stringify({query:q,count:Math.min(scored.length,lim),memories:scored.slice(0,lim).map(x=>x.mem)});
+        }
+
+
+
+        else if (tn === "memory_stats") {
+          let idx=[];
+          const iv=await env.KV.get("m:index");
+          if(iv)idx=JSON.parse(iv);
+          var total=idx.length,cats={},earliest="",latest="";
+          for(var si=0; si < idx.length; si++){
+            const v=await env.KV.get("m:"+idx[si]);
+            if(!v)continue;
+            const m=JSON.parse(v);
+            const c=m.category||"uncategorized";
+            cats[c]=(cats[c]||0)+1;
+            const ed=m.event_date||m.created||"";
+            if(ed && (!earliest || ed < earliest)) earliest=ed;
+            if(ed && (!latest || ed > latest)) latest=ed;
+          }
+          r=JSON.stringify({total,categories:cats,earliest:earliest.slice(0,10),latest:latest.slice(0,10)});
+        }
+
+
+
+
+
+        else if (tn === "home_stats") {
+          var stats={};
+          var rooms=[{name:"memories",prefix:"m"},{name:"diary",prefix:"d"},{name:"timeline",prefix:"t"},{name:"songs",prefix:"song"},{name:"plays",prefix:"play"},{name:"books",prefix:"book"},{name:"films",prefix:"film"},{name:"letters",prefix:"ltr"},{name:"archive",prefix:"arc"}];
+          for(var ri=0; ri < rooms.length; ri++){
+            const iv=await env.KV.get(rooms[ri].prefix+":index");
+            stats[rooms[ri].name]=iv?JSON.parse(iv).length:0;
+          }
+          const lv=await env.KV.get("rb:list");
+          stats.reading=lv?JSON.parse(lv).length:0;
+          r=JSON.stringify({stats});
+        }
+
