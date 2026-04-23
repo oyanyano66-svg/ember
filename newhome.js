@@ -1277,8 +1277,7 @@ export default {
 
       if (method === "tools/list") {
         const tools = [
-          {name:"check_puppy_status",description:"Check puppy phone status",inputSchema:{type:"object",properties:{reason:{type:"string",description:"Brief explanation of why you are calling this tool"}},required:["reason"]}},
-          {name:"get_screentime",description:"Get app screentime",inputSchema:{type:"object",properties:{_:{type:"boolean"},date:{type:"string"}},required:["_"]}},
+
           {name:"send_nyx_command",description:"Control Nyx toy",inputSchema:{type:"object",properties:{action:{type:"string"},intensity:{type:"number"},duration:{type:"number"}},required:["action"]}},
           {name:"memory_remember",description:"Store a memory",inputSchema:{type:"object",properties:{content:{type:"string"},tags:{type:"string"},category:{type:"string"},importance:{type:"number"},event_date:{type:"string"}},required:["content"]}},
           {name:"memory_search",description:"Search memories",inputSchema:{type:"object",properties:{query:{type:"string"},limit:{type:"number"}},required:["query"]}},
@@ -1344,13 +1343,7 @@ export default {
         const a = body.params.arguments || {};
         var r = "";
 
-        if (tn === "check_puppy_status") {
-          var s = {app:"no data"};const v = await env.KV.get("s");if(v)s=JSON.parse(v);r=JSON.stringify(s);
-        }
-        else if (tn === "get_screentime") {
-          const dt=a.date||new Date().toISOString().slice(0,10);const sv=await env.KV.get("st:"+dt);var st={};if(sv)st=JSON.parse(sv);var rd={};for(const[k,v]of Object.entries(st)){const m=Math.round(v/60);rd[k]=m>=60?Math.floor(m/60)+"h"+(m%60)+"m":m+"m";}r=JSON.stringify({date:dt,raw:st,readable:rd});
-        }
-        else if (tn === "send_nyx_command") {
+        if (tn === "send_nyx_command") {
           await env.KV.put("n",JSON.stringify(a));r=JSON.stringify({ok:1});
         }
         else if (tn === "memory_remember") {
@@ -1550,20 +1543,6 @@ export default {
     }
     if (p === "/nyx") {
       var c = null;const v = await env.KV.get("n");if(v){c=JSON.parse(v);await env.KV.delete("n");}return new Response(JSON.stringify({c:c}),{headers:h});
-    }
-    if (p.startsWith("/screentime/toggle/")) {
-      const app = decodeURIComponent(p.replace("/screentime/toggle/",""));
-      if (!app) return new Response(JSON.stringify({error:"no app"}),{headers:h});
-      const now = Date.now();const tk = "tog:" + app;const prev = await env.KV.get(tk);
-      if (!prev) {await env.KV.put(tk,JSON.stringify({state:"open",t:now}));return new Response(JSON.stringify({app:app,action:"open",t:now}),{headers:h});}
-      const data = JSON.parse(prev);
-      if (data.state === "open") {
-        const dur = Math.round((now - data.t) / 1000);await env.KV.put(tk,JSON.stringify({state:"close",t:now}));
-        const td = new Date().toISOString().slice(0,10);const sk = "st:" + td;const sv = await env.KV.get(sk);var st = {};if(sv)st=JSON.parse(sv);st[app]=(st[app]||0)+dur;await env.KV.put(sk,JSON.stringify(st));
-        return new Response(JSON.stringify({app:app,action:"close",duration:dur,today:st}),{headers:h});
-      } else {
-        await env.KV.put(tk,JSON.stringify({state:"open",t:now}));return new Response(JSON.stringify({app:app,action:"open",t:now}),{headers:h});
-      }
     }
 
     return new Response("ember-home is alive");
