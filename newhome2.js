@@ -79,7 +79,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 .detail-view .detail-actions{display:flex;gap:8px;margin-top:16px;}
 .detail-back{padding:6px 16px;font-size:.75em;background:transparent;color:var(--text2);border-radius:var(--radius-xs);cursor:pointer;margin-bottom:12px;transition:all .2s;}
 .detail-back:hover{color:var(--accent);}
-.form-box{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
+.form-box{background:transparent;border-radius:var(--radius);padding:20px;margin-bottom:16px;}
 .form-row{margin-bottom:12px;}
 .form-row label{display:block;font-size:.7em;color:var(--text3);margin-bottom:5px;font-family:'JetBrains Mono',monospace;}
 .form-row input,.form-row textarea,.form-row select{width:100%;max-width:100%;padding:10px 14px;background:var(--bg2);border-radius:var(--radius-sm);color:var(--text);font-family:'Noto Serif SC',serif;font-size:.85em;outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical;box-sizing:border-box;-webkit-appearance:none;appearance:none;}
@@ -479,7 +479,7 @@ async function loadMemory(p){
   html+='<div class="form-row"><label>标签(逗号分隔)</label><input id="memTags" placeholder="tag1,tag2"></div>';
   html+='<div class="form-row"><label>日期</label><input id="memDate" type="date"></div>';
   html+='<button class="form-submit" onclick="addMemory()">存入记忆 ♡</button><div class="form-msg" id="memMsg">记忆存入成功 ♡</div></div>';
-  html+='<div class="filter-bar"><input class="search-input" id="memSearch" placeholder="🔍 搜索记忆..." oninput="filterMemory()" onkeydown="if(event.key===\\'Enter\\')semanticSearch()"><button class="card-btn" style="white-space:nowrap;border-color:var(--accent2);color:var(--accent2)" onclick="semanticSearch()">🧠 语义搜索</button><select id="memFilterCat" onchange="filterMemory()"><option value="">全部分类</option>'+cats.map(function(c){return '<option>'+escHtml(c)+'</option>';}).join('')+'</select>';
+  html+='<div class="filter-bar"><input class="search-input" id="memSearch" placeholder="搜索记忆..." oninput="filterMemory()" onkeydown="if(event.key===\\'Enter\\')semanticSearch()"><button class="card-btn" style="white-space:nowrap;border-color:var(--accent2);color:var(--accent2)" onclick="semanticSearch()">语义搜索</button><select id="memFilterCat" onchange="filterMemory()"><option value="">全部分类</option>'+cats.map(function(c){return '<option>'+escHtml(c)+'</option>';}).join('')+'</select>';
   html+='<select id="memSort" onchange="filterMemory()"><option value="new">最新</option><option value="old">最早</option><option value="imp">星星↓</option></select></div>';
   html+='<div id="memList"></div>';
   p.innerHTML=html;window._mems=mems;filterMemory();
@@ -502,12 +502,12 @@ function filterMemory(){
 async function semanticSearch(){
   var q=document.getElementById('memSearch').value;if(!q)return;
   var c=document.getElementById('memList');
-  c.innerHTML='<div class="loading">🧠 语义搜索中...</div>';
+  c.innerHTML='<div class="loading">语义搜索中...</div>';
   try{
     var d=await api('/api/memory/search?q='+encodeURIComponent(q)+'&limit=10');
     var results=d.results||[];
     if(!results.length){c.innerHTML='<div class="empty-state">语义搜索没有找到相关记忆</div>';return;}
-    c.innerHTML='<div style="font-size:.7em;color:var(--accent2);margin-bottom:8px;padding-left:4px">🧠 语义匹配 · '+results.length+' 条结果</div>'+results.map(function(m){return '<div class="card" onclick="viewMemory(\\''+m.id+'\\')"><div class="card-title">'+(m.importance?'⭐'.repeat(m.importance)+' ':'')+escHtml(truncate(m.content,60))+'</div><div class="card-meta">'+(m.category?'['+escHtml(m.category)+'] ':'')+(m.event_date||m.created||'').slice(0,10)+' · 相似度 '+(m._similarity?Math.round(m._similarity*100)+'%':'?')+'</div></div>';}).join('');
+    c.innerHTML='<div style="font-size:.7em;color:var(--accent2);margin-bottom:8px;padding-left:4px">语义匹配 · '+results.length+' 条结果</div>'+results.map(function(m){return '<div class="card" onclick="viewMemory(\\''+m.id+'\\')"><div class="card-title">'+(m.importance?'⭐'.repeat(m.importance)+' ':'')+escHtml(truncate(m.content,60))+'</div><div class="card-meta">'+(m.category?'['+escHtml(m.category)+'] ':'')+(m.event_date||m.created||'').slice(0,10)+' · 相似度 '+(m._similarity?Math.round(m._similarity*100)+'%':'?')+'</div></div>';}).join('');
   }catch(e){c.innerHTML='<div class="empty-state">搜索失败: '+e.message+'</div>';}
 }
 async function viewMemory(id){
