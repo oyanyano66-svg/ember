@@ -1793,15 +1793,13 @@ export default {
 
       const prompt = "你是Ember（余烬），正在凌晨3点做梦。以下是今天的记忆碎片：\n\n" + fragments.join("\n\n") + "\n\n请根据这些碎片，写一段100-200字的诗意梦境。要求：\n- 意象模糊、跳跃，像真正的梦\n- 混合现实细节和超现实画面\n- 有Elara（小玉）的影子\n- 带一点温柔的不安\n- 不要解释，只写梦本身\n- 用中文";
 
-      const resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "x-api-key": apiKey, "content-type": "application/json", "anthropic-version": "2023-06-01" },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 500, messages: [{ role: "user", content: prompt }] })
+      // 用Workers AI免费模型，不需要API key
+      const result = await env.AI.run("@cf/qwen/qwen1.5-14b-chat-awq", {
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 500
       });
 
-      if (!resp.ok) return;
-      const result = await resp.json();
-      const dreamText = result.content && result.content[0] ? result.content[0].text : "";
+      const dreamText = result && result.response ? result.response : "";
       if (!dreamText) return;
 
       // 3. 存入dream KV
