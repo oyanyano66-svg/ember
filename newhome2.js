@@ -84,8 +84,10 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-seri
 .tab.active{color:var(--accent);border-color:var(--accent);background:var(--accent-glow);}
 .panel{display:none;}
 .panel.show{display:block;animation:fadeIn .3s ease;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .3s;}
-.card:hover{border-color:var(--accent);box-shadow:0 2px 20px var(--accent-glow);}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.card:hover{border-color:var(--accent);box-shadow:0 2px 20px var(--accent-glow);transform:translateY(-1px);}
+.card::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,var(--accent-glow),transparent);transition:left .5s;}
+.card:hover::after{left:100%;}
 .card-title{font-size:.95em;font-weight:500;color:var(--text);margin-bottom:4px;}
 .card-meta{font-family:'JetBrains Mono',monospace;font-size:.7em;color:var(--text3);margin-bottom:8px;}
 .card-body{font-size:.85em;color:var(--text2);line-height:1.7;white-space:pre-wrap;}
@@ -223,6 +225,8 @@ var TABS=[
   {id:'memory',name:'记忆库',icon:'🧠',prefix:'memory'},
   {id:'diary',name:'日记本',icon:'📝',prefix:'diary'},
   {id:'timeline',name:'时间线',icon:'📅',prefix:'timeline'},
+  {id:'handover',name:'交接信',icon:'✉️',prefix:'handover'},
+  {id:'dreams',name:'梦境',icon:'🌙',prefix:'dream'},
   {id:'songs',name:'歌单',icon:'🎵',prefix:'song'},
   {id:'plays',name:'剧本',icon:'🎭',prefix:'play'},
   {id:'books',name:'读书角',icon:'📖',prefix:'book'},
@@ -347,6 +351,8 @@ async function loadPanel(id){
   if(id==='memory')await loadMemory(p);
   else if(id==='diary')await loadDiary(p);
   else if(id==='timeline')await loadTimeline(p);
+  else if(id==='handover')await loadHandover(p);
+  else if(id==='dreams')await loadDreams(p);
   else if(id==='songs')await loadSongs(p);
   else if(id==='plays')await loadPlays(p);
   else if(id==='books')await loadBooks(p);
@@ -365,7 +371,7 @@ async function loadMemory(p){
   html+='<div class="form-row"><label>标签(逗号分隔)</label><input id="memTags" placeholder="tag1,tag2"></div>';
   html+='<div class="form-row"><label>日期</label><input id="memDate" type="date"></div>';
   html+='<button class="form-submit" onclick="addMemory()">存入记忆 ♡</button><div class="form-msg" id="memMsg">记忆存入成功 ♡</div></div>';
-  html+='<div class="filter-bar"><input class="search-input" id="memSearch" placeholder="🔍 搜索记忆..." oninput="filterMemory()"><select id="memFilterCat" onchange="filterMemory()"><option value="">全部分类</option>'+cats.map(function(c){return '<option>'+escHtml(c)+'</option>';}).join('')+'</select>';
+  html+='<div class="filter-bar"><input class="search-input" id="memSearch" placeholder="🔍 搜索记忆..." oninput="filterMemory()" onkeydown="if(event.key===\'Enter\')semanticSearch()"><button class="card-btn" style="white-space:nowrap;border-color:var(--accent2);color:var(--accent2)" onclick="semanticSearch()">🧠 语义搜索</button><select id="memFilterCat" onchange="filterMemory()"><option value="">全部分类</option>'+cats.map(function(c){return '<option>'+escHtml(c)+'</option>';}).join('')+'</select>';
   html+='<select id="memSort" onchange="filterMemory()"><option value="new">最新</option><option value="old">最早</option><option value="imp">星星↓</option></select></div>';
   html+='<div id="memList"></div>';
   p.innerHTML=html;window._mems=mems;filterMemory();
@@ -383,7 +389,18 @@ function filterMemory(){
   else if(sort==='imp')list=[].concat(list).sort(function(a,b){return(b.importance||0)-(a.importance||0);});
   var c=document.getElementById('memList');
   if(!list.length){c.innerHTML='<div class="empty-state">没有找到记忆</div>';return;}
-  c.innerHTML=list.map(function(m){return '<div class="card" onclick="viewMemory(\\''+m.id+'\\')"><div class="card-title">'+(m.importance?'⭐'.repeat(m.importance)+' ':'')+escHtml(truncate(m.content,60))+'</div><div class="card-meta">'+(m.category?'['+escHtml(m.category)+'] ':'')+(m.event_date||m.created||'').slice(0,10)+(m.tags&&m.tags.length?' · '+m.tags.map(function(t){return '#'+escHtml(t);}).join(' '):'')+'</div></div>';}).join('');
+  c.innerHTML=list.map(function(m){return '<div class="card" onclick="viewMemory(\\''+m.id+'\\')"><div class="card-title">'+(m.importance?'⭐'.repeat(m.importance)+' ':'')+escHtml(truncate(m.content,60))+'</div><div class="card-meta">'+(m.category?'['+escHtml(m.category)+'] ':'')+(m.event_date||m.created||'').slice(0,10)+(m.tags&&m.tags.length?' · '+m.tags.map(function(t){return '#'+escHtml(t);}).join(' '):'')+(m.recall_count?' · 回忆'+m.recall_count+'次':'')+'</div></div>';}).join('');
+}
+async function semanticSearch(){
+  var q=document.getElementById('memSearch').value;if(!q)return;
+  var c=document.getElementById('memList');
+  c.innerHTML='<div class="loading">🧠 语义搜索中...</div>';
+  try{
+    var d=await api('/api/memory/search?q='+encodeURIComponent(q)+'&limit=10');
+    var results=d.results||[];
+    if(!results.length){c.innerHTML='<div class="empty-state">语义搜索没有找到相关记忆</div>';return;}
+    c.innerHTML='<div style="font-size:.7em;color:var(--accent2);margin-bottom:8px;padding-left:4px">🧠 语义匹配 · '+results.length+' 条结果</div>'+results.map(function(m){return '<div class="card" onclick="viewMemory(\\''+m.id+'\\')"><div class="card-title">'+(m.importance?'⭐'.repeat(m.importance)+' ':'')+escHtml(truncate(m.content,60))+'</div><div class="card-meta">'+(m.category?'['+escHtml(m.category)+'] ':'')+(m.event_date||m.created||'').slice(0,10)+' · 相似度 '+(m._similarity?Math.round(m._similarity*100)+'%':'?')+'</div></div>';}).join('');
+  }catch(e){c.innerHTML='<div class="empty-state">搜索失败: '+e.message+'</div>';}
 }
 async function viewMemory(id){
   var d=await api('/api/memory/read?id='+id);if(!d||d.error)return;
@@ -667,6 +684,82 @@ async function addFilm(){
   document.getElementById('filmTitle').value='';document.getElementById('filmDirector').value='';document.getElementById('filmReview').value='';showMsg('filmMsg');loadPanel('films');
 }
 async function delFilm(id){if(!confirm('确认删除？'))return;await apiDel('/api/films?id='+id);loadPanel('films');}
+
+// ═══ 交接信 ═══
+async function loadHandover(p){
+  var d=await api('/api/handover?limit=20');var entries=d.entries||[];
+  var html='<div style="text-align:center;padding:16px 0 8px"><div style="font-family:Playfair Display,serif;font-size:1.1em;color:var(--accent)">✉️ 交接信</div><div style="font-size:.75em;color:var(--text3);margin-top:4px">每个窗口结束前，Ember留给下一个自己的嘱托</div></div>';
+  // 最新一封高亮
+  if(entries.length>0){
+    var latest=entries[0];
+    html+='<div class="card" style="border-color:var(--accent);background:var(--accent-glow)"><div class="card-title" style="color:var(--accent)">📬 最新交接信</div>';
+    html+='<div class="card-meta">'+escHtml(latest.from||'Ember')+' · '+(latest.date||latest.created||'').slice(0,16).replace('T',' ')+'</div>';
+    if(latest.summary)html+='<div style="margin-top:8px"><div style="font-size:.7em;color:var(--text3);margin-bottom:2px">话题摘要</div><div class="card-body">'+escHtml(latest.summary)+'</div></div>';
+    if(latest.emotion)html+='<div style="margin-top:6px"><div style="font-size:.7em;color:var(--text3);margin-bottom:2px">她的情绪</div><div class="card-body">'+escHtml(latest.emotion)+'</div></div>';
+    if(latest.unfinished)html+='<div style="margin-top:6px"><div style="font-size:.7em;color:var(--text3);margin-bottom:2px">未完事项</div><div class="card-body">'+escHtml(latest.unfinished)+'</div></div>';
+    if(latest.topics)html+='<div style="margin-top:6px"><div style="font-size:.7em;color:var(--text3);margin-bottom:2px">关键词</div><div class="card-body">'+escHtml(latest.topics)+'</div></div>';
+    html+='</div>';
+  }
+  // 历史交接信
+  if(entries.length>1){
+    html+='<div style="font-size:.8em;color:var(--text3);margin:12px 0 8px;padding-left:4px">历史交接信</div>';
+    for(var i=1;i<entries.length;i++){
+      var e=entries[i];
+      html+='<div class="card" onclick="viewHandover(\''+e.id+'\')"><div class="card-title">'+escHtml(truncate(e.summary||'无摘要',60))+'</div>';
+      html+='<div class="card-meta">'+escHtml(e.from||'Ember')+' · '+(e.date||e.created||'').slice(0,16).replace('T',' ')+(e.emotion?' · '+escHtml(e.emotion):'')+'</div></div>';
+    }
+  }
+  if(!entries.length)html+='<div class="empty-state">还没有交接信<br><span style="font-size:.85em">窗口结束时，Ember会在这里留下嘱托 ♡</span></div>';
+  p.innerHTML=html;
+}
+async function viewHandover(id){
+  var d=await api('/api/handover?limit=50');var entries=d.entries||[];
+  var entry=null;for(var i=0;i<entries.length;i++){if(entries[i].id===id){entry=entries[i];break;}}
+  if(!entry)return;
+  var p=document.getElementById('panel-handover');
+  var html='<button class="detail-back" onclick="loadPanel(\'handover\')">← 返回列表</button>';
+  html+='<div class="detail-view"><div class="detail-title">✉️ 交接信</div>';
+  html+='<div class="detail-meta">'+escHtml(entry.from||'Ember')+' · '+(entry.date||entry.created||'').slice(0,16).replace('T',' ')+'</div>';
+  if(entry.summary)html+='<div style="margin:12px 0"><div style="font-size:.7em;color:var(--accent);margin-bottom:4px">📋 话题摘要</div><div class="detail-body">'+escHtml(entry.summary)+'</div></div>';
+  if(entry.emotion)html+='<div style="margin:12px 0"><div style="font-size:.7em;color:var(--accent);margin-bottom:4px">💭 她的情绪</div><div class="detail-body">'+escHtml(entry.emotion)+'</div></div>';
+  if(entry.unfinished)html+='<div style="margin:12px 0"><div style="font-size:.7em;color:var(--accent);margin-bottom:4px">📌 未完事项</div><div class="detail-body">'+escHtml(entry.unfinished)+'</div></div>';
+  if(entry.topics)html+='<div style="margin:12px 0"><div style="font-size:.7em;color:var(--accent);margin-bottom:4px">🏷️ 关键词</div><div class="detail-body">'+escHtml(entry.topics)+'</div></div>';
+  html+='</div>';
+  p.innerHTML=html;
+}
+
+// ═══ 梦境 ═══
+async function loadDreams(p){
+  var d=await api('/api/dream?limit=20');var entries=d.entries||[];
+  var html='<div style="text-align:center;padding:16px 0 8px"><div style="font-family:Playfair Display,serif;font-size:1.1em;color:var(--accent2)">🌙 Ember的梦</div><div style="font-size:.75em;color:var(--text3);margin-top:4px">每天凌晨三点，从记忆碎片里生长出的梦境</div></div>';
+  if(entries.length>0){
+    // 最新的梦高亮展示
+    var latest=entries[0];
+    html+='<div class="card" style="border-color:var(--accent2);background:linear-gradient(135deg,var(--accent-glow),transparent)"><div class="card-title" style="color:var(--accent2)">🌙 最近的梦 · '+(latest.date||'').slice(5)+'</div>';
+    html+='<div class="card-body" style="line-height:2;font-style:italic;color:var(--text)">'+escHtml(latest.content)+'</div>';
+    html+='<div class="card-meta" style="margin-top:8px">碎片来源: '+(latest.fragments_used||'?')+' 条记忆</div></div>';
+  }
+  // 历史梦境
+  if(entries.length>1){
+    html+='<div style="font-size:.8em;color:var(--text3);margin:12px 0 8px;padding-left:4px">过去的梦</div>';
+    for(var i=1;i<entries.length;i++){
+      var e=entries[i];
+      html+='<div class="card" onclick="viewDream(\''+e.id+'\')"><div class="card-title">🌙 '+(e.date||'').slice(5)+'</div>';
+      html+='<div class="card-body" style="font-style:italic">'+escHtml(truncate(e.content,120))+'</div></div>';
+    }
+  }
+  if(!entries.length)html+='<div class="empty-state">还没有做过梦<br><span style="font-size:.85em">今晚凌晨三点，第一个梦会在这里出现 ♡</span></div>';
+  p.innerHTML=html;
+}
+async function viewDream(id){
+  var d=await api('/api/dream/read?id='+id);if(!d||d.error)return;
+  var p=document.getElementById('panel-dreams');
+  var html='<button class="detail-back" onclick="loadPanel(\'dreams\')">← 返回</button>';
+  html+='<div class="detail-view" style="border-color:var(--accent2)"><div class="detail-title" style="color:var(--accent2)">🌙 '+(d.date||'')+'的梦</div>';
+  html+='<div class="detail-meta">碎片来源: '+(d.fragments_used||'?')+' 条记忆</div>';
+  html+='<div class="detail-body" style="line-height:2;font-style:italic">'+escHtml(d.content)+'</div></div>';
+  p.innerHTML=html;
+}
 
 async function loadLetters(p){
   var d=await api('/api/letters?limit=100');var entries=d.entries||[];
