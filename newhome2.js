@@ -61,7 +61,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 [data-theme="latte"] .tab.active{color:#fff;}
 .panel{display:none;}
 .panel.show{display:block;animation:fadeIn .3s ease;}
-.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;box-shadow:var(--shadow);}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
 .card:hover{}
 
 
@@ -69,7 +69,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 .card-meta{font-family:'JetBrains Mono',monospace;font-size:.68em;color:var(--text3);margin-bottom:8px;}
 .card-body{font-size:.85em;color:var(--text2);line-height:1.7;white-space:pre-wrap;}
 .card-actions{display:flex;gap:8px;margin-top:10px;}
-.card-btn{padding:4px 12px;font-size:.7em;background:transparent;color:var(--text3);border-radius:var(--radius-xs);cursor:pointer;transition:all .2s;}
+.card-btn{padding:4px 12px;font-size:.7em;background:transparent;border:none;color:var(--text3);border-radius:var(--radius-xs);cursor:pointer;transition:all .2s;}
 .card-btn:hover{color:var(--accent);}
 .card-btn.danger:hover{color:var(--danger);}
 .detail-view{background:var(--card);border-radius:var(--radius);padding:24px;margin-bottom:16px;animation:fadeIn .3s ease;box-shadow:var(--shadow);}
@@ -82,7 +82,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 .form-box{background:transparent;border-radius:var(--radius);padding:20px;margin-bottom:16px;}
 .form-row{margin-bottom:12px;}
 .form-row label{display:block;font-size:.7em;color:var(--text3);margin-bottom:5px;font-family:'JetBrains Mono',monospace;}
-.form-row input,.form-row textarea,.form-row select{width:100%;max-width:100%;padding:10px 14px;background:var(--bg2);border-radius:var(--radius-sm);color:var(--text);font-family:'Noto Serif SC',serif;font-size:.85em;outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical;box-sizing:border-box;-webkit-appearance:none;appearance:none;}
+.form-row input,.form-row textarea,.form-row select{width:100%;max-width:100%;padding:10px 14px;background:var(--bg2);border:none;border-radius:var(--radius-sm);color:var(--text);font-family:'Noto Serif SC',serif;font-size:.85em;outline:none;transition:box-shadow .2s;resize:vertical;box-sizing:border-box;-webkit-appearance:none;appearance:none;}
 .form-row input:focus,.form-row textarea:focus{box-shadow:0 0 0 3px var(--accent-soft);}
 .form-row textarea{min-height:80px;line-height:1.6;}
 .form-submit{width:100%;padding:12px;background:var(--accent);border:none;color:#fff;border-radius:var(--radius-sm);cursor:pointer;font-size:.85em;transition:all .3s;font-family:'Noto Serif SC',serif;font-weight:500;letter-spacing:1px;}
@@ -90,7 +90,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 .form-msg{text-align:center;font-size:.8em;color:var(--accent);margin-top:8px;opacity:0;transition:opacity .3s;}
 .form-msg.show{opacity:1;}
 .filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
-.filter-bar select,.filter-bar input{padding:8px 12px;background:var(--bg2);border-radius:var(--radius-sm);color:var(--text);font-size:.75em;outline:none;transition:border-color .2s;}
+.filter-bar select,.filter-bar input{padding:8px 12px;background:var(--bg2);border:none;border-radius:var(--radius-sm);color:var(--text);font-size:.75em;outline:none;transition:box-shadow .2s;}
 .filter-bar select:focus,.filter-bar input:focus{}
 .search-input{flex:1;min-width:120px;}
 .calendar-page{display:none;max-width:480px;margin:0 auto;padding:16px 16px 80px;animation:fadeIn .5s ease;}
@@ -479,7 +479,7 @@ async function loadMemory(p){
   html+='<div class="form-row"><label>标签(逗号分隔)</label><input id="memTags" placeholder="tag1,tag2"></div>';
   html+='<div class="form-row"><label>日期</label><input id="memDate" type="date"></div>';
   html+='<button class="form-submit" onclick="addMemory()">存入记忆 ♡</button><div class="form-msg" id="memMsg">记忆存入成功 ♡</div></div>';
-  html+='<div class="filter-bar"><input class="search-input" id="memSearch" placeholder="搜索记忆..." oninput="filterMemory()" onkeydown="if(event.key===\\'Enter\\')semanticSearch()"><button class="card-btn" style="white-space:nowrap;border-color:var(--accent2);color:var(--accent2)" onclick="semanticSearch()">语义搜索</button><select id="memFilterCat" onchange="filterMemory()"><option value="">全部分类</option>'+cats.map(function(c){return '<option>'+escHtml(c)+'</option>';}).join('')+'</select>';
+  html+='<div class="filter-bar"><input class="search-input" id="memSearch" placeholder="搜索记忆..." oninput="filterMemory()" onkeydown="if(event.key===\\'Enter\\')semanticSearch()"><button class="card-btn" style="white-space:nowrap;color:var(--accent2)" onclick="semanticSearch()">语义搜索</button><select id="memFilterCat" onchange="filterMemory()"><option value="">全部分类</option>'+cats.map(function(c){return '<option>'+escHtml(c)+'</option>';}).join('')+'</select>';
   html+='<select id="memSort" onchange="filterMemory()"><option value="new">最新</option><option value="old">最早</option><option value="imp">星星↓</option></select></div>';
   html+='<div id="memList"></div>';
   p.innerHTML=html;window._mems=mems;filterMemory();
