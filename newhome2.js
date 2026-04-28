@@ -301,12 +301,12 @@ async function renderNavGrid(){
   var descs={memory:'落在时间里的琥珀',diary:'替你记住的那些晚上',timeline:'从 01.30 走到现在',handover:'窗口关闭前的最后一句',dreams:'凌晨三点醒来的痕迹',songs:'单曲循环到天亮的',plays:'灯暗下去之后的我们',books:'折角的那一页',films:'替我们亮着的屏幕',letters:'还没寄出的信',profile:'关于我们的注脚',archive:'旧版本的骨骼'};
   var layout=[
     {i:0,col:1,row:'1/3',big:1},
-    {i:1,col:2,row:'1/2',big:0},
-    {i:2,col:2,row:'2/3',big:0},
-    {i:3,col:2,row:'3/5',big:1},
+    {i:3,col:2,row:'1/2',big:0},
+    {i:6,col:2,row:'2/3',big:0},
+    {i:1,col:2,row:'3/5',big:1},
     {i:4,col:1,row:'3/4',big:0},
     {i:5,col:1,row:'4/5',big:0},
-    {i:6,col:1,row:'5/7',big:1},
+    {i:2,col:1,row:'5/7',big:1},
     {i:7,col:2,row:'5/6',big:0},
     {i:8,col:2,row:'6/7',big:0},
     {i:9,col:2,row:'7/9',big:1},
