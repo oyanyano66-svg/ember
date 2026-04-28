@@ -2037,7 +2037,14 @@ export default {
           const date = a.date || new Date().toISOString().slice(0,10);
           const mv = await env.KV.get("chat:" + date);
           const msgs = mv ? JSON.parse(mv) : [];
-          r = JSON.stringify({date:date, count:msgs.length, messages:msgs});
+          const readable = msgs.map(function(m){
+            var d = new Date(m.ts);
+            var pad = function(n){return n<10?"0"+n:""+n;};
+            m.time = pad(d.getUTCHours()+8>=24?d.getUTCHours()+8-24:d.getUTCHours()+8)+":"+pad(d.getUTCMinutes());
+            m.datetime = date+" "+m.time;
+            return m;
+          });
+          r = JSON.stringify({date:date, count:readable.length, messages:readable});
         }
         else if (tn === "chat_dates") {
           const dv = await env.KV.get("chat:dates");
