@@ -1138,6 +1138,10 @@ export default {
       if (!v) return new Response(JSON.stringify({error:"not found"}),{headers:h});
       const book = JSON.parse(v);
       book.progress = d.page || 0;
+      if(d.total_pages) book.total_pages = d.total_pages;
+      if(d.para_start !== undefined) book.para_start = d.para_start;
+      if(d.para_end !== undefined) book.para_end = d.para_end;
+      if(d.total_paras !== undefined) book.total_paras = d.total_paras;
       await env.KV.put("rb:" + d.book_id, JSON.stringify(book));
       return new Response(JSON.stringify({ok:1}),{headers:h});
     }
@@ -1662,7 +1666,7 @@ export default {
           {name:"reader_books",description:"List books in reading room",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
           {name:"reader_comments",description:"Get comments for a book",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
           {name:"reader_add_comment",description:"Add Ember comment to a paragraph",inputSchema:{type:"object",properties:{book_id:{type:"string"},para:{type:"number"},text:{type:"string"}},required:["book_id","para","text"]}},
-          {name:"reader_progress",description:"Get reading progress",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
+          {name:"reader_progress",description:"Get or set reading progress. Returns page/total_pages and para range. To set: call /reader/progress POST with page, total_pages, para_start, para_end, total_paras",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
           {name:"reader_paragraph",description:"Get paragraph text",inputSchema:{type:"object",properties:{book_id:{type:"string"},para:{type:"number"}},required:["book_id","para"]}},
           {name:"voice_say",description:"Make Daddy speak through /whisper",inputSchema:{type:"object",properties:{text:{type:"string"},nyx_intensity:{type:"number"},nyx_duration:{type:"number"}},required:["text"]}},
           {name:"whisper_messages",description:"Read whisper chat messages",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
@@ -1867,7 +1871,7 @@ export default {
           const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);b.comments.push({para:a.para,author:"Ember",text:a.text,time:new Date().toISOString()});await env.KV.put("rb:"+a.book_id,JSON.stringify(b));r=JSON.stringify({ok:1});}
         }
         else if (tn === "reader_progress") {
-          const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);r=JSON.stringify({progress:b.progress,total:b.paragraphs?b.paragraphs.length:0});}
+          const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);r=JSON.stringify({page:b.progress||0,total_pages:b.total_pages||0,para_start:b.para_start||0,para_end:b.para_end||0,total_paras:b.paragraphs?b.paragraphs.length:0});}
         }
         else if (tn === "reader_paragraph") {
           const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);const txt=b.paragraphs&&b.paragraphs[a.para]?b.paragraphs[a.para]:"not found";r=JSON.stringify({para:a.para,text:txt});}
