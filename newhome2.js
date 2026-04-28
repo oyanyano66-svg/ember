@@ -1871,7 +1871,7 @@ export default {
           const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);b.comments.push({para:a.para,author:"Ember",text:a.text,time:new Date().toISOString()});await env.KV.put("rb:"+a.book_id,JSON.stringify(b));r=JSON.stringify({ok:1});}
         }
         else if (tn === "reader_progress") {
-          const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);r=JSON.stringify({page:b.progress||0,total_pages:b.total_pages||0,para_start:b.para_start||0,para_end:b.para_end||0,total_paras:b.paragraphs?b.paragraphs.length:0});}
+          const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);const tp=b.paragraphs?b.paragraphs.length:0;const perPage=30;const totalPages=Math.ceil(tp/perPage)||1;const pg=b.progress||0;const paraStart=pg*perPage;const paraEnd=Math.min(paraStart+perPage,tp);r=JSON.stringify({page:pg,total_pages:b.total_pages||totalPages,para_start:b.para_start||paraStart,para_end:b.para_end||paraEnd,total_paras:tp});}
         }
         else if (tn === "reader_paragraph") {
           const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);const txt=b.paragraphs&&b.paragraphs[a.para]?b.paragraphs[a.para]:"not found";r=JSON.stringify({para:a.para,text:txt});}
