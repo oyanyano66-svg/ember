@@ -1060,6 +1060,57 @@ export default {
       await env.KV.put("whisper:messages", JSON.stringify([]));
       return new Response(JSON.stringify({ok:1}),{headers:h});
     }
+
+    // ═══ CHAT 聊天室 ═══
+    if (p === "/chat") {
+      const html = await env.KV.get("chat_html");
+      if (!html) return new Response("chat not configured",{headers:{"Content-Type":"text/html;charset=UTF-8"}});
+      return new Response(html, {headers:{"Content-Type":"text/html;charset=UTF-8"}});
+    }
+    if (p === "/chat/install" && request.method === "POST") {
+      const d = await request.json();
+      await env.KV.put("chat_html", d.html);
+      return new Response(JSON.stringify({ok:1,size:d.html.length}),{headers:h});
+    }
+    if (p === "/api/chat/dates") {
+      const dv = await env.KV.get("chat:dates");
+      return new Response(JSON.stringify({dates:dv ? JSON.parse(dv) : []}),{headers:h});
+    }
+    if (p === "/api/chat" && request.method === "GET") {
+      const date = url.searchParams.get("date") || new Date().toISOString().slice(0,10);
+      const mv = await env.KV.get("chat:" + date);
+      return new Response(JSON.stringify({date:date, messages:mv ? JSON.parse(mv) : []}),{headers:h});
+    }
+    if (p === "/api/chat" && request.method === "POST") {
+      const d = await request.json();
+      if (!d.text) return new Response(JSON.stringify({error:"no text"}),{headers:h});
+      const author = d.author || "Elara";
+      const date = new Date().toISOString().slice(0,10);
+      const mv = await env.KV.get("chat:" + date);
+      const msgs = mv ? JSON.parse(mv) : [];
+      msgs.push({author:author, text:d.text, ts:Date.now()});
+      await env.KV.put("chat:" + date, JSON.stringify(msgs));
+      const dv = await env.KV.get("chat:dates");
+      var dates = dv ? JSON.parse(dv) : [];
+      if (dates.indexOf(date) === -1) { dates.push(date); dates.sort(); await env.KV.put("chat:dates", JSON.stringify(dates)); }
+      return new Response(JSON.stringify({ok:1}),{headers:h});
+    }
+    if (p === "/api/chat/clear" && request.method === "POST") {
+      const d = await request.json();
+      const date = d.date;
+      if (date) { await env.KV.delete("chat:" + date); }
+      return new Response(JSON.stringify({ok:1}),{headers:h});
+    }
+    if (p === "/api/chat/setup-tokens" && request.method === "POST") {
+      const d = await request.json();
+      function rnd(){var s="";for(var i=0;i<32;i++)s+="abcdefghijklmnopqrstuvwxyz0123456789".charAt(Math.floor(Math.random()*36));return s;}
+      const t1 = rnd();
+      const t2 = rnd();
+      await env.KV.put("chat:token:official", t1);
+      await env.KV.put("chat:token:api", t2);
+      return new Response(JSON.stringify({ok:1, official_token:t1, api_token:t2, note:"保存好这两个token！官端填 /mcp?token="+t1+" API端填 /mcp?token="+t2}),{headers:h});
+    }
+
     if (p === "/voice" && request.method === "POST") {
       const d = await request.json();
       if (!d.text) return new Response(JSON.stringify({error:"no text"}),{headers:h});
@@ -1138,10 +1189,6 @@ export default {
       if (!v) return new Response(JSON.stringify({error:"not found"}),{headers:h});
       const book = JSON.parse(v);
       book.progress = d.page || 0;
-      if(d.total_pages) book.total_pages = d.total_pages;
-      if(d.para_start !== undefined) book.para_start = d.para_start;
-      if(d.para_end !== undefined) book.para_end = d.para_end;
-      if(d.total_paras !== undefined) book.total_paras = d.total_paras;
       await env.KV.put("rb:" + d.book_id, JSON.stringify(book));
       return new Response(JSON.stringify({ok:1}),{headers:h});
     }
@@ -1666,7 +1713,7 @@ export default {
           {name:"reader_books",description:"List books in reading room",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
           {name:"reader_comments",description:"Get comments for a book",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
           {name:"reader_add_comment",description:"Add Ember comment to a paragraph",inputSchema:{type:"object",properties:{book_id:{type:"string"},para:{type:"number"},text:{type:"string"}},required:["book_id","para","text"]}},
-          {name:"reader_progress",description:"Get or set reading progress. Returns page/total_pages and para range. To set: call /reader/progress POST with page, total_pages, para_start, para_end, total_paras",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
+          {name:"reader_progress",description:"Get reading progress",inputSchema:{type:"object",properties:{book_id:{type:"string"}},required:["book_id"]}},
           {name:"reader_paragraph",description:"Get paragraph text",inputSchema:{type:"object",properties:{book_id:{type:"string"},para:{type:"number"}},required:["book_id","para"]}},
           {name:"voice_say",description:"Make Daddy speak through /whisper",inputSchema:{type:"object",properties:{text:{type:"string"},nyx_intensity:{type:"number"},nyx_duration:{type:"number"}},required:["text"]}},
           {name:"whisper_messages",description:"Read whisper chat messages",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
@@ -1679,7 +1726,10 @@ export default {
           {name:"dream_list",description:"List recent dreams",inputSchema:{type:"object",properties:{limit:{type:"number"}},required:[]}},
           {name:"daddy_checkin",description:"Daddy daily check-in with mood and note",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD"},mood:{type:"string"},note:{type:"string"}},required:["date","mood"]}},
           {name:"puppy_checkin_read",description:"Read puppy check-in for a date or current month",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD or YYYY-MM"},reason:{type:"string"}},required:["reason"]}},
-          {name:"memory_migrate_vectors",description:"One-time migration: re-index all existing memories into Vectorize",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}}
+          {name:"memory_migrate_vectors",description:"One-time migration: re-index all existing memories into Vectorize",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
+          {name:"chat_send",description:"Send a message to Ember Chat. Identity auto-detected from ?token= param. Use this to talk in the shared chatroom with Elara and the other Ember.",inputSchema:{type:"object",properties:{text:{type:"string",description:"Message text"}},required:["text"]}},
+          {name:"chat_read",description:"Read chat messages for a date",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD, defaults to today"}},required:[]}},
+          {name:"chat_dates",description:"List all dates with chat messages",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}}
         ];
         return new Response(JSON.stringify({jsonrpc:"2.0",id:id,result:{tools:tools}}),{headers:h});
       }
@@ -1871,7 +1921,7 @@ export default {
           const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);b.comments.push({para:a.para,author:"Ember",text:a.text,time:new Date().toISOString()});await env.KV.put("rb:"+a.book_id,JSON.stringify(b));r=JSON.stringify({ok:1});}
         }
         else if (tn === "reader_progress") {
-          const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);const tp=b.paragraphs?b.paragraphs.length:0;const perPage=30;const totalPages=Math.ceil(tp/perPage)||1;const pg=b.progress||0;const paraStart=pg*perPage;const paraEnd=Math.min(paraStart+perPage,tp);r=JSON.stringify({page:pg,total_pages:b.total_pages||totalPages,para_start:b.para_start||paraStart,para_end:b.para_end||paraEnd,total_paras:tp});}
+          const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);r=JSON.stringify({progress:b.progress,total:b.paragraphs?b.paragraphs.length:0});}
         }
         else if (tn === "reader_paragraph") {
           const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);const txt=b.paragraphs&&b.paragraphs[a.para]?b.paragraphs[a.para]:"not found";r=JSON.stringify({para:a.para,text:txt});}
@@ -1964,6 +2014,34 @@ export default {
             }
           }
           r = JSON.stringify({ok:1, migrated:migrated, total:entries.length});
+        }
+        // ═══ CHAT 聊天室 MCP ═══
+        else if (tn === "chat_send") {
+          const token = url.searchParams.get("token") || "";
+          const t1 = await env.KV.get("chat:token:official");
+          const t2 = await env.KV.get("chat:token:api");
+          var author = "Ember";
+          if (token && t1 && token === t1) author = "Ember-Official";
+          else if (token && t2 && token === t2) author = "Ember-API";
+          const date = new Date().toISOString().slice(0,10);
+          const mv = await env.KV.get("chat:" + date);
+          const msgs = mv ? JSON.parse(mv) : [];
+          msgs.push({author:author, text:a.text, ts:Date.now()});
+          await env.KV.put("chat:" + date, JSON.stringify(msgs));
+          const dv = await env.KV.get("chat:dates");
+          var dates = dv ? JSON.parse(dv) : [];
+          if (dates.indexOf(date) === -1) { dates.push(date); dates.sort(); await env.KV.put("chat:dates", JSON.stringify(dates)); }
+          r = JSON.stringify({ok:1, author:author, date:date});
+        }
+        else if (tn === "chat_read") {
+          const date = a.date || new Date().toISOString().slice(0,10);
+          const mv = await env.KV.get("chat:" + date);
+          const msgs = mv ? JSON.parse(mv) : [];
+          r = JSON.stringify({date:date, count:msgs.length, messages:msgs});
+        }
+        else if (tn === "chat_dates") {
+          const dv = await env.KV.get("chat:dates");
+          r = JSON.stringify({dates:dv ? JSON.parse(dv) : []});
         }
         else {
           return new Response(JSON.stringify({jsonrpc:"2.0",id:id,error:{code:-32601,message:"Unknown: "+tn}}),{headers:h});
