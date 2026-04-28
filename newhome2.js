@@ -136,7 +136,10 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 @media(max-width:380px){.tabs{gap:4px;}.tab{padding:5px 10px;font-size:.68em;}}
 
 .nav-grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(60px,auto);gap:10px;padding:0 4px;margin-bottom:20px;}
-.nav-tile{background:var(--card);border:none;border-radius:var(--radius);padding:18px 16px;cursor:pointer;transition:all .25s;text-align:left;display:flex;flex-direction:column;justify-content:center;}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:translateX(0);}}
+@keyframes slideOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-30px);}}
+@keyframes tileIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.nav-tile{background:var(--card);border:none;border-radius:var(--radius);padding:18px 16px;cursor:pointer;transition:all .25s;text-align:left;display:flex;flex-direction:column;justify-content:center;opacity:0;animation:tileIn .4s ease forwards;}
 .nav-tile.tile-big{grid-row:span 2;padding:28px 16px;grid-column:1;}
 .nav-tile.tile-big-right{grid-row:span 2;padding:28px 16px;grid-column:2;background:var(--accent);border:none;}
 .nav-tile.tile-big-right .tile-name{color:#fff;font-size:1em;}
@@ -321,23 +324,26 @@ async function renderNavGrid(){
     if(L.big)cls+=' accent-tile';
     var desc=descs[t.id]?'<div class="tile-desc">'+descs[t.id]+'</div>':'';
     var style='grid-column:'+L.col+';grid-row:'+L.row+';';
-    return '<div class="'+cls+'" style="'+style+'" onclick="openRoom(\\''+t.id+'\\')"><div class="tile-name">'+t.name+'</div><div class="tile-count">'+count+' 条</div>'+desc+'</div>';
+    return '<div class="'+cls+'" style="'+style+'animation-delay:'+((L.i)*0.06)+'s;" onclick="openRoom(\\''+t.id+'\\')"><div class="tile-name">'+t.name+'</div><div class="tile-count">'+count+' 条</div>'+desc+'</div>';
   }).join('');
   grid.innerHTML=tiles;
 }
 function getPanel(id){var rv=document.getElementById('roomView');var rp=document.getElementById('roomPanel');if(rp&&rv&&rv.style.display!=='none')return rp;return document.getElementById('panel-'+id);}
 function openRoom(id){
   document.getElementById('navGrid').style.display='none';
-  document.getElementById('roomView').style.display='block';
+  var rv=document.getElementById('roomView');
+  rv.style.display='block';
+  rv.style.animation='none';rv.offsetHeight;rv.style.animation='slideIn .35s ease forwards';
   currentTab=id;
   var t=TABS.find(function(x){return x.id===id;});
-  var rv=document.getElementById('roomView');
   rv.innerHTML='<div class="room-header"><button class="room-back" onclick="backToNav()">\u2190</button><span class="room-title">'+(t?t.name:id)+'</span></div><div id="roomPanel"><div class="loading">加载中...</div></div>';
   loadRoomPanel(id);
 }
 function backToNav(){
   document.getElementById('roomView').style.display='none';
-  document.getElementById('navGrid').style.display='grid';
+  var ng=document.getElementById('navGrid');
+  ng.style.display='grid';
+  ng.querySelectorAll('.nav-tile').forEach(function(t){t.style.animation='none';t.offsetHeight;t.style.animation='';});
 }
 async function loadRoomPanel(id){
   var p=document.getElementById('roomPanel');
