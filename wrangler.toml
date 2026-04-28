@@ -1,0 +1,22 @@
+name = "ember-home"
+main = "newhome2.js"
+compatibility_date = "2024-09-25"
+account_id = "48b6e14eae93d8677b972f10e9a6a9ce"
+
+# KV Namespace
+[[kv_namespaces]]
+binding = "KV"
+id = "290572f5759e4b00b9d3fceeadec8e3e"
+
+# Workers AI (for bge-m3 embedding)
+[ai]
+binding = "AI"
+
+# Vectorize Index (需要先创建: wrangler vectorize create ember-memories --dimensions=1024 --metric=cosine)
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "ember-memories"
+
+# 做梦系统 Cron: UTC 19:00 = 北京时间凌晨3:00
+[triggers]
+crons = ["0 19 * * *"]
