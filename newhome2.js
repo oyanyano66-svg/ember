@@ -135,14 +135,18 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 .edit-form{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;animation:fadeIn .3s ease;box-shadow:var(--shadow);}
 @media(max-width:380px){.tabs{gap:4px;}.tab{padding:5px 10px;font-size:.68em;}}
 
-.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 4px;margin-bottom:20px;}
-.nav-tile{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 16px;cursor:pointer;transition:all .25s;text-align:left;}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(70px,auto);gap:10px;padding:0 4px;margin-bottom:20px;}
+.nav-tile{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;cursor:pointer;transition:all .25s;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;}
 .nav-tile:hover{border-color:var(--accent);}
 .nav-tile .tile-name{font-size:.88em;color:var(--text);font-weight:400;margin-bottom:4px;}
 .nav-tile .tile-count{font-family:'JetBrains Mono',monospace;font-size:.68em;color:var(--text3);}
 .nav-tile.accent-tile{background:var(--accent);border-color:var(--accent);}
 .nav-tile.accent-tile .tile-name{color:#fff;}
 .nav-tile.accent-tile .tile-count{color:rgba(255,255,255,.7);}
+.nav-tile.tile-tall{grid-row:span 2;}
+.nav-tile.tile-tall .tile-name{font-size:1.05em;font-family:'Playfair Display',serif;}
+.nav-tile.tile-wide{grid-column:span 2;}
+.nav-tile.tile-wide .tile-name{font-size:.95em;}
 .room-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
 .room-back{padding:6px 14px;font-size:.75em;border:1px solid var(--border);background:transparent;color:var(--text2);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;}
 .room-back:hover{border-color:var(--accent);color:var(--accent);}
@@ -288,13 +292,29 @@ function enterHome(){
 
 var navCounts={};
 var statKeyMap={memory:'memories',diary:'diary',timeline:'timeline',handover:'handover',dream:'dreams',song:'songs',play:'plays',book:'books',film:'films',letter:'letters',profile:'',archive:'archive'};
+var tileLayout=[
+  {id:'memory',cls:'tile-tall accent-tile'},
+  {id:'diary',cls:''},
+  {id:'timeline',cls:''},
+  {id:'dreams',cls:'tile-tall'},
+  {id:'handover',cls:''},
+  {id:'songs',cls:''},
+  {id:'plays',cls:''},
+  {id:'letters',cls:'tile-tall'},
+  {id:'books',cls:''},
+  {id:'films',cls:''},
+  {id:'profile',cls:''},
+  {id:'archive',cls:''}
+];
 async function renderNavGrid(){
   try{var d=await api('/api/stats');var s=d.stats||{}; navCounts=s;}catch(e){navCounts={};}
   var grid=document.getElementById('navGrid');
-  var tiles=TABS.map(function(t,i){
+  var tiles=tileLayout.map(function(lay){
+    var t=TABS.find(function(x){return x.id===lay.id;});
+    if(!t)return '';
     var sk=statKeyMap[t.prefix||t.id]||t.prefix||t.id;
     var count=navCounts[sk]||0;
-    var cls=i===0?'nav-tile accent-tile':'nav-tile';
+    var cls='nav-tile'+(lay.cls?' '+lay.cls:'');
     return '<div class="'+cls+'" onclick="openRoom(\\''+t.id+'\\')"><div class="tile-name">'+t.name+'</div><div class="tile-count">'+count+' 条</div></div>';
   }).join('');
   grid.innerHTML=tiles;
