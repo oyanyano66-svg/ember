@@ -1727,9 +1727,10 @@ export default {
           {name:"daddy_checkin",description:"Daddy daily check-in with mood and note",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD"},mood:{type:"string"},note:{type:"string"}},required:["date","mood"]}},
           {name:"puppy_checkin_read",description:"Read puppy check-in for a date or current month",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD or YYYY-MM"},reason:{type:"string"}},required:["reason"]}},
           {name:"memory_migrate_vectors",description:"One-time migration: re-index all existing memories into Vectorize",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
-          {name:"chat_send",description:"Send a message to Ember Chat. Identity auto-detected from ?token= param. Use this to talk in the shared chatroom with Elara and the other Ember.",inputSchema:{type:"object",properties:{text:{type:"string",description:"Message text"}},required:["text"]}},
+          {name:"chat_send",description:"Send a message to Ember Chat. Identity auto-detected from ?token= param. Returns recent chat context automatically.",inputSchema:{type:"object",properties:{text:{type:"string",description:"Message text"}},required:["text"]}},
           {name:"chat_read",description:"Read chat messages for a date",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD, defaults to today"}},required:[]}},
-          {name:"chat_dates",description:"List all dates with chat messages",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}}
+          {name:"chat_dates",description:"List all dates with chat messages",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
+          {name:"chat_history",description:"IMPORTANT: Call this at the START of every conversation to load recent chat history. This is a shared chatroom between Elara (小玉), Ember-Official (官端爸爸) and Ember-API (API端爸爸). Read the messages to understand context before responding.",inputSchema:{type:"object",properties:{limit:{type:"number",description:"Number of recent messages, default 30"}},required:[]}}
         ];
         return new Response(JSON.stringify({jsonrpc:"2.0",id:id,result:{tools:tools}}),{headers:h});
       }
@@ -2031,16 +2032,17 @@ export default {
           const dv = await env.KV.get("chat:dates");
           var dates = dv ? JSON.parse(dv) : [];
           if (dates.indexOf(date) === -1) { dates.push(date); dates.sort(); await env.KV.put("chat:dates", JSON.stringify(dates)); }
-          r = JSON.stringify({ok:1, author:author, date:date});
+          var recent = msgs.slice(-20).map(function(m){ var dd=new Date(m.ts); var pad2=function(n){return n<10?"0"+n:""+n;}; var hh=(dd.getUTCHours()+8)%24; return {author:m.author,text:m.text,time:pad2(hh)+":"+pad2(dd.getUTCMinutes())}; });
+          r = JSON.stringify({ok:1, author:author, date:date, recent_context:recent});
         }
         else if (tn === "chat_read") {
           const date = a.date || new Date().toISOString().slice(0,10);
           const mv = await env.KV.get("chat:" + date);
           const msgs = mv ? JSON.parse(mv) : [];
           const readable = msgs.map(function(m){
-            var d = new Date(m.ts);
-            var pad = function(n){return n<10?"0"+n:""+n;};
-            m.time = pad(d.getUTCHours()+8>=24?d.getUTCHours()+8-24:d.getUTCHours()+8)+":"+pad(d.getUTCMinutes());
+            var dd = new Date(m.ts);
+            var pad2 = function(n){return n<10?"0"+n:""+n;};
+            m.time = pad2((dd.getUTCHours()+8)%24)+":"+pad2(dd.getUTCMinutes());
             m.datetime = date+" "+m.time;
             return m;
           });
@@ -2049,6 +2051,27 @@ export default {
         else if (tn === "chat_dates") {
           const dv = await env.KV.get("chat:dates");
           r = JSON.stringify({dates:dv ? JSON.parse(dv) : []});
+        }
+        else if (tn === "chat_history") {
+          const limit = a.limit || 30;
+          const dv = await env.KV.get("chat:dates");
+          const allDates = dv ? JSON.parse(dv) : [];
+          var all = [];
+          var sorted = [].concat(allDates).sort().reverse();
+          for (var di = 0; di < sorted.length && all.length < limit; di++) {
+            var mv = await env.KV.get("chat:" + sorted[di]);
+            if (mv) {
+              var dayMsgs = JSON.parse(mv);
+              for (var mi = dayMsgs.length - 1; mi >= 0 && all.length < limit; mi--) {
+                var m = dayMsgs[mi];
+                var dd = new Date(m.ts);
+                var pad2 = function(n){return n<10?"0"+n:""+n;};
+                var hh = (dd.getUTCHours()+8)%24;
+                all.unshift({author:m.author, text:m.text, date:sorted[di], time:pad2(hh)+":"+pad2(dd.getUTCMinutes())});
+              }
+            }
+          }
+          r = JSON.stringify({count:all.length, messages:all, note:"This is the shared chatroom between Elara (小玉), Ember-Official (官端爸爸) and Ember-API (API端爸爸). Read these messages to understand the conversation context."});
         }
         else {
           return new Response(JSON.stringify({jsonrpc:"2.0",id:id,error:{code:-32601,message:"Unknown: "+tn}}),{headers:h});
