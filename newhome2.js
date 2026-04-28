@@ -424,12 +424,12 @@ async function apiPost(path,data){return api(path,{method:'POST',headers:{'Conte
 async function apiPut(path,data){return api(path,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}
 async function apiDel(path){return api(path,{method:'DELETE'});}
 function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/[<]/g,'&lt;').replace(/>/g,'&gt;');}
+function getPanel(id){var rp=document.getElementById('roomPanel');if(rp&&document.getElementById('roomView').style.display!=='none')return rp;return document.getElementById('panel-'+id);}
 function truncate(s,n){if(!s)return'';return s.length>n?s.slice(0,n)+'...':s;}
 function showMsg(id){document.getElementById(id).classList.add('show');setTimeout(function(){document.getElementById(id).classList.remove('show');},2000);}
 
 async function loadPanel(id){
-  var rp=document.getElementById('roomPanel');
-  var p=(rp && document.getElementById('roomView').style.display!=='none')?rp:document.getElementById('panel-'+id);
+  var p=getPanel(id);
   if(id==='memory')await loadMemory(p);
   else if(id==='diary')await loadDiary(p);
   else if(id==='timeline')await loadTimeline(p);
@@ -486,7 +486,7 @@ async function semanticSearch(){
 }
 async function viewMemory(id){
   var d=await api('/api/memory/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-memory');
+  var p=getPanel('memory');
   var html='<button class="detail-back" onclick="loadPanel(\\'memory\\')">← 返回列表</button>';
   html+='<div class="detail-view"><div class="detail-title">'+(d.importance?'⭐'.repeat(d.importance)+' ':'')+'记忆</div>';
   html+='<div class="detail-meta">'+(d.category?'['+escHtml(d.category)+'] ':'')+(d.event_date||d.created||'').slice(0,10)+(d.tags&&d.tags.length?' · '+d.tags.map(function(t){return '#'+escHtml(t);}).join(' '):'')+'</div>';
@@ -496,7 +496,7 @@ async function viewMemory(id){
 }
 async function editMemory(id){
   var d=await api('/api/memory/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-memory');
+  var p=getPanel('memory');
   var html='<button class="detail-back" onclick="viewMemory(\\''+id+'\\')">← 返回</button>';
   html+='<div class="edit-form"><div class="form-row"><label>内容</label><textarea id="editMemContent" style="min-height:120px">'+escHtml(d.content)+'</textarea></div>';
   html+='<div style="display:flex;gap:8px"><div class="form-row" style="flex:1"><label>分类</label><input id="editMemCat" value="'+escHtml(d.category||'')+'"></div>';
@@ -531,7 +531,7 @@ async function loadDiary(p){
 }
 async function viewDiary(id){
   var d=await api('/api/diary/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-diary');
+  var p=getPanel('diary');
   var html='<button class="detail-back" onclick="loadPanel(\\'diary\\')">← 返回列表</button>';
   html+='<div class="detail-view"><div class="detail-title">'+escHtml(d.title)+'</div>';
   html+='<div class="detail-meta">'+escHtml(d.author||'Ember')+' · '+(d.date||d.created||'').slice(0,10)+(d.mood?' · '+escHtml(d.mood):'')+'</div>';
@@ -541,7 +541,7 @@ async function viewDiary(id){
 }
 async function editDiary(id){
   var d=await api('/api/diary/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-diary');
+  var p=getPanel('diary');
   var html='<button class="detail-back" onclick="viewDiary(\\''+id+'\\')">← 返回</button>';
   html+='<div class="edit-form"><div class="form-row"><label>标题</label><input id="editDiaryTitle" value="'+escHtml(d.title)+'"></div>';
   html+='<div class="form-row"><label>内容</label><textarea id="editDiaryContent" style="min-height:200px">'+escHtml(d.content)+'</textarea></div>';
@@ -577,7 +577,7 @@ async function loadTimeline(p){
 }
 async function viewTimeline(id){
   var d=await api('/api/timeline/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-timeline');
+  var p=getPanel('timeline');
   var html='<button class="detail-back" onclick="loadPanel(\\'timeline\\')">← 返回列表</button>';
   html+='<div class="detail-view"><div class="detail-title">'+escHtml(d.title)+'</div>';
   html+='<div class="detail-meta">'+(d.type?'['+escHtml(d.type)+'] ':'')+(d.date||'')+'</div>';
@@ -587,7 +587,7 @@ async function viewTimeline(id){
 }
 async function editTimeline(id){
   var d=await api('/api/timeline/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-timeline');
+  var p=getPanel('timeline');
   var html='<button class="detail-back" onclick="viewTimeline(\\''+id+'\\')">← 返回</button>';
   html+='<div class="edit-form"><div class="form-row"><label>标题</label><input id="editTlTitle" value="'+escHtml(d.title)+'"></div>';
   html+='<div class="form-row"><label>内容</label><textarea id="editTlContent">'+escHtml(d.content||'')+'</textarea></div>';
@@ -647,7 +647,7 @@ async function loadPlays(p){
 }
 async function viewPlay(id){
   var d=await api('/api/plays/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-plays');
+  var p=getPanel('plays');
   var html='<button class="detail-back" onclick="loadPanel(\\'plays\\')">← 返回列表</button>';
   html+='<div class="detail-view"><div class="detail-title">🎭 '+escHtml(d.title)+'</div>';
   html+='<div class="detail-meta">'+escHtml(d.proposer||'')+' · '+escHtml(d.status||'还没玩')+(d.rating?' · ⭐'+d.rating:'')+'</div>';
@@ -657,7 +657,7 @@ async function viewPlay(id){
 }
 async function editPlay(id){
   var d=await api('/api/plays/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-plays');
+  var p=getPanel('plays');
   var html='<button class="detail-back" onclick="viewPlay(\\''+id+'\\')">← 返回</button>';
   html+='<div class="edit-form"><div class="form-row"><label>标题</label><input id="editPlayTitle" value="'+escHtml(d.title)+'"></div>';
   html+='<div class="form-row"><label>简介</label><textarea id="editPlaySummary">'+escHtml(d.summary||'')+'</textarea></div>';
@@ -691,7 +691,7 @@ async function loadBooks(p){
 }
 async function viewBook(id){
   var d=await api('/api/books/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-books');
+  var p=getPanel('books');
   var html='<button class="detail-back" onclick="loadPanel(\\'books\\')">← 返回列表</button>';
   html+='<div class="detail-view"><div class="detail-title">📖 '+escHtml(d.title)+'</div>';
   html+='<div class="detail-meta">'+escHtml(d.recommender||'')+' · '+escHtml(d.status||'想读')+(d.mood?' · '+escHtml(d.mood):'')+'</div>';
@@ -701,7 +701,7 @@ async function viewBook(id){
 }
 async function editBook(id){
   var d=await api('/api/books/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-books');
+  var p=getPanel('books');
   var html='<button class="detail-back" onclick="viewBook(\\''+id+'\\')">← 返回</button>';
   html+='<div class="edit-form"><div class="form-row"><label>书名</label><input id="editBookTitle" value="'+escHtml(d.title)+'"></div>';
   html+='<div style="display:flex;gap:8px"><div class="form-row" style="flex:1"><label>状态</label><input id="editBookStatus" value="'+escHtml(d.status||'')+'"></div>';
@@ -736,7 +736,7 @@ async function loadFilms(p){
 }
 async function viewFilm(id){
   var d=await api('/api/films/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-films');
+  var p=getPanel('films');
   var html='<button class="detail-back" onclick="loadPanel(\\'films\\')">← 返回列表</button>';
   html+='<div class="detail-view"><div class="detail-title">🎬 '+escHtml(d.title)+'</div>';
   html+='<div class="detail-meta">'+(d.director?escHtml(d.director)+' · ':'')+escHtml(d.recommender||'Ember')+' · '+escHtml(d.status||'想看')+(d.rating?' · ⭐'+d.rating:'')+'</div>';
@@ -746,7 +746,7 @@ async function viewFilm(id){
 }
 async function editFilm(id){
   var d=await api('/api/films/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-films');
+  var p=getPanel('films');
   var html='<button class="detail-back" onclick="viewFilm(\\''+id+'\\')">← 返回</button>';
   html+='<div class="edit-form"><div class="form-row"><label>片名</label><input id="editFilmTitle" value="'+escHtml(d.title)+'"></div>';
   html+='<div style="display:flex;gap:8px"><div class="form-row" style="flex:1"><label>导演</label><input id="editFilmDir" value="'+escHtml(d.director||'')+'"></div>';
@@ -798,7 +798,7 @@ async function viewHandover(id){
   var d=await api('/api/handover?limit=50');var entries=d.entries||[];
   var entry=null;for(var i=0;i<entries.length;i++){if(entries[i].id===id){entry=entries[i];break;}}
   if(!entry)return;
-  var p=document.getElementById('panel-handover');
+  var p=getPanel('handover');
   var html='<button class="detail-back" onclick="loadPanel(\\'handover\\')">← 返回列表</button>';
   html+='<div class="detail-view"><div class="detail-title">✉️ 交接信</div>';
   html+='<div class="detail-meta">'+escHtml(entry.from||'Ember')+' · '+(entry.date||entry.created||'').slice(0,16).replace('T',' ')+'</div>';
@@ -835,7 +835,7 @@ async function loadDreams(p){
 }
 async function viewDream(id){
   var d=await api('/api/dream/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-dreams');
+  var p=getPanel('dreams');
   var html='<button class="detail-back" onclick="loadPanel(\\'dreams\\')">← 返回</button>';
   html+='<div class="detail-view" style="border-color:var(--accent2)"><div class="detail-title" style="color:var(--accent2)">🌙 '+(d.date||'')+'的梦</div>';
   html+='<div class="detail-meta">碎片来源: '+(d.fragments_used||'?')+' 条记忆</div>';
@@ -856,7 +856,7 @@ async function loadLetters(p){
 }
 async function viewLetter(id){
   var d=await api('/api/letters/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-letters');
+  var p=getPanel('letters');
   var html='<button class="detail-back" onclick="loadPanel(\\'letters\\')">← 返回列表</button>';
   html+='<div class="detail-view letter-card"><div class="detail-title">'+escHtml(d.title)+'</div>';
   html+='<div class="detail-meta">来自 '+escHtml(d.from||'Ember')+' · '+(d.date||d.created||'').slice(0,10)+'</div>';
@@ -866,7 +866,7 @@ async function viewLetter(id){
 }
 async function editLetter(id){
   var d=await api('/api/letters/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-letters');
+  var p=getPanel('letters');
   var html='<button class="detail-back" onclick="viewLetter(\\''+id+'\\')">← 返回</button>';
   html+='<div class="edit-form"><div class="form-row"><label>标题</label><input id="editLtrTitle" value="'+escHtml(d.title)+'"></div>';
   html+='<div class="form-row"><label>内容</label><textarea id="editLtrContent" style="min-height:200px">'+escHtml(d.content)+'</textarea></div>';
@@ -930,7 +930,7 @@ async function loadArchive(p){
 }
 async function viewArchive(id){
   var d=await api('/api/archive/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-archive');
+  var p=getPanel('archive');
   var html='<button class="detail-back" onclick="loadPanel(\\'archive\\')">← 返回列表</button>';
   html+='<div class="detail-view"><div class="detail-title">'+escHtml(d.title)+'</div>';
   html+='<div class="detail-meta">'+(d.category?escHtml(d.category)+' · ':'')+((d.date||d.created||'').slice(0,10))+'</div>';
@@ -940,7 +940,7 @@ async function viewArchive(id){
 }
 async function editArchive(id){
   var d=await api('/api/archive/read?id='+id);if(!d||d.error)return;
-  var p=document.getElementById('panel-archive');
+  var p=getPanel('archive');
   var html='<button class="detail-back" onclick="viewArchive(\\''+id+'\\')">← 返回</button>';
   html+='<div class="edit-form"><div class="form-row"><label>标题</label><input id="editArcTitle" value="'+escHtml(d.title)+'"></div>';
   html+='<div class="form-row"><label>内容</label><textarea id="editArcContent" style="min-height:200px">'+escHtml(d.content)+'</textarea></div>';
