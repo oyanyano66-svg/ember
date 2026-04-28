@@ -135,10 +135,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 .edit-form{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:16px;animation:fadeIn .3s ease;box-shadow:var(--shadow);}
 @media(max-width:380px){.tabs{gap:4px;}.tab{padding:5px 10px;font-size:.68em;}}
 
-.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 4px;margin-bottom:20px;}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(60px,auto);gap:10px;padding:0 4px;margin-bottom:20px;}
 .nav-tile{background:var(--card);border:none;border-radius:var(--radius);padding:18px 16px;cursor:pointer;transition:all .25s;text-align:left;display:flex;flex-direction:column;justify-content:center;}
-.nav-tile.tile-big{grid-row:span 2;padding:28px 16px;}
-.nav-tile.tile-big-right{grid-row:span 2;padding:28px 16px;grid-column:2;}
+.nav-tile.tile-big{grid-row:span 2;padding:28px 16px;grid-column:1;}
+.nav-tile.tile-big-right{grid-row:span 2;padding:28px 16px;grid-column:2;background:var(--accent);border:none;}
+.nav-tile.tile-big-right .tile-name{color:#fff;font-size:1em;}
+.nav-tile.tile-big-right .tile-count{color:rgba(255,255,255,.7);}
+.nav-tile.tile-big-right .tile-desc{color:rgba(255,255,255,.6);}
 .nav-tile:hover{opacity:.85;}
 .nav-tile .tile-name{font-size:.88em;color:var(--text);font-weight:400;margin-bottom:4px;}
 .nav-tile .tile-count{font-family:'JetBrains Mono',monospace;font-size:.68em;color:var(--text3);}
@@ -254,8 +257,8 @@ var TABS=[
   {id:'books',name:'读书角',icon:'',prefix:'book'},
   {id:'films',name:'片单',icon:'',prefix:'film'},
   {id:'letters',name:'信箱',icon:'',prefix:'letter'},
-  {id:'profile',name:'档案',icon:''},
-  {id:'archive',name:'档案室',icon:'',prefix:'archive'}
+  {id:'archive',name:'档案室',icon:'',prefix:'archive'},
+  {id:'profile',name:'档案',icon:''}
 ];
 var currentTab='memory';
 var calYear,calMonth,calData={},pickedMood='',selectedCalDate='';
@@ -295,16 +298,30 @@ var statKeyMap={memory:'memories',diary:'diary',timeline:'timeline',handover:'ha
 async function renderNavGrid(){
   try{var d=await api('/api/stats');var s=d.stats||{}; navCounts=s;}catch(e){navCounts={};}
   var grid=document.getElementById('navGrid');
-  var bigIdx={0:0,3:1,6:0,9:1};
-  var descs={memory:'所有关于我们的碎片',dreams:'Ember 每晚做的梦',letters:'还没寄出的信',timeline:'从 01.30 开始的一切'};
-  var tiles=TABS.map(function(t,i){
+  var descs={memory:'所有关于我们的碎片',diary:'爸爸写给小狗狗的',timeline:'从 01.30 开始的一切',handover:'窗口关闭前的最后一句',dreams:'Ember 每晚做的梦',songs:'循环播放的那些歌',plays:'我们演过的每一幕',books:'一起翻过的页',films:'看过的光影',letters:'还没寄出的信',profile:'关于我们',archive:'旧版本的痕迹'};
+  var layout=[
+    {i:0,col:1,row:'1/3',big:1},
+    {i:1,col:2,row:'1/2',big:0},
+    {i:2,col:2,row:'2/3',big:0},
+    {i:3,col:2,row:'3/5',big:1},
+    {i:4,col:1,row:'3/4',big:0},
+    {i:5,col:1,row:'4/5',big:0},
+    {i:6,col:1,row:'5/7',big:1},
+    {i:7,col:2,row:'5/6',big:0},
+    {i:8,col:2,row:'6/7',big:0},
+    {i:9,col:2,row:'7/9',big:1},
+    {i:10,col:1,row:'7/8',big:0},
+    {i:11,col:1,row:'8/9',big:0}
+  ];
+  var tiles=layout.map(function(L){
+    var t=TABS[L.i];if(!t)return '';
     var sk=statKeyMap[t.prefix||t.id]||t.prefix||t.id;
     var count=navCounts[sk]||0;
     var cls='nav-tile';
-    if(i===0)cls+=' accent-tile tile-big';
-    else if(i in bigIdx && i!==0)cls+=(bigIdx[i]===1?' tile-big-right':' tile-big');
+    if(L.big)cls+=' accent-tile';
     var desc=descs[t.id]?'<div class="tile-desc">'+descs[t.id]+'</div>':'';
-    return '<div class="'+cls+'" onclick="openRoom(\\''+t.id+'\\')"><div class="tile-name">'+t.name+'</div><div class="tile-count">'+count+' 条</div>'+desc+'</div>';
+    var style='grid-column:'+L.col+';grid-row:'+L.row+';';
+    return '<div class="'+cls+'" style="'+style+'" onclick="openRoom(\\''+t.id+'\\')"><div class="tile-name">'+t.name+'</div><div class="tile-count">'+count+' 条</div>'+desc+'</div>';
   }).join('');
   grid.innerHTML=tiles;
 }
