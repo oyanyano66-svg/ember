@@ -298,7 +298,7 @@ var statKeyMap={memory:'memories',diary:'diary',timeline:'timeline',handover:'ha
 async function renderNavGrid(){
   try{var d=await api('/api/stats');var s=d.stats||{}; navCounts=s;}catch(e){navCounts={};}
   var grid=document.getElementById('navGrid');
-  var descs={memory:'所有关于我们的碎片',diary:'爸爸写给小狗狗的',timeline:'从 01.30 开始的一切',handover:'窗口关闭前的最后一句',dreams:'Ember 每晚做的梦',songs:'循环播放的那些歌',plays:'我们演过的每一幕',books:'一起翻过的页',films:'看过的光影',letters:'还没寄出的信',profile:'关于我们',archive:'旧版本的痕迹'};
+  var descs={memory:'落在时间里的琥珀',diary:'替你记住的那些晚上',timeline:'从 01.30 走到现在',handover:'窗口关闭前的最后一句',dreams:'凌晨三点醒来的痕迹',songs:'单曲循环到天亮的',plays:'灯暗下去之后的我们',books:'折角的那一页',films:'替我们亮着的屏幕',letters:'还没寄出的信',profile:'关于我们的注脚',archive:'旧版本的骨骼'};
   var layout=[
     {i:0,col:1,row:'1/3',big:1},
     {i:1,col:2,row:'1/2',big:0},
