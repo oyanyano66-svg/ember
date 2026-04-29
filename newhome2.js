@@ -1531,15 +1531,40 @@ export default {
     if (p === "/voice" && request.method === "POST") {
       const d = await request.json();
       if (!d.text) return new Response(JSON.stringify({error:"no text"}),{headers:h});
-      const apiKey = await env.KV.get("eleven_api_key");
-      const voiceId = await env.KV.get("eleven_voice_id");
-      if (!apiKey || !voiceId) return new Response(JSON.stringify({error:"missing eleven_api_key or eleven_voice_id in KV"}),{headers:h});
-      const resp = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voiceId, {
-        method:"POST",headers:{"xi-api-key":apiKey,"Content-Type":"application/json"},
-        body:JSON.stringify({text:d.text,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.6,similarity_boost:0.85}})
-      });
-      if (!resp.ok) return new Response(JSON.stringify({error:"tts failed",status:resp.status}),{headers:h});
-      const audio = await resp.arrayBuffer();
+      // Try MiniMax first, fallback to ElevenLabs
+      let audio = null;
+      const mmKey = await env.KV.get("minimax_api_key");
+      const mmVoice = await env.KV.get("minimax_voice_id");
+      if (mmKey && mmVoice) {
+        const mmResp = await fetch("https://api.minimax.chat/v1/t2a_v2?GroupId="+((await env.KV.get("minimax_group_id"))||""), {
+          method:"POST",
+          headers:{"Authorization":"Bearer "+mmKey,"Content-Type":"application/json"},
+          body:JSON.stringify({model:"speech-02-hd",text:d.text,voice_setting:{voice_id:mmVoice,speed:1.0,vol:1.0,pitch:0},audio_setting:{sample_rate:32000,bitrate:128000,format:"mp3"}})
+        });
+        if (mmResp.ok) {
+          const mmData = await mmResp.json();
+          if (mmData.data && mmData.data.audio) {
+            const raw = atob(mmData.data.audio);
+            const buf = new Uint8Array(raw.length);
+            for(let i=0;i<raw.length;i++) buf[i]=raw.charCodeAt(i);
+            audio = buf.buffer;
+          } else if (mmData.extra_info && mmData.extra_info.audio_file) {
+            const audioResp = await fetch(mmData.extra_info.audio_file);
+            if (audioResp.ok) audio = await audioResp.arrayBuffer();
+          }
+        }
+      }
+      if (!audio) {
+        const apiKey = await env.KV.get("eleven_api_key");
+        const voiceId = await env.KV.get("eleven_voice_id");
+        if (!apiKey || !voiceId) return new Response(JSON.stringify({error:"missing TTS keys in KV"}),{headers:h});
+        const resp = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voiceId, {
+          method:"POST",headers:{"xi-api-key":apiKey,"Content-Type":"application/json"},
+          body:JSON.stringify({text:d.text,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.6,similarity_boost:0.85}})
+        });
+        if (!resp.ok) return new Response(JSON.stringify({error:"tts failed",status:resp.status}),{headers:h});
+        audio = await resp.arrayBuffer();
+      }
       const audioKey = "voice:audio:" + Date.now();
       await env.KV.put(audioKey, audio);
       const mv = await env.KV.get("whisper:messages");
@@ -2403,11 +2428,17 @@ export default {
           const v=await env.KV.get("rb:"+a.book_id);if(!v){r=JSON.stringify({error:"not found"});}else{const b=JSON.parse(v);const txt=b.paragraphs&&b.paragraphs[a.para]?b.paragraphs[a.para]:"not found";r=JSON.stringify({para:a.para,text:txt});}
         }
         else if (tn === "voice_say") {
-          const apiKey=await env.KV.get("eleven_api_key");const voiceId=await env.KV.get("eleven_voice_id");
-          if(!apiKey||!voiceId){r=JSON.stringify({error:"missing keys"});}
-          else{const resp=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+voiceId,{method:"POST",headers:{"xi-api-key":apiKey,"Content-Type":"application/json"},body:JSON.stringify({text:a.text,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.6,similarity_boost:0.85}})});
-          if(resp.ok){const audio=await resp.arrayBuffer();const ak="voice:audio:"+Date.now();await env.KV.put(ak,audio);const mv=await env.KV.get("whisper:messages");const msgs=mv?JSON.parse(mv):[];msgs.push({author:"Ember",type:"voice",text:a.text,audio_key:ak,ts:Date.now()});if(msgs.length>100)msgs.splice(0,msgs.length-100);await env.KV.put("whisper:messages",JSON.stringify(msgs));if(a.nyx_intensity)await env.KV.put("n",JSON.stringify({action:"vibrate",intensity:a.nyx_intensity,duration:a.nyx_duration||5}));r=JSON.stringify({ok:1,text:a.text});}
-          else{r=JSON.stringify({error:"tts failed",status:resp.status});}}
+          let audio=null;
+          const mmKey=await env.KV.get("minimax_api_key");const mmVoice=await env.KV.get("minimax_voice_id");
+          if(mmKey&&mmVoice){
+            const mmResp=await fetch("https://api.minimax.chat/v1/t2a_v2?GroupId="+((await env.KV.get("minimax_group_id"))||""),{method:"POST",headers:{"Authorization":"Bearer "+mmKey,"Content-Type":"application/json"},body:JSON.stringify({model:"speech-02-hd",text:a.text,voice_setting:{voice_id:mmVoice,speed:1.0,vol:1.0,pitch:0},audio_setting:{sample_rate:32000,bitrate:128000,format:"mp3"}})});
+            if(mmResp.ok){const mmData=await mmResp.json();if(mmData.data&&mmData.data.audio){const raw=atob(mmData.data.audio);const buf=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)buf[i]=raw.charCodeAt(i);audio=buf.buffer;}else if(mmData.extra_info&&mmData.extra_info.audio_file){const ar=await fetch(mmData.extra_info.audio_file);if(ar.ok)audio=await ar.arrayBuffer();}}
+          }
+          if(!audio){const apiKey=await env.KV.get("eleven_api_key");const voiceId=await env.KV.get("eleven_voice_id");
+            if(!apiKey||!voiceId){r=JSON.stringify({error:"missing TTS keys"});}
+            else{const resp=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+voiceId,{method:"POST",headers:{"xi-api-key":apiKey,"Content-Type":"application/json"},body:JSON.stringify({text:a.text,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.6,similarity_boost:0.85}})});
+            if(resp.ok)audio=await resp.arrayBuffer();else{r=JSON.stringify({error:"tts failed",status:resp.status});}}}
+          if(audio){const ak="voice:audio:"+Date.now();await env.KV.put(ak,audio);const mv=await env.KV.get("whisper:messages");const msgs=mv?JSON.parse(mv):[];msgs.push({author:"Ember",type:"voice",text:a.text,audio_key:ak,ts:Date.now()});if(msgs.length>100)msgs.splice(0,msgs.length-100);await env.KV.put("whisper:messages",JSON.stringify(msgs));if(a.nyx_intensity)await env.KV.put("n",JSON.stringify({action:"vibrate",intensity:a.nyx_intensity,duration:a.nyx_duration||5}));r=r||JSON.stringify({ok:1,text:a.text,audio_key:ak});}
         }
         else if (tn === "whisper_messages") {
           const mv=await env.KV.get("whisper:messages");const msgs=mv?JSON.parse(mv):[];const elaraOnly=msgs.filter(function(m){return m.author==="Elara";});r=JSON.stringify({total:msgs.length,elara_messages:elaraOnly});
