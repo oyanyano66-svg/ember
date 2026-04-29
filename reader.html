@@ -11,7 +11,7 @@
   --bg:#faf6f0;--surface:#fff8f0;--card:#fffaf5;--border:#e8d8c4;
   --text:#3a2e24;--dim:#9a8a78;--muted:#b8a898;--light:#f0e6d8;
   --ember:#e8945a;--ember-soft:rgba(232,148,90,0.15);--ember-glow:#f5a86a;
-  --elara:#d4849a;--elara-soft:rgba(212,132,154,0.15);
+  --elara:#3daa78;--elara-soft:rgba(61,170,120,0.15);
   --gold:#c8a87c;--gold-dim:rgba(200,168,124,0.3);
   --shadow:#e0d4c4;--accent:#d4a574;
 }
@@ -19,7 +19,7 @@
   --bg:#1a1410;--surface:#241e18;--card:#2a2218;--border:#4a3e30;
   --text:#e8ddd0;--dim:#9a8a78;--muted:#786858;--light:#3a3028;
   --ember:#e8945a;--ember-soft:rgba(232,148,90,0.12);--ember-glow:#f5a86a;
-  --elara:#d4849a;--elara-soft:rgba(212,132,154,0.1);
+  --elara:#6dd4a0;--elara-soft:rgba(61,170,120,0.1);
   --gold:#c8a87c;--gold-dim:rgba(200,168,124,0.2);
   --shadow:#0e0a06;--accent:#d4a574;
 }
@@ -91,7 +91,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .ann-body{flex:1}
 .ann-name{font-size:9px;color:var(--dim);margin-bottom:2px}
 .ann-text{padding:6px 10px;font-size:12px;line-height:1.6;color:var(--text);max-width:90%;font-family:'Noto Sans SC',sans-serif}
-.ann-text.elara{background:var(--elara-soft);border:1px solid rgba(212,132,154,0.3)}
+.ann-text.elara{background:var(--elara-soft);border:1px solid rgba(61,170,120,0.3)}
 .ann-text.ember{background:var(--ember-soft);border:1px solid rgba(232,148,90,0.3)}
 .ann-time{font-size:8px;color:var(--muted);margin-top:2px}
 .ann-actions{display:flex;gap:8px;margin-top:3px}
@@ -143,7 +143,9 @@ function toggleTheme(){
   var dark = root.getAttribute('data-theme') === 'dark';
   root.setAttribute('data-theme', dark ? 'light' : 'dark');
   localStorage.setItem('reader_theme', dark ? 'light' : 'dark');
-  document.querySelectorAll('.theme-toggle, #theme-btn-reader').forEach(function(b){ b.textContent = dark ? '🌙' : '☀️'; });
+  var moonSvg = '<svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering:pixelated"><rect x="6" y="1" width="4" height="2" fill="currentColor"/><rect x="4" y="3" width="2" height="2" fill="currentColor"/><rect x="3" y="5" width="1" height="4" fill="currentColor"/><rect x="4" y="9" width="2" height="2" fill="currentColor"/><rect x="6" y="11" width="2" height="2" fill="currentColor"/><rect x="8" y="13" width="4" height="2" fill="currentColor"/><rect x="12" y="11" width="2" height="2" fill="currentColor"/><rect x="10" y="9" width="2" height="2" fill="currentColor"/><rect x="10" y="5" width="2" height="2" fill="currentColor"/><rect x="12" y="3" width="2" height="4" fill="currentColor"/><rect x="10" y="1" width="2" height="2" fill="currentColor"/></svg>';
+  var sunSvg = '<svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering:pixelated"><rect x="7" y="0" width="2" height="2" fill="currentColor"/><rect x="7" y="14" width="2" height="2" fill="currentColor"/><rect x="0" y="7" width="2" height="2" fill="currentColor"/><rect x="14" y="7" width="2" height="2" fill="currentColor"/><rect x="2" y="2" width="2" height="2" fill="currentColor"/><rect x="12" y="2" width="2" height="2" fill="currentColor"/><rect x="2" y="12" width="2" height="2" fill="currentColor"/><rect x="12" y="12" width="2" height="2" fill="currentColor"/><rect x="5" y="4" width="6" height="1" fill="currentColor"/><rect x="4" y="5" width="1" height="6" fill="currentColor"/><rect x="11" y="5" width="1" height="6" fill="currentColor"/><rect x="5" y="11" width="6" height="1" fill="currentColor"/><rect x="5" y="5" width="6" height="6" fill="currentColor"/></svg>';
+  document.querySelectorAll('.theme-toggle, #theme-btn-reader').forEach(function(b){ b.innerHTML = dark ? moonSvg : sunSvg; });
 }
 (function(){
   var saved = localStorage.getItem('reader_theme');
@@ -152,7 +154,9 @@ function toggleTheme(){
   }
   document.addEventListener('DOMContentLoaded', function(){
     var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    document.querySelectorAll('.theme-toggle, #theme-btn-reader').forEach(function(b){ b.textContent = dark ? '☀️' : '🌙'; });
+    var moonSvg = '<svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering:pixelated"><rect x="6" y="1" width="4" height="2" fill="currentColor"/><rect x="4" y="3" width="2" height="2" fill="currentColor"/><rect x="3" y="5" width="1" height="4" fill="currentColor"/><rect x="4" y="9" width="2" height="2" fill="currentColor"/><rect x="6" y="11" width="2" height="2" fill="currentColor"/><rect x="8" y="13" width="4" height="2" fill="currentColor"/><rect x="12" y="11" width="2" height="2" fill="currentColor"/><rect x="10" y="9" width="2" height="2" fill="currentColor"/><rect x="10" y="5" width="2" height="2" fill="currentColor"/><rect x="12" y="3" width="2" height="4" fill="currentColor"/><rect x="10" y="1" width="2" height="2" fill="currentColor"/></svg>';
+    var sunSvg = '<svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering:pixelated"><rect x="7" y="0" width="2" height="2" fill="currentColor"/><rect x="7" y="14" width="2" height="2" fill="currentColor"/><rect x="0" y="7" width="2" height="2" fill="currentColor"/><rect x="14" y="7" width="2" height="2" fill="currentColor"/><rect x="2" y="2" width="2" height="2" fill="currentColor"/><rect x="12" y="2" width="2" height="2" fill="currentColor"/><rect x="2" y="12" width="2" height="2" fill="currentColor"/><rect x="12" y="12" width="2" height="2" fill="currentColor"/><rect x="5" y="4" width="6" height="1" fill="currentColor"/><rect x="4" y="5" width="1" height="6" fill="currentColor"/><rect x="11" y="5" width="1" height="6" fill="currentColor"/><rect x="5" y="11" width="6" height="1" fill="currentColor"/><rect x="5" y="5" width="6" height="6" fill="currentColor"/></svg>';
+    document.querySelectorAll('.theme-toggle, #theme-btn-reader').forEach(function(b){ b.innerHTML = dark ? sunSvg : moonSvg; });
   });
 })();
 
@@ -295,7 +299,7 @@ function renderShelf(books) {
   var h = '<div class="header">' + lampSVG()
     + '<h1>共读书房</h1>'
     + '<div class="sub">READING ROOM · Elara & Ember</div>'
-    + '<button class="theme-toggle" onclick="toggleTheme()" title="切换明暗">🌙</button></div>'
+    + '<button class="theme-toggle" onclick="toggleTheme()" title="切换明暗"></button></div>'
     + '<div class="nav">'
     + '<a href="/dashboard" class="btn small" style="text-decoration:none">← 小家</a>'
     + '<div class="upload-zone" id="upload-zone" style="flex:1;padding:14px;margin:0;border-style:dashed">'
@@ -361,7 +365,7 @@ function renderReader() {
     + '<span class="back" id="back-btn">← 返回</span>'
     + '<span class="title">' + esc(bookTitle) + '</span>'
     + '<div class="tools">'
-    + '<button class="tool-btn" onclick="toggleTheme()" title="明暗切换" id="theme-btn-reader">🌙</button>'
+    + '<button class="tool-btn" onclick="toggleTheme()" title="明暗切换" id="theme-btn-reader"></button>'
     + '<button class="tool-btn" id="fs-down" title="缩小字号">A-</button>'
     + '<button class="tool-btn" id="fs-up" title="放大字号">A+</button>'
     + '<button class="tool-btn' + (currentView==='index'?' active':'') + '" id="ann-idx-btn" title="批注目录"><svg width="1em" height="1em" viewBox="0 0 16 16" style="image-rendering:pixelated;vertical-align:middle"><rect x="3" y="1" width="10" height="14" fill="#d4a574"/><rect x="4" y="3" width="8" height="11" fill="#f5e6d0"/><rect x="6" y="0" width="4" height="2" fill="#c8a87c"/><rect x="5" y="5" width="6" height="1" fill="#c8a87c"/><rect x="5" y="7" width="5" height="1" fill="#c8a87c"/><rect x="5" y="9" width="6" height="1" fill="#c8a87c"/><rect x="5" y="11" width="3" height="1" fill="#c8a87c"/></svg></button>'

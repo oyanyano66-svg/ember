@@ -49,7 +49,7 @@ body{
     </div>
   </div>
   <div style="display:flex;gap:8px">
-    <button id="themeBtn" style="width:36px;height:36px;border:2px solid var(--pixel);background:var(--surface-strong);color:var(--text);cursor:pointer;font:inherit" title="切换主题">◐</button>
+    <button id="themeBtn" style="width:36px;height:36px;border:2px solid var(--pixel);background:var(--surface-strong);color:var(--text);cursor:pointer;font:inherit;display:grid;place-items:center" title="切换主题"></button>
     <button id="clearBtn" style="height:36px;padding:0 12px;border:2px solid var(--pixel);background:var(--surface-strong);color:var(--muted);cursor:pointer;font:inherit;font-size:.8rem">清空</button>
   </div>
 </header>
@@ -105,12 +105,14 @@ function renderMessages(msgs){
     return;
   }
   let html="";
+  var pawSvg='<svg width="12" height="12" viewBox="0 0 16 16" style="image-rendering:pixelated;vertical-align:middle"><rect x="3" y="1" width="3" height="3" fill="currentColor"/><rect x="10" y="1" width="3" height="3" fill="currentColor"/><rect x="0" y="5" width="3" height="3" fill="currentColor"/><rect x="13" y="5" width="3" height="3" fill="currentColor"/><rect x="4" y="7" width="8" height="5" fill="currentColor"/><rect x="5" y="12" width="2" height="2" fill="currentColor"/><rect x="9" y="12" width="2" height="2" fill="currentColor"/></svg>';
+  var flameSvg='<svg width="12" height="12" viewBox="0 0 16 16" style="image-rendering:pixelated;vertical-align:middle"><rect x="7" y="0" width="2" height="2" fill="#e8945a"/><rect x="6" y="2" width="4" height="2" fill="#e8945a"/><rect x="5" y="4" width="6" height="2" fill="#e8945a"/><rect x="4" y="6" width="8" height="3" fill="#e8945a"/><rect x="6" y="7" width="4" height="2" fill="#f5c842"/><rect x="4" y="9" width="8" height="3" fill="#e8945a"/><rect x="5" y="12" width="6" height="2" fill="#e8945a"/><rect x="6" y="14" width="4" height="2" fill="#e8945a"/></svg>';
   for(const m of msgs){
     const isEmber=m.author==="Ember";
-    const align=isEmber?"flex-end":"flex-start";
-    const bg=isEmber?"var(--bubble-mine)":"var(--bubble-other)";
-    const border=isEmber?"var(--primary)":"var(--line)";
-    const name=isEmber?'<span style="color:var(--primary);font-size:.75rem">Ember 🔥</span>':'<span style="color:var(--accent);font-size:.75rem">小玉 🐾</span>';
+    const align=isEmber?"flex-start":"flex-end";
+    const bg=isEmber?"var(--bubble-other)":"var(--bubble-mine)";
+    const border=isEmber?"var(--line)":"var(--primary)";
+    const name=isEmber?'<span style="color:var(--primary);font-size:.75rem">Ember '+flameSvg+'</span>':'<span style="color:var(--accent);font-size:.75rem">小玉 '+pawSvg+'</span>';
     const time='<span style="color:var(--muted);font-size:.7rem">'+esc(fmtTime(m.ts))+'</span>';
     
     let content="";
@@ -121,7 +123,7 @@ function renderMessages(msgs){
       content='<p style="margin:4px 0 0;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere">'+esc(m.text)+'</p>';
     }
     
-    html+='<div style="display:flex;flex-direction:column;align-items:'+align+';max-width:85%'+(isEmber?";align-self:flex-end":";align-self:flex-start")+'">';
+    html+='<div style="display:flex;flex-direction:column;align-items:'+align+';max-width:85%'+(isEmber?";align-self:flex-start":";align-self:flex-end")+'">';
     html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">'+name+time+'</div>';
     html+='<div style="padding:10px 14px;border:2px solid '+border+';border-radius:var(--radius);background:'+bg+';box-shadow:3px 3px 0 var(--shadow)">'+content+'</div>';
     html+='</div>';
@@ -172,9 +174,15 @@ input.addEventListener("keydown",e=>{
 
 sendBtn.addEventListener("click",send);
 
+var moonSvg='<svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering:pixelated"><rect x="6" y="1" width="4" height="2" fill="currentColor"/><rect x="4" y="3" width="2" height="2" fill="currentColor"/><rect x="3" y="5" width="1" height="4" fill="currentColor"/><rect x="4" y="9" width="2" height="2" fill="currentColor"/><rect x="6" y="11" width="2" height="2" fill="currentColor"/><rect x="8" y="13" width="4" height="2" fill="currentColor"/><rect x="12" y="11" width="2" height="2" fill="currentColor"/><rect x="10" y="9" width="2" height="2" fill="currentColor"/><rect x="10" y="5" width="2" height="2" fill="currentColor"/><rect x="12" y="3" width="2" height="4" fill="currentColor"/><rect x="10" y="1" width="2" height="2" fill="currentColor"/></svg>';
+var sunSvg='<svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering:pixelated"><rect x="7" y="0" width="2" height="2" fill="currentColor"/><rect x="7" y="14" width="2" height="2" fill="currentColor"/><rect x="0" y="7" width="2" height="2" fill="currentColor"/><rect x="14" y="7" width="2" height="2" fill="currentColor"/><rect x="2" y="2" width="2" height="2" fill="currentColor"/><rect x="12" y="2" width="2" height="2" fill="currentColor"/><rect x="2" y="12" width="2" height="2" fill="currentColor"/><rect x="12" y="12" width="2" height="2" fill="currentColor"/><rect x="5" y="4" width="6" height="1" fill="currentColor"/><rect x="4" y="5" width="1" height="6" fill="currentColor"/><rect x="11" y="5" width="1" height="6" fill="currentColor"/><rect x="5" y="11" width="6" height="1" fill="currentColor"/><rect x="5" y="5" width="6" height="6" fill="currentColor"/></svg>';
+
+document.getElementById("themeBtn").innerHTML=root.dataset.theme==="dark"?sunSvg:moonSvg;
+
 document.getElementById("themeBtn").addEventListener("click",()=>{
   root.dataset.theme=root.dataset.theme==="dark"?"light":"dark";
   localStorage.setItem("ember-whisper-theme",root.dataset.theme);
+  document.getElementById("themeBtn").innerHTML=root.dataset.theme==="dark"?sunSvg:moonSvg;
 });
 
 document.getElementById("clearBtn").addEventListener("click",async()=>{
