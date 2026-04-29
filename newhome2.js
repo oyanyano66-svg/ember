@@ -287,6 +287,31 @@ html:not([data-theme="latte"]) .cal-recent-date{color:#ff9a62!important;}
 html:not([data-theme="latte"]) .bottom-nav{background:#120d0a!important;border-top-color:#5f4e3d!important;}
 html:not([data-theme="latte"]) .nav-btn{background:#201610!important;border-color:#6f5b47!important;color:#e5cfaa!important;box-shadow:3px 3px 0 rgba(0,0,0,.38)!important;}
 html:not([data-theme="latte"]) .nav-btn.active{background:#ff9a62!important;color:#1b120d!important;border-color:#ffd29a!important;}
+/* EMBER_DARK_THEME_SPLIT_V2 */
+html:not([data-theme="latte"]) .nav-grid{gap:12px!important;}
+html:not([data-theme="latte"]) .nav-tile{position:relative!important;overflow:hidden!important;background:linear-gradient(180deg,#30211a,#211611)!important;border:2px solid #8b765e!important;box-shadow:4px 4px 0 rgba(0,0,0,.42),inset 0 0 0 1px rgba(255,226,177,.06)!important;}
+html:not([data-theme="latte"]) .nav-tile::after{content:""!important;position:absolute!important;left:0!important;right:0!important;bottom:0!important;height:10px!important;background:repeating-linear-gradient(90deg,rgba(231,205,164,.62) 0 7px,transparent 7px 13px)!important;opacity:.9!important;z-index:0!important;pointer-events:none!important;}
+html:not([data-theme="latte"]) .nav-tile::before,html:not([data-theme="latte"]) .nav-tile .tile-name,html:not([data-theme="latte"]) .nav-tile .tile-count,html:not([data-theme="latte"]) .nav-tile .tile-desc{position:relative!important;z-index:1!important;}
+html:not([data-theme="latte"]) .nav-tile::before{color:#cdb18a!important;opacity:.86!important;text-shadow:1px 1px 0 rgba(0,0,0,.45)!important;}
+html:not([data-theme="latte"]) .nav-tile .tile-name{color:#f6e6c8!important;text-shadow:1px 1px 0 #000!important;}
+html:not([data-theme="latte"]) .nav-tile .tile-count,html:not([data-theme="latte"]) .nav-tile .tile-desc{color:#d5bea0!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="memory"],html:not([data-theme="latte"]) .nav-tile[onclick*="books"],html:not([data-theme="latte"]) .nav-tile[onclick*="archive"]{background:linear-gradient(180deg,#c65f3e 0%,#a84630 100%)!important;border-color:#789061!important;box-shadow:4px 4px 0 rgba(0,0,0,.42),inset 0 0 0 1px rgba(255,224,170,.12)!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="memory"]::after,html:not([data-theme="latte"]) .nav-tile[onclick*="books"]::after,html:not([data-theme="latte"]) .nav-tile[onclick*="archive"]::after{background:repeating-linear-gradient(90deg,rgba(126,144,97,.72) 0 7px,rgba(255,219,165,.28) 7px 13px)!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="diary"]{background:repeating-linear-gradient(0deg,#fbf2de 0 20px,#d8cbae 20px 22px)!important;border-color:#7d9461!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"]{background:linear-gradient(90deg,#fbf2de 0 43%,#594635 43% 49%,#fbf2de 49% 100%)!important;border-color:#7d9461!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="letters"]{background:linear-gradient(180deg,#fbf2de 0 48%,#dcc7a8 48% 54%,#fbf2de 54%)!important;border-color:#7d9461!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="diary"] .tile-name,html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"] .tile-name,html:not([data-theme="latte"]) .nav-tile[onclick*="letters"] .tile-name{color:#20150e!important;text-shadow:none!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="diary"] .tile-count,html:not([data-theme="latte"]) .nav-tile[onclick*="diary"] .tile-desc,html:not([data-theme="latte"]) .nav-tile[onclick*="diary"]::before,html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"] .tile-count,html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"] .tile-desc,html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"]::before,html:not([data-theme="latte"]) .nav-tile[onclick*="letters"] .tile-count,html:not([data-theme="latte"]) .nav-tile[onclick*="letters"] .tile-desc,html:not([data-theme="latte"]) .nav-tile[onclick*="letters"]::before{color:rgba(37,24,16,.68)!important;text-shadow:none!important;}
+html:not([data-theme="latte"]) #calDetail,html:not([data-theme="latte"]) #calForm,html:not([data-theme="latte"]) .cal-entry-form{background:#211611!important;border:2px solid #8b765e!important;color:#ecd9ba!important;box-shadow:4px 4px 0 rgba(0,0,0,.42)!important;}
+html:not([data-theme="latte"]) #calDetailDate,html:not([data-theme="latte"]) #calFormDate{color:#ffd28d!important;text-shadow:1px 1px 0 rgba(0,0,0,.55)!important;font-family:"Songti SC","STSong",SimSun,serif!important;font-weight:900!important;}
+html:not([data-theme="latte"]) #calPuppyMood,html:not([data-theme="latte"]) #calDaddyMood{color:#ffd28d!important;}
+html:not([data-theme="latte"]) #calPuppyNote,html:not([data-theme="latte"]) #calDaddyNote{color:#e8d2b0!important;line-height:1.7!important;}
+html:not([data-theme="latte"]) .mood-opt{opacity:.82!important;filter:saturate(1.08) drop-shadow(1px 1px 0 rgba(0,0,0,.25))!important;}
+html:not([data-theme="latte"]) .mood-opt.picked{opacity:1!important;transform:scale(1.18)!important;background:rgba(255,154,98,.16)!important;outline:2px solid rgba(255,154,98,.45)!important;}
+html:not([data-theme="latte"]) #calNote{background:#1a100c!important;color:#f2dfc2!important;border:2px solid #7b6650!important;box-shadow:inset 0 0 0 1px rgba(255,226,177,.05)!important;}
+html:not([data-theme="latte"]) #calNote::placeholder{color:rgba(226,207,178,.5)!important;}
+html:not([data-theme="latte"]) #calMsg{color:#ffd28d!important;}
+html:not([data-theme="latte"]) .form-submit{background:#ff9a62!important;color:#1b120d!important;border-color:#ffd29a!important;box-shadow:4px 4px 0 rgba(0,0,0,.42)!important;}
 </style>
 
 </head>
