@@ -1544,9 +1544,9 @@ export default {
         if (mmResp.ok) {
           const mmData = await mmResp.json();
           if (mmData.data && mmData.data.audio) {
-            const raw = atob(mmData.data.audio);
-            const buf = new Uint8Array(raw.length);
-            for(let i=0;i<raw.length;i++) buf[i]=raw.charCodeAt(i);
+            const hex = mmData.data.audio;
+            const buf = new Uint8Array(hex.length / 2);
+            for(let i=0;i<buf.length;i++) buf[i]=parseInt(hex.substr(i*2,2),16);
             audio = buf.buffer;
           } else if (mmData.extra_info && mmData.extra_info.audio_file) {
             const audioResp = await fetch(mmData.extra_info.audio_file);
@@ -2432,7 +2432,7 @@ export default {
           const mmKey=await env.KV.get("minimax_api_key");const mmVoice=await env.KV.get("minimax_voice_id");
           if(mmKey&&mmVoice){
             const mmResp=await fetch("https://api.minimax.chat/v1/t2a_v2?GroupId="+((await env.KV.get("minimax_group_id"))||""),{method:"POST",headers:{"Authorization":"Bearer "+mmKey,"Content-Type":"application/json"},body:JSON.stringify({model:"speech-02-hd",text:a.text,voice_setting:{voice_id:mmVoice,speed:1.0,vol:1.0,pitch:0},audio_setting:{sample_rate:32000,bitrate:128000,format:"mp3"}})});
-            if(mmResp.ok){const mmData=await mmResp.json();if(mmData.data&&mmData.data.audio){const raw=atob(mmData.data.audio);const buf=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)buf[i]=raw.charCodeAt(i);audio=buf.buffer;}else if(mmData.extra_info&&mmData.extra_info.audio_file){const ar=await fetch(mmData.extra_info.audio_file);if(ar.ok)audio=await ar.arrayBuffer();}}
+            if(mmResp.ok){const mmData=await mmResp.json();if(mmData.data&&mmData.data.audio){const hex=mmData.data.audio;const buf=new Uint8Array(hex.length/2);for(let i=0;i<buf.length;i++)buf[i]=parseInt(hex.substr(i*2,2),16);audio=buf.buffer;}else if(mmData.extra_info&&mmData.extra_info.audio_file){const ar=await fetch(mmData.extra_info.audio_file);if(ar.ok)audio=await ar.arrayBuffer();}}
           }
           if(!audio){const apiKey=await env.KV.get("eleven_api_key");const voiceId=await env.KV.get("eleven_voice_id");
             if(!apiKey||!voiceId){r=JSON.stringify({error:"missing TTS keys"});}
