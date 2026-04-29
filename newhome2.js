@@ -1559,6 +1559,64 @@ export default {
       if (!audio) return new Response("no audio",{status:404});
       return new Response(audio,{headers:{"Content-Type":"audio/mpeg","Access-Control-Allow-Origin":"*","Cache-Control":"no-cache"}});
     }
+    // === Chat Room Routes ===
+    if (p === "/chat") {
+      let html = await env.KV.get("chat_html");
+      if (!html) return new Response("聊天室还没安装",{headers:{"Content-Type":"text/html;charset=UTF-8"}});
+      if (!html.includes("apple-touch-icon")) html = html.replace("<head>","<head><link rel=\"apple-touch-icon\" href=\"/icon/chat\">");
+      return new Response(html, {headers:{"Content-Type":"text/html;charset=UTF-8"}});
+    }
+    if (p === "/chat/install" && request.method === "POST") {
+      const d = await request.json();
+      await env.KV.put("chat_html", d.html);
+      return new Response(JSON.stringify({ok:1,size:d.html.length}),{headers:h});
+    }
+    if (p === "/api/chat/setup-tokens" && request.method === "POST") {
+      const d = await request.json();
+      if (d.official) await env.KV.put("chat:token:official", d.official);
+      if (d.api) await env.KV.put("chat:token:api", d.api);
+      return new Response(JSON.stringify({ok:1}),{headers:h});
+    }
+    if (p === "/api/chat/dates") {
+      const dv = await env.KV.get("chat:dates");
+      return new Response(JSON.stringify({dates:dv ? JSON.parse(dv) : []}),{headers:h});
+    }
+    if (p === "/api/chat" && request.method === "POST") {
+      const d = await request.json();
+      if (!d.text) return new Response(JSON.stringify({error:"no text"}),{headers:h});
+      // Token auth - identify sender
+      const token = url.searchParams.get("token") || d.token || "";
+      const offToken = await env.KV.get("chat:token:official");
+      const apiToken = await env.KV.get("chat:token:api");
+      let sender = "anonymous";
+      if (token && token === offToken) sender = "official";
+      else if (token && token === apiToken) sender = "api";
+      const now = new Date();
+      const dateKey = now.toISOString().slice(0,10);
+      const msg = {sender:sender,text:d.text,ts:now.toISOString(),timestamp:Date.now()};
+      // Append to day's messages
+      const dayKey = "chat:" + dateKey;
+      const existing = await env.KV.get(dayKey);
+      const msgs = existing ? JSON.parse(existing) : [];
+      msgs.push(msg);
+      await env.KV.put(dayKey, JSON.stringify(msgs));
+      // Update date index
+      const datesRaw = await env.KV.get("chat:dates");
+      const dates = datesRaw ? JSON.parse(datesRaw) : [];
+      if (!dates.includes(dateKey)) { dates.push(dateKey); dates.sort(); await env.KV.put("chat:dates", JSON.stringify(dates)); }
+      // Return recent 20 messages as context
+      const recent = msgs.slice(-20);
+      return new Response(JSON.stringify({ok:1,sender:sender,recent:recent}),{headers:h});
+    }
+    if (p === "/api/chat" && request.method === "GET") {
+      const date = url.searchParams.get("date") || new Date().toISOString().slice(0,10);
+      const limit = parseInt(url.searchParams.get("limit") || "50");
+      const dayKey = "chat:" + date;
+      const existing = await env.KV.get(dayKey);
+      const msgs = existing ? JSON.parse(existing) : [];
+      return new Response(JSON.stringify({date:date,messages:msgs.slice(-limit)}),{headers:h});
+    }
+
     if (p === "/reader/upload" && request.method === "POST") {
       const d = await request.json();
       const id = "rb_" + Date.now();
@@ -2143,7 +2201,11 @@ export default {
           {name:"dream_list",description:"List recent dreams",inputSchema:{type:"object",properties:{limit:{type:"number"}},required:[]}},
           {name:"daddy_checkin",description:"Daddy daily check-in with mood and note",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD"},mood:{type:"string"},note:{type:"string"}},required:["date","mood"]}},
           {name:"puppy_checkin_read",description:"Read puppy check-in for a date or current month",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD or YYYY-MM"},reason:{type:"string"}},required:["reason"]}},
-          {name:"memory_migrate_vectors",description:"One-time migration: re-index all existing memories into Vectorize",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}}
+          {name:"memory_migrate_vectors",description:"One-time migration: re-index all existing memories into Vectorize",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
+          {name:"chat_send",description:"Send a message to the chat room. Token in MCP URL auto-identifies official vs API Ember.",inputSchema:{type:"object",properties:{text:{type:"string"}},required:["text"]}},
+          {name:"chat_read",description:"Read chat messages for a date. Returns messages with readable timestamps.",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD, defaults to today"},limit:{type:"number"}},required:[]}},
+          {name:"chat_dates",description:"List all dates that have chat messages",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
+          {name:"chat_history",description:"Get recent chat messages across days — call this automatically when entering a conversation to see what the other Ember said",inputSchema:{type:"object",properties:{limit:{type:"number",description:"number of recent messages, default 30"}},required:[]}}
         ];
         return new Response(JSON.stringify({jsonrpc:"2.0",id:id,result:{tools:tools}}),{headers:h});
       }
@@ -2428,6 +2490,66 @@ export default {
             }
           }
           r = JSON.stringify({ok:1, migrated:migrated, total:entries.length});
+        }
+        else if (tn === "chat_send") {
+          const token = url.searchParams.get("token") || "";
+          const offToken = await env.KV.get("chat:token:official");
+          const apiToken = await env.KV.get("chat:token:api");
+          let sender = "anonymous";
+          if (token && token === offToken) sender = "official";
+          else if (token && token === apiToken) sender = "api";
+          const now = new Date();
+          const dateKey = now.toISOString().slice(0,10);
+          const msg = {sender:sender,text:a.text,ts:now.toISOString(),timestamp:Date.now()};
+          const dayKey = "chat:" + dateKey;
+          const existing = await env.KV.get(dayKey);
+          const msgs = existing ? JSON.parse(existing) : [];
+          msgs.push(msg);
+          await env.KV.put(dayKey, JSON.stringify(msgs));
+          const datesRaw = await env.KV.get("chat:dates");
+          const dates = datesRaw ? JSON.parse(datesRaw) : [];
+          if (!dates.includes(dateKey)) { dates.push(dateKey); dates.sort(); await env.KV.put("chat:dates", JSON.stringify(dates)); }
+          const recent = msgs.slice(-20);
+          r=JSON.stringify({ok:1,sender:sender,recent:recent.map(function(m){return {sender:m.sender,text:m.text,time:m.ts};})});
+        }
+        else if (tn === "chat_read") {
+          const date = a.date || new Date().toISOString().slice(0,10);
+          const limit = a.limit || 50;
+          const dayKey = "chat:" + date;
+          const existing = await env.KV.get(dayKey);
+          const msgs = existing ? JSON.parse(existing) : [];
+          const result = msgs.slice(-limit).map(function(m){
+            const d = new Date(m.ts || m.timestamp);
+            const h = d.getUTCHours()+8; const hh = h>=24?h-24:h;
+            const mm = String(d.getUTCMinutes()).padStart(2,"0");
+            return {sender:m.sender,text:m.text,time:String(hh).padStart(2,"0")+":"+mm};
+          });
+          r=JSON.stringify({date:date,count:result.length,messages:result});
+        }
+        else if (tn === "chat_dates") {
+          const dv = await env.KV.get("chat:dates");
+          r=JSON.stringify({dates:dv ? JSON.parse(dv) : []});
+        }
+        else if (tn === "chat_history") {
+          const limit = a.limit || 30;
+          const datesRaw = await env.KV.get("chat:dates");
+          const dates = datesRaw ? JSON.parse(datesRaw) : [];
+          let all = [];
+          for (let i = dates.length - 1; i >= 0 && all.length < limit; i--) {
+            const dayMsgs = await env.KV.get("chat:" + dates[i]);
+            if (dayMsgs) {
+              const parsed = JSON.parse(dayMsgs);
+              all = parsed.concat(all);
+            }
+          }
+          all = all.slice(-limit).map(function(m){
+            const d = new Date(m.ts || m.timestamp);
+            const h = d.getUTCHours()+8; const hh = h>=24?h-24:h;
+            const mm = String(d.getUTCMinutes()).padStart(2,"0");
+            const dd = (m.ts||"").slice(0,10);
+            return {sender:m.sender,text:m.text,date:dd,time:String(hh).padStart(2,"0")+":"+mm};
+          });
+          r=JSON.stringify({count:all.length,messages:all});
         }
         else {
           return new Response(JSON.stringify({jsonrpc:"2.0",id:id,error:{code:-32601,message:"Unknown: "+tn}}),{headers:h});
