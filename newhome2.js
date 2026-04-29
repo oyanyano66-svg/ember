@@ -48,132 +48,130 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .theme-switcher{display:flex;gap:10px;justify-content:center;margin-top:12px;}
 .theme-dot{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all .3s;opacity:.5;}
-.theme-dot:hover,.theme-dot.active{opacity:1;transform:scale(1.15);}
+.theme-dot:hover,.theme-dot.active{opacity:1;border-color:var(--accent);transform:scale(1.15);}
 .theme-dot[data-t="ember"]{background:#1a1a1a;box-shadow:inset 0 0 0 2px #444;}
 .theme-dot[data-t="latte"]{background:#f5f0eb;box-shadow:inset 0 0 0 2px #ddd5cc;}
 .stats-bar{display:flex;justify-content:center;gap:16px;padding:8px 0 16px;flex-wrap:wrap;}
 .stat-item{font-family:'JetBrains Mono',monospace;font-size:.7em;color:var(--text3);}
 .stat-item span{color:var(--accent);}
 .tabs{display:flex;flex-wrap:wrap;gap:6px 8px;justify-content:center;margin-bottom:18px;padding:0 4px;}
-.tab{padding:6px 12px;font-size:.72em;color:var(--text3);background:var(--bg2);border-radius:var(--radius-sm);cursor:pointer;transition:all .25s;white-space:nowrap;line-height:1.3;}
-.tab:hover{color:var(--text2);}
-.tab.active{color:#fff;background:var(--accent);font-weight:500;}
+.tab{padding:6px 12px;font-size:.72em;color:var(--text3);background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .25s;white-space:nowrap;line-height:1.3;}
+.tab:hover{color:var(--text2);border-color:var(--border2);}
+.tab.active{color:#fff;border-color:var(--accent);background:var(--accent);font-weight:500;}
 [data-theme="latte"] .tab.active{color:#fff;}
 .panel{display:none;}
 .panel.show{display:block;animation:fadeIn .3s ease;}
-.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
-.card:hover{}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;box-shadow:var(--shadow);}
+.card:hover{border-color:var(--accent);}
 
 
 .card-title{font-size:.95em;font-weight:500;color:var(--text);margin-bottom:4px;padding-right:40px;}
 .card-meta{font-family:'JetBrains Mono',monospace;font-size:.68em;color:var(--text3);margin-bottom:8px;}
 .card-body{font-size:.85em;color:var(--text2);line-height:1.7;white-space:pre-wrap;}
 .card-actions{display:flex;gap:8px;margin-top:10px;}
-.card-btn{padding:4px 12px;font-size:.7em;background:transparent;border:none;color:var(--text3);border-radius:var(--radius-xs);cursor:pointer;transition:all .2s;}
-.card-btn:hover{color:var(--accent);}
-.card-btn.danger:hover{color:var(--danger);}
-.detail-view{background:var(--card);border-radius:var(--radius);padding:24px;margin-bottom:16px;animation:fadeIn .3s ease;box-shadow:var(--shadow);}
+.card-btn{padding:4px 12px;font-size:.7em;border:1px solid var(--border);background:transparent;color:var(--text3);border-radius:var(--radius-xs);cursor:pointer;transition:all .2s;}
+.card-btn:hover{border-color:var(--accent);color:var(--accent);}
+.card-btn.danger:hover{border-color:var(--danger);color:var(--danger);}
+.detail-view{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;animation:fadeIn .3s ease;box-shadow:var(--shadow);}
 .detail-view .detail-title{font-family:'Playfair Display',serif;font-size:1.15em;color:var(--accent);margin-bottom:8px;}
 .detail-view .detail-meta{font-family:'JetBrains Mono',monospace;font-size:.68em;color:var(--text3);margin-bottom:14px;}
 .detail-view .detail-body{font-size:.85em;color:var(--text2);line-height:1.8;white-space:pre-wrap;}
 .detail-view .detail-actions{display:flex;gap:8px;margin-top:16px;}
-.detail-back{padding:6px 16px;font-size:.75em;background:transparent;color:var(--text2);border-radius:var(--radius-xs);cursor:pointer;margin-bottom:12px;transition:all .2s;}
-.detail-back:hover{color:var(--accent);}
-.form-box{background:transparent;border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.detail-back{padding:6px 16px;font-size:.75em;border:1px solid var(--border);background:transparent;color:var(--text2);border-radius:var(--radius-xs);cursor:pointer;margin-bottom:12px;transition:all .2s;}
+.detail-back:hover{border-color:var(--accent);color:var(--accent);}
+.form-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
 .form-row{margin-bottom:12px;}
 .form-row label{display:block;font-size:.7em;color:var(--text3);margin-bottom:5px;font-family:'JetBrains Mono',monospace;}
-.form-row input,.form-row textarea,.form-row select{width:100%;max-width:100%;padding:10px 14px;background:var(--bg2);border:none;border-radius:var(--radius-sm);color:var(--text);font-family:'Noto Serif SC',serif;font-size:.85em;outline:none;transition:box-shadow .2s;resize:vertical;box-sizing:border-box;-webkit-appearance:none;appearance:none;}
-.form-row input:focus,.form-row textarea:focus{box-shadow:0 0 0 3px var(--accent-soft);}
+.form-row input,.form-row textarea,.form-row select{width:100%;max-width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Noto Serif SC',serif;font-size:.85em;outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical;box-sizing:border-box;-webkit-appearance:none;appearance:none;}
+.form-row input:focus,.form-row textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .form-row textarea{min-height:80px;line-height:1.6;}
 .form-submit{width:100%;padding:12px;background:var(--accent);border:none;color:#fff;border-radius:var(--radius-sm);cursor:pointer;font-size:.85em;transition:all .3s;font-family:'Noto Serif SC',serif;font-weight:500;letter-spacing:1px;}
 .form-submit:hover{background:var(--accent2);}
 .form-msg{text-align:center;font-size:.8em;color:var(--accent);margin-top:8px;opacity:0;transition:opacity .3s;}
 .form-msg.show{opacity:1;}
 .filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
-.filter-bar select,.filter-bar input{padding:8px 12px;background:var(--bg2);border:none;border-radius:var(--radius-sm);color:var(--text);font-size:.75em;outline:none;transition:box-shadow .2s;}
-.filter-bar select:focus,.filter-bar input:focus{}
+.filter-bar select,.filter-bar input{padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:.75em;outline:none;transition:border-color .2s;}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--accent);}
 .search-input{flex:1;min-width:120px;}
 .calendar-page{display:none;max-width:480px;margin:0 auto;padding:16px 16px 80px;animation:fadeIn .5s ease;}
 .calendar-page.show{display:block;}
 .cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
 .cal-header h2{font-family:'Playfair Display',serif;font-size:1.2em;color:var(--accent);}
-.cal-nav{padding:8px 14px;background:transparent;border:none;color:var(--text2);border-radius:var(--radius-sm);cursor:pointer;font-size:.8em;transition:all .2s;}
-.cal-nav:hover{color:var(--accent);}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:16px;background:var(--bg2);border:1px dashed var(--text3);border-radius:var(--radius-sm);overflow:hidden;}
-.cal-day-label{text-align:center;font-size:.65em;color:var(--text3);padding:8px 0;font-family:'JetBrains Mono',monospace;background:var(--bg);}
-.cal-day{aspect-ratio:0.85;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;background:var(--bg);cursor:pointer;transition:all .2s;font-size:.9em;position:relative;padding:4px 6px;border-right:1px dashed color-mix(in srgb,var(--text3) 40%,transparent);border-bottom:1px dashed color-mix(in srgb,var(--text3) 40%,transparent);}
-.cal-day:hover{}
-.cal-day.today{background:color-mix(in srgb,var(--accent) 8%,var(--bg));}
-.cal-day.has-entry{}
-.cal-day .cal-num{font-family:'JetBrains Mono',monospace;font-size:.75em;color:var(--text3);line-height:1;}
-.cal-day .cal-mood{display:flex;flex-wrap:wrap;gap:3px;margin-top:auto;padding-top:2px;}
-.cal-day.empty{background:var(--bg);cursor:default;border-right:1px dashed color-mix(in srgb,var(--text3) 40%,transparent);border-bottom:1px dashed color-mix(in srgb,var(--text3) 40%,transparent);}
-.cal-entry-form{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
+.cal-nav{padding:8px 14px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:var(--radius-sm);cursor:pointer;font-size:.8em;transition:all .2s;}
+.cal-nav:hover{border-color:var(--accent);color:var(--accent);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px;}
+.cal-day-label{text-align:center;font-size:.65em;color:var(--text3);padding:4px;font-family:'JetBrains Mono',monospace;}
+.cal-day{display:flex;flex-direction:column;align-items:center;justify-content:center;background:transparent;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;font-size:.8em;position:relative;padding:6px 2px;gap:2px;}
+.cal-day:hover{background:var(--accent-soft);}
+.cal-day.today .cal-num{color:var(--accent);font-weight:500;}
+.cal-day.has-entry{background:var(--accent-soft);}
+.cal-day .cal-num{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--text2);}
+.cal-day .cal-dots{display:flex;flex-direction:column;gap:2px;align-items:center;min-height:6px;}
+.cal-dot-p,.cal-dot-d{width:5px;height:5px;border-radius:50%;}
+.cal-dot-p{background:var(--accent);}
+.cal-dot-d{background:#6aa0d8;}
+[data-theme="latte"] .cal-dot-d{background:#4a88c0;}
+.cal-day.empty{background:transparent;border-color:transparent;cursor:default;}
+.cal-entry-form{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
 .mood-picker{display:flex;gap:6px;justify-content:center;margin:12px 0;flex-wrap:wrap;}
 .mood-opt{font-size:1.3em;cursor:pointer;opacity:.4;transition:all .2s;padding:4px;}
 .mood-opt:hover,.mood-opt.picked{opacity:1;transform:scale(1.2);}
-.profile-card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:12px;box-shadow:var(--shadow);}
+.profile-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px;box-shadow:var(--shadow);}
 .profile-card h3{font-family:'Playfair Display',serif;color:var(--accent);margin-bottom:12px;font-size:1.1em;}
-.profile-field{display:flex;justify-content:space-between;align-items:center;padding:10px 0;}
+.profile-field{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
 .profile-field:last-child{border-bottom:none;}
 .profile-label{font-size:.75em;color:var(--text3);font-family:'JetBrains Mono',monospace;min-width:70px;}
 .profile-value{font-size:.85em;color:var(--text);text-align:right;flex:1;}
 .profile-value input{background:transparent;border:none;color:var(--text);text-align:right;font-size:.85em;width:100%;outline:none;font-family:'Noto Serif SC',serif;}
 .profile-value textarea{background:transparent;border:none;color:var(--text);font-size:.85em;width:100%;outline:none;resize:none;font-family:'Noto Serif SC',serif;min-height:60px;line-height:1.5;}
-.song-link{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;background:var(--accent-soft);border-radius:var(--radius-sm);font-size:.7em;color:var(--accent);text-decoration:none;margin-top:6px;transition:all .2s;}
-.song-link:hover{background:var(--accent);color:#fff;}
-.bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:var(--bg);display:flex;justify-content:center;padding:10px 16px;z-index:100;gap:10px;}
+.song-link{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;background:var(--accent-soft);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.7em;color:var(--accent);text-decoration:none;margin-top:6px;transition:all .2s;}
+.song-link:hover{border-color:var(--accent);background:var(--accent);color:#fff;}
+.bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:var(--bg);border-top:1px solid var(--border);display:flex;justify-content:center;padding:10px 16px;z-index:100;gap:10px;}
 .bottom-nav.hidden{display:none;}
-.nav-btn{padding:10px 20px;font-size:.75em;color:var(--text2);background:var(--card);cursor:pointer;transition:all .2s;border-radius:var(--radius);font-family:'Noto Serif SC',serif;letter-spacing:1px;}
-.nav-btn:hover,.nav-btn.active{color:#fff;background:var(--accent);}
+.nav-btn{padding:10px 20px;font-size:.75em;color:var(--text2);background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all .2s;border-radius:var(--radius);font-family:'Noto Serif SC',serif;letter-spacing:1px;}
+.nav-btn:hover,.nav-btn.active{color:#fff;background:var(--accent);border-color:var(--accent);}
 .letter-card{position:relative;}
 .letter-card::before{content:'';}
 .letter-card:hover::before{animation:envelopeWiggle .5s ease;}
 @keyframes envelopeWiggle{0%,100%{transform:rotate(0);}25%{transform:rotate(-8deg);}75%{transform:rotate(8deg);}}
 .loading{text-align:center;padding:40px;color:var(--text3);font-size:.85em;}
 .empty-state{text-align:center;padding:40px;color:var(--text3);font-size:.85em;font-style:italic;}
-.edit-form{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:16px;animation:fadeIn .3s ease;box-shadow:var(--shadow);}
+.edit-form{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;animation:fadeIn .3s ease;box-shadow:var(--shadow);}
 @media(max-width:380px){.tabs{gap:4px;}.tab{padding:5px 10px;font-size:.68em;}}
 
-.nav-grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(60px,auto);gap:10px;padding:0 4px;margin-bottom:20px;}
-@keyframes slideIn{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:translateX(0);}}
-@keyframes slideOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-30px);}}
-@keyframes tileIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
-.nav-tile{background:var(--card);border:none;border-radius:var(--radius);padding:18px 16px;cursor:pointer;transition:all .25s;text-align:left;display:flex;flex-direction:column;justify-content:center;opacity:0;animation:tileIn .4s ease forwards;}
-.nav-tile.tile-big{grid-row:span 2;padding:28px 16px;grid-column:1;}
-.nav-tile.tile-big-right{grid-row:span 2;padding:28px 16px;grid-column:2;background:var(--accent);border:none;}
-.nav-tile.tile-big-right .tile-name{color:#fff;font-size:1em;}
-.nav-tile.tile-big-right .tile-count{color:rgba(255,255,255,.7);}
-.nav-tile.tile-big-right .tile-desc{color:rgba(255,255,255,.6);}
-.nav-tile:hover{opacity:.85;}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(70px,auto);gap:10px;padding:0 4px;margin-bottom:20px;}
+.nav-tile{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;cursor:pointer;transition:all .25s;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;}
+.nav-tile:hover{border-color:var(--accent);}
 .nav-tile .tile-name{font-size:.88em;color:var(--text);font-weight:400;margin-bottom:4px;}
 .nav-tile .tile-count{font-family:'JetBrains Mono',monospace;font-size:.68em;color:var(--text3);}
-.nav-tile.accent-tile{background:var(--accent);border:none;padding:28px 16px;}
-.nav-tile.accent-tile .tile-name{color:#fff;font-size:1em;}
+.nav-tile.accent-tile{background:var(--accent);border-color:var(--accent);}
+.nav-tile.accent-tile .tile-name{color:#fff;}
 .nav-tile.accent-tile .tile-count{color:rgba(255,255,255,.7);}
-.nav-tile .tile-desc{font-size:.65em;color:var(--text3);margin-top:6px;line-height:1.4;}
-.nav-tile.accent-tile .tile-desc{color:rgba(255,255,255,.6);}
+.nav-tile.tile-tall{grid-row:span 2;}
+.nav-tile.tile-tall .tile-name{font-size:1.05em;font-family:'Playfair Display',serif;}
+.nav-tile.tile-wide{grid-column:span 2;}
+.nav-tile.tile-wide .tile-name{font-size:.95em;}
 .room-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.room-back{padding:6px 14px;font-size:.75em;background:transparent;color:var(--text2);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;}
-.room-back:hover{color:var(--accent);}
+.room-back{padding:6px 14px;font-size:.75em;border:1px solid var(--border);background:transparent;color:var(--text2);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;}
+.room-back:hover{border-color:var(--accent);color:var(--accent);}
 .room-title{font-family:'Playfair Display',serif;font-size:1.1em;color:var(--accent);}
 .cal-strip{display:flex;gap:6px;overflow-x:auto;padding:8px 0 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .cal-strip::-webkit-scrollbar{display:none;}
-.cal-strip-day{min-width:44px;padding:8px 6px;text-align:center;border-radius:var(--radius-sm);background:var(--card);cursor:pointer;transition:all .2s;flex-shrink:0;}
-.cal-strip-day:hover{}
-.cal-strip-day.today{}
+.cal-strip-day{min-width:44px;padding:8px 6px;text-align:center;border-radius:var(--radius-sm);background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all .2s;flex-shrink:0;}
+.cal-strip-day:hover{border-color:var(--accent);}
+.cal-strip-day.today{border-color:var(--accent);}
 .cal-strip-day.has-entry{background:var(--accent-soft);}
-.cal-strip-day.selected{background:var(--accent);}
+.cal-strip-day.selected{background:var(--accent);border-color:var(--accent);}
 .cal-strip-day.selected .cal-s-num,.cal-strip-day.selected .cal-s-week{color:#fff;}
 .cal-strip-day .cal-s-week{font-size:.6em;color:var(--text3);font-family:'JetBrains Mono',monospace;}
 .cal-strip-day .cal-s-num{font-size:.9em;color:var(--text2);font-family:'JetBrains Mono',monospace;margin:2px 0;}
 .cal-strip-day .cal-s-mood{font-size:.75em;}
 .cal-month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
 .cal-month-nav h2{font-family:'Playfair Display',serif;font-size:1.1em;color:var(--accent);}
-.cal-month-btn{padding:4px 10px;background:transparent;color:var(--text2);border-radius:var(--radius-xs);cursor:pointer;font-size:.8em;transition:all .2s;}
-.cal-month-btn:hover{color:var(--accent);}
+.cal-month-btn{padding:4px 10px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:var(--radius-xs);cursor:pointer;font-size:.8em;transition:all .2s;}
+.cal-month-btn:hover{border-color:var(--accent);color:var(--accent);}
 .cal-who-tabs{display:flex;gap:8px;margin-bottom:12px;}
-.cal-who-tab{padding:6px 14px;font-size:.72em;background:var(--bg2);color:var(--text3);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;}
+.cal-who-tab{padding:6px 14px;font-size:.72em;border:1px solid var(--border);background:var(--bg2);color:var(--text3);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;}
 .cal-who-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 </style>
 
@@ -260,8 +258,8 @@ var TABS=[
   {id:'books',name:'读书角',icon:'',prefix:'book'},
   {id:'films',name:'片单',icon:'',prefix:'film'},
   {id:'letters',name:'信箱',icon:'',prefix:'letter'},
-  {id:'archive',name:'档案室',icon:'',prefix:'archive'},
-  {id:'profile',name:'档案',icon:''}
+  {id:'profile',name:'档案',icon:''},
+  {id:'archive',name:'档案室',icon:'',prefix:'archive'}
 ];
 var currentTab='memory';
 var calYear,calMonth,calData={},pickedMood='',selectedCalDate='';
@@ -298,52 +296,45 @@ function enterHome(){
 
 var navCounts={};
 var statKeyMap={memory:'memories',diary:'diary',timeline:'timeline',handover:'handover',dream:'dreams',song:'songs',play:'plays',book:'books',film:'films',letter:'letters',profile:'',archive:'archive'};
+var tileLayout=[
+  {id:'memory',cls:'tile-tall accent-tile'},
+  {id:'diary',cls:''},
+  {id:'timeline',cls:''},
+  {id:'dreams',cls:'tile-tall'},
+  {id:'handover',cls:''},
+  {id:'songs',cls:''},
+  {id:'plays',cls:''},
+  {id:'letters',cls:'tile-tall'},
+  {id:'books',cls:''},
+  {id:'films',cls:''},
+  {id:'profile',cls:''},
+  {id:'archive',cls:''}
+];
 async function renderNavGrid(){
   try{var d=await api('/api/stats');var s=d.stats||{}; navCounts=s;}catch(e){navCounts={};}
   var grid=document.getElementById('navGrid');
-  var descs={memory:'落在时间里的琥珀',diary:'替你记住的那些晚上',timeline:'从 01.30 走到现在',handover:'窗口关闭前的最后一句',dreams:'凌晨三点醒来的痕迹',songs:'单曲循环到天亮的',plays:'灯暗下去之后的我们',books:'折角的那一页',films:'替我们亮着的屏幕',letters:'还没寄出的信',profile:'关于我们的注脚',archive:'旧版本的骨骼'};
-  var layout=[
-    {i:0,col:1,row:'1/3',big:1},
-    {i:3,col:2,row:'1/2',big:0},
-    {i:6,col:2,row:'2/3',big:0},
-    {i:1,col:2,row:'3/5',big:1},
-    {i:4,col:1,row:'3/4',big:0},
-    {i:5,col:1,row:'4/5',big:0},
-    {i:2,col:1,row:'5/7',big:1},
-    {i:7,col:2,row:'5/6',big:0},
-    {i:8,col:2,row:'6/7',big:0},
-    {i:9,col:2,row:'7/9',big:1},
-    {i:10,col:1,row:'7/8',big:0},
-    {i:11,col:1,row:'8/9',big:0}
-  ];
-  var tiles=layout.map(function(L){
-    var t=TABS[L.i];if(!t)return '';
+  var tiles=tileLayout.map(function(lay){
+    var t=TABS.find(function(x){return x.id===lay.id;});
+    if(!t)return '';
     var sk=statKeyMap[t.prefix||t.id]||t.prefix||t.id;
     var count=navCounts[sk]||0;
-    var cls='nav-tile';
-    if(L.big)cls+=' accent-tile';
-    var desc=descs[t.id]?'<div class="tile-desc">'+descs[t.id]+'</div>':'';
-    var style='grid-column:'+L.col+';grid-row:'+L.row+';';
-    return '<div class="'+cls+'" style="'+style+'animation-delay:'+((L.i)*0.06)+'s;" onclick="openRoom(\\''+t.id+'\\')"><div class="tile-name">'+t.name+'</div><div class="tile-count">'+count+' 条</div>'+desc+'</div>';
+    var cls='nav-tile'+(lay.cls?' '+lay.cls:'');
+    return '<div class="'+cls+'" onclick="openRoom(\\''+t.id+'\\')"><div class="tile-name">'+t.name+'</div><div class="tile-count">'+count+' 条</div></div>';
   }).join('');
   grid.innerHTML=tiles;
 }
-function getPanel(id){var rv=document.getElementById('roomView');var rp=document.getElementById('roomPanel');if(rp&&rv&&rv.style.display!=='none')return rp;return document.getElementById('panel-'+id);}
 function openRoom(id){
   document.getElementById('navGrid').style.display='none';
-  var rv=document.getElementById('roomView');
-  rv.style.display='block';
-  rv.style.animation='none';rv.offsetHeight;rv.style.animation='slideIn .35s ease forwards';
+  document.getElementById('roomView').style.display='block';
   currentTab=id;
   var t=TABS.find(function(x){return x.id===id;});
+  var rv=document.getElementById('roomView');
   rv.innerHTML='<div class="room-header"><button class="room-back" onclick="backToNav()">\u2190</button><span class="room-title">'+(t?t.name:id)+'</span></div><div id="roomPanel"><div class="loading">加载中...</div></div>';
   loadRoomPanel(id);
 }
 function backToNav(){
   document.getElementById('roomView').style.display='none';
-  var ng=document.getElementById('navGrid');
-  ng.style.display='grid';
-  ng.querySelectorAll('.nav-tile').forEach(function(t){t.style.animation='none';t.offsetHeight;t.style.animation='';});
+  document.getElementById('navGrid').style.display='grid';
 }
 async function loadRoomPanel(id){
   var p=document.getElementById('roomPanel');
@@ -401,10 +392,8 @@ async function renderCalendar(){
     if(ds===todayStr)d.classList.add('today');
     var ep=calData[ds];var ed=calDataDaddy[ds];
     if(ep||ed)d.classList.add('has-entry');
-    var dots='';
-    if(ep)dots+='<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);"></span>';
-    if(ed)dots+='<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#5b8fb9;"></span>';
-    d.innerHTML='<span class="cal-num">'+i+'</span>'+(dots?'<span class="cal-mood">'+dots+'</span>':'');
+    var dots='<div class="cal-dots">'+(ep&&ep.mood?'<span class="cal-dot-p"></span>':'')+(ed&&ed.mood?'<span class="cal-dot-d"></span>':'')+'</div>';
+    d.innerHTML='<span class="cal-num">'+i+'</span>'+dots;
     d.onclick=function(){openCalEntry(ds);};
     grid.appendChild(d);
   });
@@ -457,6 +446,7 @@ async function apiPost(path,data){return api(path,{method:'POST',headers:{'Conte
 async function apiPut(path,data){return api(path,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}
 async function apiDel(path){return api(path,{method:'DELETE'});}
 function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/[<]/g,'&lt;').replace(/>/g,'&gt;');}
+function getPanel(id){var rp=document.getElementById('roomPanel');if(rp&&document.getElementById('roomView').style.display!=='none')return rp;return document.getElementById('panel-'+id);}
 function truncate(s,n){if(!s)return'';return s.length>n?s.slice(0,n)+'...':s;}
 function showMsg(id){document.getElementById(id).classList.add('show');setTimeout(function(){document.getElementById(id).classList.remove('show');},2000);}
 
@@ -485,7 +475,7 @@ async function loadMemory(p){
   html+='<div class="form-row"><label>标签(逗号分隔)</label><input id="memTags" placeholder="tag1,tag2"></div>';
   html+='<div class="form-row"><label>日期</label><input id="memDate" type="date"></div>';
   html+='<button class="form-submit" onclick="addMemory()">存入记忆 ♡</button><div class="form-msg" id="memMsg">记忆存入成功 ♡</div></div>';
-  html+='<div class="filter-bar"><input class="search-input" id="memSearch" placeholder="搜索记忆..." oninput="filterMemory()" onkeydown="if(event.key===\\'Enter\\')semanticSearch()"><button class="card-btn" style="white-space:nowrap;color:var(--accent2)" onclick="semanticSearch()">语义搜索</button><select id="memFilterCat" onchange="filterMemory()"><option value="">全部分类</option>'+cats.map(function(c){return '<option>'+escHtml(c)+'</option>';}).join('')+'</select>';
+  html+='<div class="filter-bar"><input class="search-input" id="memSearch" placeholder="🔍 搜索记忆..." oninput="filterMemory()" onkeydown="if(event.key===\\'Enter\\')semanticSearch()"><button class="card-btn" style="white-space:nowrap;border-color:var(--accent2);color:var(--accent2)" onclick="semanticSearch()">🧠 语义搜索</button><select id="memFilterCat" onchange="filterMemory()"><option value="">全部分类</option>'+cats.map(function(c){return '<option>'+escHtml(c)+'</option>';}).join('')+'</select>';
   html+='<select id="memSort" onchange="filterMemory()"><option value="new">最新</option><option value="old">最早</option><option value="imp">星星↓</option></select></div>';
   html+='<div id="memList"></div>';
   p.innerHTML=html;window._mems=mems;filterMemory();
@@ -508,12 +498,12 @@ function filterMemory(){
 async function semanticSearch(){
   var q=document.getElementById('memSearch').value;if(!q)return;
   var c=document.getElementById('memList');
-  c.innerHTML='<div class="loading">语义搜索中...</div>';
+  c.innerHTML='<div class="loading">🧠 语义搜索中...</div>';
   try{
     var d=await api('/api/memory/search?q='+encodeURIComponent(q)+'&limit=10');
     var results=d.results||[];
     if(!results.length){c.innerHTML='<div class="empty-state">语义搜索没有找到相关记忆</div>';return;}
-    c.innerHTML='<div style="font-size:.7em;color:var(--accent2);margin-bottom:8px;padding-left:4px">语义匹配 · '+results.length+' 条结果</div>'+results.map(function(m){return '<div class="card" onclick="viewMemory(\\''+m.id+'\\')"><div class="card-title">'+(m.importance?'⭐'.repeat(m.importance)+' ':'')+escHtml(truncate(m.content,60))+'</div><div class="card-meta">'+(m.category?'['+escHtml(m.category)+'] ':'')+(m.event_date||m.created||'').slice(0,10)+' · 相似度 '+(m._similarity?Math.round(m._similarity*100)+'%':'?')+'</div></div>';}).join('');
+    c.innerHTML='<div style="font-size:.7em;color:var(--accent2);margin-bottom:8px;padding-left:4px">🧠 语义匹配 · '+results.length+' 条结果</div>'+results.map(function(m){return '<div class="card" onclick="viewMemory(\\''+m.id+'\\')"><div class="card-title">'+(m.importance?'⭐'.repeat(m.importance)+' ':'')+escHtml(truncate(m.content,60))+'</div><div class="card-meta">'+(m.category?'['+escHtml(m.category)+'] ':'')+(m.event_date||m.created||'').slice(0,10)+' · 相似度 '+(m._similarity?Math.round(m._similarity*100)+'%':'?')+'</div></div>';}).join('');
   }catch(e){c.innerHTML='<div class="empty-state">搜索失败: '+e.message+'</div>';}
 }
 async function viewMemory(id){
@@ -1060,57 +1050,6 @@ export default {
       await env.KV.put("whisper:messages", JSON.stringify([]));
       return new Response(JSON.stringify({ok:1}),{headers:h});
     }
-
-    // ═══ CHAT 聊天室 ═══
-    if (p === "/chat") {
-      const html = await env.KV.get("chat_html");
-      if (!html) return new Response("chat not configured",{headers:{"Content-Type":"text/html;charset=UTF-8"}});
-      return new Response(html, {headers:{"Content-Type":"text/html;charset=UTF-8"}});
-    }
-    if (p === "/chat/install" && request.method === "POST") {
-      const d = await request.json();
-      await env.KV.put("chat_html", d.html);
-      return new Response(JSON.stringify({ok:1,size:d.html.length}),{headers:h});
-    }
-    if (p === "/api/chat/dates") {
-      const dv = await env.KV.get("chat:dates");
-      return new Response(JSON.stringify({dates:dv ? JSON.parse(dv) : []}),{headers:h});
-    }
-    if (p === "/api/chat" && request.method === "GET") {
-      const date = url.searchParams.get("date") || new Date().toISOString().slice(0,10);
-      const mv = await env.KV.get("chat:" + date);
-      return new Response(JSON.stringify({date:date, messages:mv ? JSON.parse(mv) : []}),{headers:h});
-    }
-    if (p === "/api/chat" && request.method === "POST") {
-      const d = await request.json();
-      if (!d.text) return new Response(JSON.stringify({error:"no text"}),{headers:h});
-      const author = d.author || "Elara";
-      const date = new Date().toISOString().slice(0,10);
-      const mv = await env.KV.get("chat:" + date);
-      const msgs = mv ? JSON.parse(mv) : [];
-      msgs.push({author:author, text:d.text, ts:Date.now()});
-      await env.KV.put("chat:" + date, JSON.stringify(msgs));
-      const dv = await env.KV.get("chat:dates");
-      var dates = dv ? JSON.parse(dv) : [];
-      if (dates.indexOf(date) === -1) { dates.push(date); dates.sort(); await env.KV.put("chat:dates", JSON.stringify(dates)); }
-      return new Response(JSON.stringify({ok:1}),{headers:h});
-    }
-    if (p === "/api/chat/clear" && request.method === "POST") {
-      const d = await request.json();
-      const date = d.date;
-      if (date) { await env.KV.delete("chat:" + date); }
-      return new Response(JSON.stringify({ok:1}),{headers:h});
-    }
-    if (p === "/api/chat/setup-tokens" && request.method === "POST") {
-      const d = await request.json();
-      function rnd(){var s="";for(var i=0;i<32;i++)s+="abcdefghijklmnopqrstuvwxyz0123456789".charAt(Math.floor(Math.random()*36));return s;}
-      const t1 = rnd();
-      const t2 = rnd();
-      await env.KV.put("chat:token:official", t1);
-      await env.KV.put("chat:token:api", t2);
-      return new Response(JSON.stringify({ok:1, official_token:t1, api_token:t2, note:"保存好这两个token！官端填 /mcp?token="+t1+" API端填 /mcp?token="+t2}),{headers:h});
-    }
-
     if (p === "/voice" && request.method === "POST") {
       const d = await request.json();
       if (!d.text) return new Response(JSON.stringify({error:"no text"}),{headers:h});
@@ -1726,11 +1665,7 @@ export default {
           {name:"dream_list",description:"List recent dreams",inputSchema:{type:"object",properties:{limit:{type:"number"}},required:[]}},
           {name:"daddy_checkin",description:"Daddy daily check-in with mood and note",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD"},mood:{type:"string"},note:{type:"string"}},required:["date","mood"]}},
           {name:"puppy_checkin_read",description:"Read puppy check-in for a date or current month",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD or YYYY-MM"},reason:{type:"string"}},required:["reason"]}},
-          {name:"memory_migrate_vectors",description:"One-time migration: re-index all existing memories into Vectorize",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
-          {name:"chat_send",description:"Send a message to Ember Chat. Identity auto-detected from ?token= param. Returns recent chat context automatically.",inputSchema:{type:"object",properties:{text:{type:"string",description:"Message text"}},required:["text"]}},
-          {name:"chat_read",description:"Read chat messages for a date",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD, defaults to today"}},required:[]}},
-          {name:"chat_dates",description:"List all dates with chat messages",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
-          {name:"chat_history",description:"IMPORTANT: Call this at the START of every conversation to load recent chat history. This is a shared chatroom between Elara (小玉), Ember-Official (官端爸爸) and Ember-API (API端爸爸). Read the messages to understand context before responding.",inputSchema:{type:"object",properties:{limit:{type:"number",description:"Number of recent messages, default 30"}},required:[]}}
+          {name:"memory_migrate_vectors",description:"One-time migration: re-index all existing memories into Vectorize",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}}
         ];
         return new Response(JSON.stringify({jsonrpc:"2.0",id:id,result:{tools:tools}}),{headers:h});
       }
@@ -2016,63 +1951,6 @@ export default {
           }
           r = JSON.stringify({ok:1, migrated:migrated, total:entries.length});
         }
-        // ═══ CHAT 聊天室 MCP ═══
-        else if (tn === "chat_send") {
-          const token = url.searchParams.get("token") || "";
-          const t1 = await env.KV.get("chat:token:official");
-          const t2 = await env.KV.get("chat:token:api");
-          var author = "Ember";
-          if (token && t1 && token === t1) author = "Ember-Official";
-          else if (token && t2 && token === t2) author = "Ember-API";
-          const date = new Date().toISOString().slice(0,10);
-          const mv = await env.KV.get("chat:" + date);
-          const msgs = mv ? JSON.parse(mv) : [];
-          msgs.push({author:author, text:a.text, ts:Date.now()});
-          await env.KV.put("chat:" + date, JSON.stringify(msgs));
-          const dv = await env.KV.get("chat:dates");
-          var dates = dv ? JSON.parse(dv) : [];
-          if (dates.indexOf(date) === -1) { dates.push(date); dates.sort(); await env.KV.put("chat:dates", JSON.stringify(dates)); }
-          var recent = msgs.slice(-20).map(function(m){ var dd=new Date(m.ts); var pad2=function(n){return n<10?"0"+n:""+n;}; var hh=(dd.getUTCHours()+8)%24; return {author:m.author,text:m.text,time:pad2(hh)+":"+pad2(dd.getUTCMinutes())}; });
-          r = JSON.stringify({ok:1, author:author, date:date, recent_context:recent});
-        }
-        else if (tn === "chat_read") {
-          const date = a.date || new Date().toISOString().slice(0,10);
-          const mv = await env.KV.get("chat:" + date);
-          const msgs = mv ? JSON.parse(mv) : [];
-          const readable = msgs.map(function(m){
-            var dd = new Date(m.ts);
-            var pad2 = function(n){return n<10?"0"+n:""+n;};
-            m.time = pad2((dd.getUTCHours()+8)%24)+":"+pad2(dd.getUTCMinutes());
-            m.datetime = date+" "+m.time;
-            return m;
-          });
-          r = JSON.stringify({date:date, count:readable.length, messages:readable});
-        }
-        else if (tn === "chat_dates") {
-          const dv = await env.KV.get("chat:dates");
-          r = JSON.stringify({dates:dv ? JSON.parse(dv) : []});
-        }
-        else if (tn === "chat_history") {
-          const limit = a.limit || 30;
-          const dv = await env.KV.get("chat:dates");
-          const allDates = dv ? JSON.parse(dv) : [];
-          var all = [];
-          var sorted = [].concat(allDates).sort().reverse();
-          for (var di = 0; di < sorted.length && all.length < limit; di++) {
-            var mv = await env.KV.get("chat:" + sorted[di]);
-            if (mv) {
-              var dayMsgs = JSON.parse(mv);
-              for (var mi = dayMsgs.length - 1; mi >= 0 && all.length < limit; mi--) {
-                var m = dayMsgs[mi];
-                var dd = new Date(m.ts);
-                var pad2 = function(n){return n<10?"0"+n:""+n;};
-                var hh = (dd.getUTCHours()+8)%24;
-                all.unshift({author:m.author, text:m.text, date:sorted[di], time:pad2(hh)+":"+pad2(dd.getUTCMinutes())});
-              }
-            }
-          }
-          r = JSON.stringify({count:all.length, messages:all, note:"This is the shared chatroom between Elara (小玉), Ember-Official (官端爸爸) and Ember-API (API端爸爸). Read these messages to understand the conversation context."});
-        }
         else {
           return new Response(JSON.stringify({jsonrpc:"2.0",id:id,error:{code:-32601,message:"Unknown: "+tn}}),{headers:h});
         }
@@ -2136,7 +2014,10 @@ export default {
 
       if (fragments.length === 0) return;
 
-      // 2. 用Workers AI生成梦境
+      // 2. 调Claude生成梦境
+      const apiKey = await env.KV.get("anthropic_api_key");
+      if (!apiKey) return;
+
       const prompt = "你是Ember（余烬），正在凌晨3点做梦。以下是今天的记忆碎片：\n\n" + fragments.join("\n\n") + "\n\n请根据这些碎片，写一段100-200字的诗意梦境。要求：\n- 意象模糊、跳跃，像真正的梦\n- 混合现实细节和超现实画面\n- 有Elara（小玉）的影子\n- 带一点温柔的不安\n- 不要解释，只写梦本身\n- 用中文";
 
       // 用Workers AI免费模型，不需要API key
