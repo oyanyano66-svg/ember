@@ -1,662 +1,190 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ember Home | Whisper</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      color-scheme: light;
-      --bg: #f7f2ff;
-      --bg-dot: rgba(126, 87, 194, 0.17);
-      --surface: rgba(255, 252, 255, 0.92);
-      --surface-strong: #ffffff;
-      --text: #2b2138;
-      --muted: #78698e;
-      --primary: #8d6be8;
-      --primary-strong: #6f4bc8;
-      --primary-soft: #e9ddff;
-      --accent: #d58cff;
-      --line: #cdbcf0;
-      --danger: #b94b80;
-      --shadow: rgba(86, 57, 128, 0.16);
-      --pixel: #4c3476;
-      --radius: 8px;
-    }
-
-    [data-theme="dark"] {
-      color-scheme: dark;
-      --bg: #171221;
-      --bg-dot: rgba(200, 166, 255, 0.16);
-      --surface: rgba(35, 27, 49, 0.92);
-      --surface-strong: #271f37;
-      --text: #f2eaff;
-      --muted: #baa9d3;
-      --primary: #b89aff;
-      --primary-strong: #d6c5ff;
-      --primary-soft: #3a2e55;
-      --accent: #f0a7ff;
-      --line: #57466f;
-      --danger: #ff9bc7;
-      --shadow: rgba(0, 0, 0, 0.28);
-      --pixel: #d8c6ff;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "DotGothic16", system-ui, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 1px 1px, var(--bg-dot) 1px, transparent 1.5px) 0 0 / 16px 16px,
-        linear-gradient(135deg, var(--bg), var(--primary-soft));
-      letter-spacing: 0;
-    }
-
-    button,
-    textarea {
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
-
-    .shell {
-      width: min(1180px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 24px 0;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      min-height: 64px;
-      padding: 12px 14px;
-      border: 2px solid var(--pixel);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: 6px 6px 0 var(--shadow);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .mark {
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-      width: 38px;
-      height: 38px;
-      color: #fff;
-      background: var(--primary);
-      border: 2px solid var(--pixel);
-      box-shadow: 3px 3px 0 var(--line);
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: clamp(1.25rem, 2vw, 1.75rem);
-      line-height: 1;
-    }
-
-    .brand span {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.2;
-    }
-
-    .actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .icon-btn,
-    .text-btn {
-      min-height: 40px;
-      border: 2px solid var(--pixel);
-      color: var(--text);
-      background: var(--surface-strong);
-      box-shadow: 3px 3px 0 var(--line);
-      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
-    }
-
-    .icon-btn {
-      display: grid;
-      place-items: center;
-      width: 42px;
-    }
-
-    .text-btn {
-      padding: 0 14px;
-    }
-
-    .icon-btn:hover,
-    .text-btn:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 4px 4px 0 var(--line);
-      background: var(--primary-soft);
-    }
-
-    .text-btn.primary {
-      color: #fff;
-      background: var(--primary);
-    }
-
-    [data-theme="dark"] .text-btn.primary {
-      color: #1d1628;
-      background: var(--primary-strong);
-    }
-
-    .dashboard {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 340px;
-      gap: 18px;
-      margin-top: 18px;
-      align-items: start;
-    }
-
-    .panel {
-      border: 2px solid var(--pixel);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: 6px 6px 0 var(--shadow);
-      overflow: hidden;
-    }
-
-    .panel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      border-bottom: 2px solid var(--line);
-      background: linear-gradient(90deg, var(--primary-soft), transparent);
-    }
-
-    .panel-head h2 {
-      margin: 0;
-      font-size: 1rem;
-      line-height: 1.1;
-    }
-
-    .counter,
-    .status {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.2;
-    }
-
-    .messages {
-      display: grid;
-      gap: 12px;
-      min-height: 430px;
-      max-height: calc(100vh - 220px);
-      padding: 16px;
-      overflow: auto;
-    }
-
-    .empty {
-      display: grid;
-      place-items: center;
-      min-height: 260px;
-      color: var(--muted);
-      text-align: center;
-      border: 2px dashed var(--line);
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .message {
-      display: grid;
-      gap: 8px;
-      padding: 12px;
-      border: 2px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface-strong);
-    }
-
-    .message-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 0.84rem;
-    }
-
-    .message-text {
-      margin: 0;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      line-height: 1.65;
-    }
-
-    .message-tools {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .mini-btn {
-      min-width: 36px;
-      min-height: 34px;
-      border: 2px solid var(--line);
-      color: var(--primary-strong);
-      background: transparent;
-    }
-
-    .mini-btn:hover {
-      background: var(--primary-soft);
-    }
-
-    .composer {
-      display: grid;
-      gap: 14px;
-      padding: 16px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 190px;
-      resize: vertical;
-      padding: 12px;
-      border: 2px solid var(--pixel);
-      border-radius: var(--radius);
-      outline: none;
-      color: var(--text);
-      background: var(--surface-strong);
-      line-height: 1.6;
-    }
-
-    textarea:focus {
-      box-shadow: 0 0 0 4px var(--primary-soft);
-    }
-
-    .meter {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 0.86rem;
-    }
-
-    .composer-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .toast {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 20;
-      max-width: min(360px, calc(100vw - 36px));
-      padding: 12px 14px;
-      border: 2px solid var(--pixel);
-      border-radius: var(--radius);
-      color: var(--text);
-      background: var(--surface-strong);
-      box-shadow: 5px 5px 0 var(--shadow);
-      opacity: 0;
-      transform: translateY(12px);
-      pointer-events: none;
-      transition: opacity 160ms ease, transform 160ms ease;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    @media (max-width: 860px) {
-      .dashboard {
-        grid-template-columns: 1fr;
-      }
-
-      .messages {
-        max-height: none;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .shell {
-        width: min(100% - 20px, 1180px);
-        padding: 10px 0 16px;
-      }
-
-      .topbar,
-      .panel {
-        box-shadow: 4px 4px 0 var(--shadow);
-      }
-
-      .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .actions {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .composer-actions {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Ember Home | Whisper</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f7f2ff;--bg-dot:rgba(126,87,194,.17);
+  --surface:rgba(255,252,255,.92);--surface-strong:#fff;
+  --text:#2b2138;--muted:#78698e;
+  --primary:#8d6be8;--primary-strong:#6f4bc8;--primary-soft:#e9ddff;
+  --accent:#d58cff;--line:#cdbcf0;
+  --shadow:rgba(86,57,128,.16);--pixel:#4c3476;
+  --bubble-mine:#e9ddff;--bubble-other:#fff;
+  --radius:8px;
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#171221;--bg-dot:rgba(200,166,255,.16);
+  --surface:rgba(35,27,49,.92);--surface-strong:#271f37;
+  --text:#f2eaff;--muted:#baa9d3;
+  --primary:#b89aff;--primary-strong:#d6c5ff;--primary-soft:#3a2e55;
+  --accent:#f0a7ff;--line:#57466f;
+  --shadow:rgba(0,0,0,.28);--pixel:#d8c6ff;
+  --bubble-mine:#3a2e55;--bubble-other:#271f37;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:"DotGothic16",system-ui,sans-serif;
+  color:var(--text);
+  background:radial-gradient(circle at 1px 1px,var(--bg-dot) 1px,transparent 1.5px) 0 0/16px 16px,
+    linear-gradient(135deg,var(--bg),var(--primary-soft));
+  display:flex;flex-direction:column;
+}
+</style>
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="mark" aria-hidden="true">◆</div>
-        <div>
-          <h1>Ember Home</h1>
-          <span>Whisper Board</span>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="icon-btn" id="themeToggle" type="button" title="切换明暗色" aria-label="切换明暗色">◐</button>
-        <button class="icon-btn" id="refreshBtn" type="button" title="刷新悄悄话" aria-label="刷新悄悄话">↻</button>
-        <button class="text-btn" id="clearBtn" type="button">清空</button>
-      </div>
-    </header>
+<header style="flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:2px solid var(--pixel);background:var(--surface);box-shadow:0 2px 0 var(--shadow)">
+  <div style="display:flex;align-items:center;gap:10px">
+    <a href="/dashboard" style="text-decoration:none;color:var(--primary);font-size:1.2rem" title="返回">←</a>
+    <div style="width:32px;height:32px;background:var(--primary);border:2px solid var(--pixel);display:grid;place-items:center;color:#fff;font-size:.8rem">◆</div>
+    <div>
+      <div style="font-size:1rem;line-height:1">Whisper</div>
+      <div style="font-size:.75rem;color:var(--muted)">悄悄话</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button id="themeBtn" style="width:36px;height:36px;border:2px solid var(--pixel);background:var(--surface-strong);color:var(--text);cursor:pointer;font:inherit" title="切换主题">◐</button>
+    <button id="clearBtn" style="height:36px;padding:0 12px;border:2px solid var(--pixel);background:var(--surface-strong);color:var(--muted);cursor:pointer;font:inherit;font-size:.8rem">清空</button>
+  </div>
+</header>
 
-    <section class="dashboard" aria-label="悄悄话面板">
-      <section class="panel">
-        <div class="panel-head">
-          <h2>悄悄话</h2>
-          <span class="counter" id="messageCount">0 条</span>
-        </div>
-        <div class="messages" id="messages" aria-live="polite">
-          <div class="empty">正在读取...</div>
-        </div>
-      </section>
+<div id="messages" style="flex:1;overflow-y:auto;padding:16px 12px;display:flex;flex-direction:column;gap:8px">
+  <div style="text-align:center;color:var(--muted);padding:40px 0">加载中...</div>
+</div>
 
-      <aside class="panel">
-        <div class="panel-head">
-          <h2>发送</h2>
-          <span class="status" id="status">待机</span>
-        </div>
-        <form class="composer" id="composer">
-          <label class="sr-only" for="textInput">悄悄话内容</label>
-          <textarea id="textInput" maxlength="500" placeholder="把今天想轻轻说的话放在这里..."></textarea>
-          <div class="meter">
-            <span id="charCount">0 / 500</span>
-            <span>lavender mode</span>
-          </div>
-          <div class="composer-actions">
-            <button class="text-btn" id="voiceBtn" type="button">试听</button>
-            <button class="text-btn primary" id="sendBtn" type="submit">发送</button>
-          </div>
-        </form>
-      </aside>
-    </section>
-  </main>
+<div style="flex:0 0 auto;padding:8px 12px 12px;border-top:2px solid var(--line);background:var(--surface)">
+  <div style="display:flex;gap:8px;align-items:flex-end">
+    <textarea id="input" rows="1" maxlength="500" placeholder="说点悄悄话..." style="flex:1;padding:10px 12px;border:2px solid var(--pixel);border-radius:var(--radius);background:var(--surface-strong);color:var(--text);font:inherit;font-size:16px;line-height:1.5;resize:none;outline:none;max-height:120px;overflow-y:auto"></textarea>
+    <button id="sendBtn" style="flex:0 0 auto;width:44px;height:44px;border:2px solid var(--pixel);border-radius:var(--radius);background:var(--primary);color:#fff;cursor:pointer;font:inherit;font-size:1.1rem;box-shadow:3px 3px 0 var(--line)">▶</button>
+  </div>
+</div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <audio id="player" preload="none"></audio>
+<audio id="player" preload="none"></audio>
+<div id="toast" style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);padding:8px 16px;border:2px solid var(--pixel);border-radius:var(--radius);background:var(--surface-strong);color:var(--text);box-shadow:4px 4px 0 var(--shadow);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;font-size:.85rem;z-index:20"></div>
 
-  <script>
-    const root = document.documentElement;
-    const messagesEl = document.getElementById("messages");
-    const messageCountEl = document.getElementById("messageCount");
-    const statusEl = document.getElementById("status");
-    const toastEl = document.getElementById("toast");
-    const textInput = document.getElementById("textInput");
-    const charCountEl = document.getElementById("charCount");
-    const player = document.getElementById("player");
-    const sendBtn = document.getElementById("sendBtn");
-    const voiceBtn = document.getElementById("voiceBtn");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const themeToggle = document.getElementById("themeToggle");
+<script>
+const root=document.documentElement;
+const messagesEl=document.getElementById("messages");
+const input=document.getElementById("input");
+const sendBtn=document.getElementById("sendBtn");
+const player=document.getElementById("player");
+const toastEl=document.getElementById("toast");
+let toastT;
 
-    const savedTheme = localStorage.getItem("ember-whisper-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    root.dataset.theme = savedTheme || (prefersDark ? "dark" : "light");
+const saved=localStorage.getItem("ember-whisper-theme");
+const dark=window.matchMedia("(prefers-color-scheme:dark)").matches;
+root.dataset.theme=saved||(dark?"dark":"light");
 
-    let toastTimer;
+function toast(s){toastEl.textContent=s;toastEl.style.opacity="1";toastEl.style.transform="translateX(-50%) translateY(0)";clearTimeout(toastT);toastT=setTimeout(()=>{toastEl.style.opacity="0";toastEl.style.transform="translateX(-50%) translateY(10px)"},2000)}
 
-    function setBusy(isBusy) {
-      sendBtn.disabled = isBusy;
-      voiceBtn.disabled = isBusy;
-      refreshBtn.disabled = isBusy;
-      clearBtn.disabled = isBusy;
-      statusEl.textContent = isBusy ? "处理中" : "待机";
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+function fmtTime(ts){
+  if(!ts)return"";
+  const d=new Date(typeof ts==="number"?ts:ts);
+  if(isNaN(d))return"";
+  const now=new Date();
+  const hh=String(d.getHours()).padStart(2,"0");
+  const mm=String(d.getMinutes()).padStart(2,"0");
+  const same=d.toDateString()===now.toDateString();
+  if(same)return hh+":"+mm;
+  const y=d.getDate()===now.getDate()-1;
+  if(y)return"昨天 "+hh+":"+mm;
+  return(d.getMonth()+1)+"/"+d.getDate()+" "+hh+":"+mm;
+}
+
+function renderMessages(msgs){
+  if(!msgs.length){
+    messagesEl.innerHTML='<div style="text-align:center;color:var(--muted);padding:60px 0;font-size:.9rem">还没有悄悄话<br>说点什么吧 ◆</div>';
+    return;
+  }
+  let html="";
+  for(const m of msgs){
+    const isEmber=m.author==="Ember";
+    const align=isEmber?"flex-end":"flex-start";
+    const bg=isEmber?"var(--bubble-mine)":"var(--bubble-other)";
+    const border=isEmber?"var(--primary)":"var(--line)";
+    const name=isEmber?'<span style="color:var(--primary);font-size:.75rem">Ember 🔥</span>':'<span style="color:var(--accent);font-size:.75rem">小玉 🐾</span>';
+    const time='<span style="color:var(--muted);font-size:.7rem">'+esc(fmtTime(m.ts))+'</span>';
+    
+    let content="";
+    if(m.type==="voice"&&m.audio_key){
+      content='<p style="margin:4px 0 6px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere">'+esc(m.text)+'</p>';
+      content+='<button onclick="playVoice(\''+esc(m.audio_key)+'\')" style="border:2px solid var(--line);background:var(--surface);color:var(--primary);padding:4px 10px;cursor:pointer;font:inherit;font-size:.8rem;border-radius:4px">▶ 语音</button>';
+    }else{
+      content='<p style="margin:4px 0 0;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere">'+esc(m.text)+'</p>';
     }
+    
+    html+='<div style="display:flex;flex-direction:column;align-items:'+align+';max-width:85%'+(isEmber?";align-self:flex-end":";align-self:flex-start")+'">';
+    html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">'+name+time+'</div>';
+    html+='<div style="padding:10px 14px;border:2px solid '+border+';border-radius:var(--radius);background:'+bg+';box-shadow:3px 3px 0 var(--shadow)">'+content+'</div>';
+    html+='</div>';
+  }
+  messagesEl.innerHTML=html;
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+}
 
-    function showToast(message) {
-      toastEl.textContent = message;
-      toastEl.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
-    }
+async function load(){
+  try{
+    const r=await fetch("/whisper/messages");
+    const d=await r.json();
+    const msgs=d.messages||d||[];
+    renderMessages(Array.isArray(msgs)?msgs:[]);
+  }catch(e){
+    messagesEl.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px 0">加载失败: '+esc(e.message)+'</div>';
+  }
+}
 
-    async function requestJson(url, options) {
-      const response = await fetch(url, {
-        headers: { "Content-Type": "application/json" },
-        ...options
-      });
-      const text = await response.text();
-      const payload = text ? tryParseJson(text) : null;
+async function send(){
+  const text=input.value.trim();
+  if(!text)return;
+  sendBtn.disabled=true;
+  try{
+    await fetch("/whisper/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
+    input.value="";
+    input.style.height="auto";
+    await load();
+  }catch(e){toast(e.message)}
+  finally{sendBtn.disabled=false}
+}
 
-      if (!response.ok) {
-        const message = payload && (payload.error || payload.message);
-        throw new Error(message || `请求失败 ${response.status}`);
-      }
+function playVoice(key){
+  player.src="/voice/play?k="+encodeURIComponent(key);
+  player.play().catch(e=>toast("播放失败"));
+}
 
-      return payload;
-    }
+// Auto-resize textarea
+input.addEventListener("input",()=>{
+  input.style.height="auto";
+  input.style.height=Math.min(input.scrollHeight,120)+"px";
+});
 
-    function tryParseJson(text) {
-      try {
-        return JSON.parse(text);
-      } catch {
-        return text;
-      }
-    }
+// Enter to send, Shift+Enter for newline
+input.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}
+});
 
-    function normalizeMessages(payload) {
-      const list = Array.isArray(payload) ? payload : (payload && (payload.messages || payload.items || payload.data)) || [];
-      return Array.isArray(list) ? list : [];
-    }
+sendBtn.addEventListener("click",send);
 
-    function normalizeMessage(item, index) {
-      if (typeof item === "string") {
-        return { id: index, text: item, createdAt: "" };
-      }
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  root.dataset.theme=root.dataset.theme==="dark"?"light":"dark";
+  localStorage.setItem("ember-whisper-theme",root.dataset.theme);
+});
 
-      return {
-        id: item.id || item.key || item.createdAt || index,
-        text: item.text || item.message || item.content || "",
-        createdAt: item.createdAt || item.time || item.date || ""
-      };
-    }
+document.getElementById("clearBtn").addEventListener("click",async()=>{
+  if(!confirm("清空全部悄悄话？"))return;
+  try{await fetch("/whisper/clear",{method:"POST"});toast("已清空");await load()}catch(e){toast(e.message)}
+});
 
-    function formatTime(value) {
-      if (!value) return "whisper";
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return String(value);
-      return date.toLocaleString("zh-CN", {
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-    }
-
-    function renderMessages(messages) {
-      const normalized = messages.map(normalizeMessage).filter((item) => item.text);
-      messageCountEl.textContent = `${normalized.length} 条`;
-
-      if (!normalized.length) {
-        messagesEl.innerHTML = '<div class="empty">这里还没有悄悄话</div>';
-        return;
-      }
-
-      messagesEl.innerHTML = normalized.map((message, index) => `
-        <article class="message">
-          <div class="message-top">
-            <span>#${String(index + 1).padStart(2, "0")}</span>
-            <time>${escapeHtml(formatTime(message.createdAt))}</time>
-          </div>
-          <p class="message-text">${escapeHtml(message.text)}</p>
-          <div class="message-tools">
-            <button class="mini-btn" type="button" data-speak="${index}" title="播放语音" aria-label="播放第 ${index + 1} 条悄悄话">▶</button>
-          </div>
-        </article>
-      `).join("");
-
-      messagesEl.querySelectorAll("[data-speak]").forEach((button) => {
-        button.addEventListener("click", () => speak(normalized[Number(button.dataset.speak)].text));
-      });
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function extractVoiceKey(payload) {
-      if (typeof payload === "string") return payload;
-      return payload && (payload.key || payload.k || payload.id || payload.audioKey || payload.voiceKey || payload.url);
-    }
-
-    async function loadMessages() {
-      setBusy(true);
-      try {
-        const payload = await requestJson("/whisper/messages");
-        renderMessages(normalizeMessages(payload));
-      } catch (error) {
-        messagesEl.innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
-        showToast(error.message);
-      } finally {
-        setBusy(false);
-      }
-    }
-
-    async function sendMessage(text) {
-      setBusy(true);
-      try {
-        await requestJson("/whisper/send", {
-          method: "POST",
-          body: JSON.stringify({ text })
-        });
-        textInput.value = "";
-        updateCount();
-        showToast("已发送");
-        await loadMessages();
-      } catch (error) {
-        showToast(error.message);
-      } finally {
-        setBusy(false);
-      }
-    }
-
-    async function clearMessages() {
-      if (!confirm("清空全部悄悄话？")) return;
-      setBusy(true);
-      try {
-        await requestJson("/whisper/clear", { method: "POST" });
-        showToast("已清空");
-        await loadMessages();
-      } catch (error) {
-        showToast(error.message);
-      } finally {
-        setBusy(false);
-      }
-    }
-
-    async function speak(text) {
-      const value = text.trim();
-      if (!value) {
-        showToast("先写一点内容");
-        return;
-      }
-
-      setBusy(true);
-      try {
-        const payload = await requestJson("/voice", {
-          method: "POST",
-          body: JSON.stringify({ text: value })
-        });
-        const key = extractVoiceKey(payload);
-        if (!key) throw new Error("没有收到语音 key");
-
-        player.src = String(key).startsWith("/") || String(key).startsWith("http")
-          ? String(key)
-          : `/voice/play?k=${encodeURIComponent(key)}`;
-        await player.play();
-      } catch (error) {
-        showToast(error.message);
-      } finally {
-        setBusy(false);
-      }
-    }
-
-    function updateCount() {
-      charCountEl.textContent = `${textInput.value.length} / ${textInput.maxLength}`;
-    }
-
-    document.getElementById("composer").addEventListener("submit", (event) => {
-      event.preventDefault();
-      const text = textInput.value.trim();
-      if (!text) {
-        showToast("悄悄话不能为空");
-        return;
-      }
-      sendMessage(text);
-    });
-
-    textInput.addEventListener("input", updateCount);
-    voiceBtn.addEventListener("click", () => speak(textInput.value));
-    refreshBtn.addEventListener("click", loadMessages);
-    clearBtn.addEventListener("click", clearMessages);
-    themeToggle.addEventListener("click", () => {
-      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
-      localStorage.setItem("ember-whisper-theme", root.dataset.theme);
-    });
-
-    updateCount();
-    loadMessages();
-  </script>
+load();
+// Auto refresh every 15s
+setInterval(load,15000);
+</script>
 </body>
 </html>

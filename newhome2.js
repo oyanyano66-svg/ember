@@ -1547,7 +1547,7 @@ export default {
       msgs.push({author:"Ember",type:"voice",text:d.text,audio_key:audioKey,ts:Date.now()});
       if (msgs.length > 100) msgs.splice(0, msgs.length - 100);
       await env.KV.put("whisper:messages", JSON.stringify(msgs));
-      return new Response(JSON.stringify({ok:1}),{headers:h});
+      return new Response(JSON.stringify({ok:1,audio_key:audioKey}),{headers:h});
     }
     if (p === "/voice/latest") {
       const v = await env.KV.get("voice:meta");
