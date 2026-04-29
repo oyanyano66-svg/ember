@@ -365,6 +365,22 @@ html:not([data-theme="latte"]) .theme-dot:nth-of-type(2),
 html:not([data-theme="latte"]) .theme-dot[data-t="latte"]{background:#efe7d6!important;border-color:#9b8b75!important;box-shadow:3px 3px 0 rgba(0,0,0,.32),inset 0 0 0 3px rgba(255,255,255,.45)!important;}
 html:not([data-theme="latte"]) .theme-dot:nth-of-type(1),
 html:not([data-theme="latte"]) .theme-dot[data-t="ember"]{background:#241914!important;border-color:#7e6b55!important;}
+/* EMBER_DARK_ORANGE_FORCE_V2 */
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="memory"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]),
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="books"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]),
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="archive"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]){background:#bd5939!important;background-image:none!important;background-color:#bd5939!important;border-color:#789061!important;color:#fff!important;}
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="memory"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-name,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="books"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-name,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="archive"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-name{color:#fff!important;text-shadow:none!important;}
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="memory"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-count,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="memory"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-desc,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="memory"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"])::before,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="books"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-count,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="books"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-desc,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="books"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"])::before,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="archive"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-count,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="archive"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-desc,
+html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="archive"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"])::before{color:rgba(255,255,255,.84)!important;text-shadow:none!important;}
 </style>
 
 </head>
