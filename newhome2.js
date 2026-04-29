@@ -381,6 +381,30 @@ html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="books"]:not([onclic
 html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="archive"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-count,
 html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="archive"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-desc,
 html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="archive"]:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"])::before{color:rgba(255,255,255,.84)!important;text-shadow:none!important;}
+
+/* EMBER_REDEPLOY_RESTORE_V1 */
+.cover{background:radial-gradient(circle at 50% 38%,rgba(255,154,98,.16),transparent 28%),var(--bg)!important;overflow:hidden!important;}
+.cover::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,208,137,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,208,137,.045) 1px,transparent 1px);background-size:22px 22px;opacity:.8;pointer-events:none;}
+[data-theme="latte"] .cover{background:linear-gradient(180deg,#fff8e8 0%,#f4e7cf 58%,#d9c49d 100%)!important;}
+[data-theme="latte"] .cover::before{background-image:linear-gradient(rgba(104,87,65,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(104,87,65,.08) 1px,transparent 1px);opacity:.75;}
+.cover-stage{position:relative;width:min(78vw,360px);height:172px;margin:0 auto 12px;z-index:2;}
+.cover-orbit{position:absolute;inset:18px 34px 4px;border:2px dashed rgba(140,120,92,.28);transform:rotate(18deg);animation:coverOrbit 12s linear infinite;}
+.cover-moon{position:absolute;right:28px;top:10px;width:34px;height:34px;border:6px solid var(--border2);background:var(--bg);box-shadow:3px 3px 0 rgba(0,0,0,.22);}
+.pixel-house{position:absolute;left:50%;bottom:28px;width:132px;height:86px;transform:translateX(-50%);}
+.pixel-house .roof{position:absolute;left:6px;top:0;width:120px;height:45px;background:#bd5939;clip-path:polygon(50% 0,100% 70%,88% 70%,88% 100%,12% 100%,12% 70%,0 70%);box-shadow:4px 4px 0 rgba(0,0,0,.22);}
+.pixel-house .body{position:absolute;left:22px;top:42px;width:88px;height:54px;background:#fffaf0;border:6px solid #756751;box-shadow:5px 5px 0 rgba(0,0,0,.25);}
+.pixel-house .door{position:absolute;left:58px;top:63px;width:24px;height:34px;background:#2b2118;border:4px solid #5c4b39;}
+.pixel-house .window{position:absolute;top:54px;width:24px;height:22px;background:#ffe79d;border:5px solid #756751;box-shadow:inset 0 0 0 3px rgba(43,33,24,.15);}
+.pixel-house .window.left{left:32px}.pixel-house .window.right{right:32px}
+.pixel-house .ground{position:absolute;left:-66px;right:-66px;bottom:-5px;height:18px;border:5px solid #8f7a5f;background:repeating-linear-gradient(90deg,#fffaf0 0 20px,#b7a889 20px 38px);box-shadow:4px 4px 0 rgba(0,0,0,.24);}
+.cover-title{position:relative;z-index:2;font-family:"Courier New","SF Mono",Menlo,monospace!important;font-weight:900!important;text-transform:lowercase!important;letter-spacing:.04em!important;color:#ffd28d!important;text-shadow:2px 2px 0 rgba(0,0,0,.45)!important;}
+[data-theme="latte"] .cover-title{color:#5a3425!important;text-shadow:2px 2px 0 #ffe9c6,4px 4px 0 rgba(99,69,45,.16)!important;}
+.cover-title::before{content:"EMBER HOME";display:block;font-size:.28em;letter-spacing:.14em;color:var(--text3);margin-bottom:6px;text-transform:uppercase;}
+.cover-sub,.cover-counter,.cover-btns{position:relative;z-index:2;}
+.cover-btn{border:2px solid var(--border2)!important;border-radius:0!important;box-shadow:5px 5px 0 rgba(0,0,0,.32)!important;font-family:"Songti SC","STSong",SimSun,serif!important;}
+.cover-spark{position:absolute;width:5px;height:5px;background:var(--accent);opacity:.7;animation:coverSpark 4.2s linear infinite;z-index:1;}
+@keyframes coverOrbit{to{transform:rotate(378deg)}}
+@keyframes coverSpark{0%{transform:translateY(0);opacity:0}20%{opacity:.75}100%{transform:translateY(-70px);opacity:0}}
 </style>
 
 </head>
@@ -1277,6 +1301,20 @@ async function loadRandomMemory(){
   };
 })();
 initCover();initTabs();loadStats();loadRandomMemory();loadPanel('memory');
+</script>
+
+<script>
+/* EMBER_REDEPLOY_RESTORE_V1_JS */
+(function(){
+  var oldInit=window.initCover||initCover;
+  initCover=function(){
+    if(oldInit) oldInit();
+    var alive=document.getElementById('coverAlive');
+    if(alive){var tick=function(){var d=new Date();alive.textContent='ONLINE · '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');};tick();setInterval(tick,1000);}
+    var c=document.getElementById('embers');
+    if(c&&!c.dataset.restore){c.dataset.restore='1';for(var i=0;i<22;i++){var s=document.createElement('div');s.className='cover-spark';s.style.left=Math.random()*100+'%';s.style.bottom=(Math.random()*30)+'%';s.style.animationDelay=(Math.random()*4)+'s';c.appendChild(s);}}
+  };
+})();
 </script>
 </body></html>`;
 
