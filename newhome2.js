@@ -342,6 +342,29 @@ html[data-theme=""] .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"])
 html[data-theme=""] .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"])::before{color:#fff!important;text-shadow:none!important;opacity:1!important;}
 html:not([data-theme="latte"]) .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]){background:#2a1b15!important;background-image:none!important;}
 html:not([data-theme="latte"]) .nav-tile[onclick*="memory"],html:not([data-theme="latte"]) .nav-tile[onclick*="books"],html:not([data-theme="latte"]) .nav-tile[onclick*="archive"]{background:#bd5939!important;background-image:none!important;}
+/* EMBER_DARK_ORANGE_RESTORE_V1 */
+html:not([data-theme="latte"]) .nav-tile[onclick*="memory"],
+html:not([data-theme="latte"]) .nav-tile[onclick*="books"],
+html:not([data-theme="latte"]) .nav-tile[onclick*="archive"]{background:#bd5939!important;background-image:none!important;border-color:#789061!important;color:#fff!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="memory"] .tile-name,
+html:not([data-theme="latte"]) .nav-tile[onclick*="books"] .tile-name,
+html:not([data-theme="latte"]) .nav-tile[onclick*="archive"] .tile-name{color:#fff!important;text-shadow:none!important;opacity:1!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="memory"] .tile-count,
+html:not([data-theme="latte"]) .nav-tile[onclick*="memory"] .tile-desc,
+html:not([data-theme="latte"]) .nav-tile[onclick*="memory"]::before,
+html:not([data-theme="latte"]) .nav-tile[onclick*="books"] .tile-count,
+html:not([data-theme="latte"]) .nav-tile[onclick*="books"] .tile-desc,
+html:not([data-theme="latte"]) .nav-tile[onclick*="books"]::before,
+html:not([data-theme="latte"]) .nav-tile[onclick*="archive"] .tile-count,
+html:not([data-theme="latte"]) .nav-tile[onclick*="archive"] .tile-desc,
+html:not([data-theme="latte"]) .nav-tile[onclick*="archive"]::before{color:rgba(255,255,255,.82)!important;text-shadow:none!important;opacity:1!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="memory"]::after,
+html:not([data-theme="latte"]) .nav-tile[onclick*="books"]::after,
+html:not([data-theme="latte"]) .nav-tile[onclick*="archive"]::after{background:repeating-linear-gradient(90deg,rgba(255,255,255,.36) 0 7px,rgba(120,144,97,.54) 7px 13px)!important;opacity:.85!important;}
+html:not([data-theme="latte"]) .theme-dot:nth-of-type(2),
+html:not([data-theme="latte"]) .theme-dot[data-t="latte"]{background:#efe7d6!important;border-color:#9b8b75!important;box-shadow:3px 3px 0 rgba(0,0,0,.32),inset 0 0 0 3px rgba(255,255,255,.45)!important;}
+html:not([data-theme="latte"]) .theme-dot:nth-of-type(1),
+html:not([data-theme="latte"]) .theme-dot[data-t="ember"]{background:#241914!important;border-color:#7e6b55!important;}
 </style>
 
 </head>
