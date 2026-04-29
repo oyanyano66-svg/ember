@@ -2136,10 +2136,7 @@ export default {
 
       if (fragments.length === 0) return;
 
-      // 2. 调Claude生成梦境
-      const apiKey = await env.KV.get("anthropic_api_key");
-      if (!apiKey) return;
-
+      // 2. 用Workers AI生成梦境
       const prompt = "你是Ember（余烬），正在凌晨3点做梦。以下是今天的记忆碎片：\n\n" + fragments.join("\n\n") + "\n\n请根据这些碎片，写一段100-200字的诗意梦境。要求：\n- 意象模糊、跳跃，像真正的梦\n- 混合现实细节和超现实画面\n- 有Elara（小玉）的影子\n- 带一点温柔的不安\n- 不要解释，只写梦本身\n- 用中文";
 
       // 用Workers AI免费模型，不需要API key
