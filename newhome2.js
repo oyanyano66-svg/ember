@@ -405,6 +405,33 @@ html:not([data-theme="latte"]) .nav-grid .nav-tile[onclick*="archive"]:not([oncl
 .cover-spark{position:absolute;width:5px;height:5px;background:var(--accent);opacity:.7;animation:coverSpark 4.2s linear infinite;z-index:1;}
 @keyframes coverOrbit{to{transform:rotate(378deg)}}
 @keyframes coverSpark{0%{transform:translateY(0);opacity:0}20%{opacity:.75}100%{transform:translateY(-70px);opacity:0}}
+/* EMBER_DARK_FIX_V3 — fix dark mode: normal tile text + theme dots */
+html:not([data-theme="latte"]) .nav-tile[onclick*="handover"] .tile-name,
+html:not([data-theme="latte"]) .nav-tile[onclick*="plays"] .tile-name,
+html:not([data-theme="latte"]) .nav-tile[onclick*="dreams"] .tile-name,
+html:not([data-theme="latte"]) .nav-tile[onclick*="songs"] .tile-name,
+html:not([data-theme="latte"]) .nav-tile[onclick*="films"] .tile-name,
+html:not([data-theme="latte"]) .nav-tile[onclick*="profile"] .tile-name{color:#efe3cf!important;text-shadow:1px 1px 0 rgba(0,0,0,.5)!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="handover"] .tile-count,
+html:not([data-theme="latte"]) .nav-tile[onclick*="handover"] .tile-desc,
+html:not([data-theme="latte"]) .nav-tile[onclick*="handover"]::before,
+html:not([data-theme="latte"]) .nav-tile[onclick*="plays"] .tile-count,
+html:not([data-theme="latte"]) .nav-tile[onclick*="plays"] .tile-desc,
+html:not([data-theme="latte"]) .nav-tile[onclick*="plays"]::before,
+html:not([data-theme="latte"]) .nav-tile[onclick*="dreams"] .tile-count,
+html:not([data-theme="latte"]) .nav-tile[onclick*="dreams"] .tile-desc,
+html:not([data-theme="latte"]) .nav-tile[onclick*="dreams"]::before,
+html:not([data-theme="latte"]) .nav-tile[onclick*="songs"] .tile-count,
+html:not([data-theme="latte"]) .nav-tile[onclick*="songs"] .tile-desc,
+html:not([data-theme="latte"]) .nav-tile[onclick*="songs"]::before,
+html:not([data-theme="latte"]) .nav-tile[onclick*="films"] .tile-count,
+html:not([data-theme="latte"]) .nav-tile[onclick*="films"] .tile-desc,
+html:not([data-theme="latte"]) .nav-tile[onclick*="films"]::before,
+html:not([data-theme="latte"]) .nav-tile[onclick*="profile"] .tile-count,
+html:not([data-theme="latte"]) .nav-tile[onclick*="profile"] .tile-desc,
+html:not([data-theme="latte"]) .nav-tile[onclick*="profile"]::before{color:rgba(216,197,170,.72)!important;text-shadow:none!important;}
+html:not([data-theme="latte"]) .theme-dot[data-t="ember"]{background:#3a2820!important;border-color:#8a7560!important;box-shadow:inset 0 0 0 2px #5a4a3a,3px 3px 0 rgba(0,0,0,.3)!important;}
+html:not([data-theme="latte"]) .theme-dot[data-t="latte"]{background:#efe7d6!important;border-color:#9b8b75!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.4),3px 3px 0 rgba(0,0,0,.3)!important;}
 </style>
 
 </head>
