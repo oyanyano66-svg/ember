@@ -15,6 +15,14 @@
   --gold:#c8a87c;--gold-dim:rgba(200,168,124,0.3);
   --shadow:#e0d4c4;--accent:#d4a574;
 }
+[data-theme="dark"]{
+  --bg:#1a1410;--surface:#241e18;--card:#2a2218;--border:#4a3e30;
+  --text:#e8ddd0;--dim:#9a8a78;--muted:#786858;--light:#3a3028;
+  --ember:#e8945a;--ember-soft:rgba(232,148,90,0.12);--ember-glow:#f5a86a;
+  --elara:#d4849a;--elara-soft:rgba(212,132,154,0.1);
+  --gold:#c8a87c;--gold-dim:rgba(200,168,124,0.2);
+  --shadow:#0e0a06;--accent:#d4a574;
+}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'DotGothic16',monospace;font-size:13px;min-height:100vh;position:relative}
 body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,var(--light) 1px,transparent 1px);background-size:16px 16px;opacity:.3;pointer-events:none;z-index:0}
@@ -116,6 +124,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 
 /* Footer */
 .footer{text-align:center;padding:20px;font-size:9px;color:var(--muted);letter-spacing:2px;border-top:1px dashed var(--light)}
+.theme-toggle{position:absolute;top:12px;right:12px;background:var(--card);border:2px solid var(--border);width:32px;height:32px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:2px 2px 0 var(--shadow);z-index:20}
 
 .hidden{display:none!important}
 @media(max-width:480px){
@@ -128,6 +137,25 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 <body>
 <div class="wrap" id="app"></div>
 <script>
+// ─── Theme ──────────────────────────────────────────────────────────
+function toggleTheme(){
+  var root = document.documentElement;
+  var dark = root.getAttribute('data-theme') === 'dark';
+  root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  localStorage.setItem('reader_theme', dark ? 'light' : 'dark');
+  document.querySelectorAll('.theme-toggle, #theme-btn-reader').forEach(function(b){ b.textContent = dark ? '🌙' : '☀️'; });
+}
+(function(){
+  var saved = localStorage.getItem('reader_theme');
+  if(saved === 'dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('.theme-toggle, #theme-btn-reader').forEach(function(b){ b.textContent = dark ? '☀️' : '🌙'; });
+  });
+})();
+
 // ─── Config ─────────────────────────────────────────────────────────
 var A = location.origin;
 var PER_PAGE = 20;
@@ -266,7 +294,8 @@ function fmtTime(t) {
 function renderShelf(books) {
   var h = '<div class="header">' + lampSVG()
     + '<h1>共读书房</h1>'
-    + '<div class="sub">READING ROOM · Elara & Ember</div></div>'
+    + '<div class="sub">READING ROOM · Elara & Ember</div>'
+    + '<button class="theme-toggle" onclick="toggleTheme()" title="切换明暗">🌙</button></div>'
     + '<div class="nav">'
     + '<a href="/dashboard" class="btn small" style="text-decoration:none">← 小家</a>'
     + '<div class="upload-zone" id="upload-zone" style="flex:1;padding:14px;margin:0;border-style:dashed">'
@@ -332,6 +361,7 @@ function renderReader() {
     + '<span class="back" id="back-btn">← 返回</span>'
     + '<span class="title">' + esc(bookTitle) + '</span>'
     + '<div class="tools">'
+    + '<button class="tool-btn" onclick="toggleTheme()" title="明暗切换" id="theme-btn-reader">🌙</button>'
     + '<button class="tool-btn" id="fs-down" title="缩小字号">A-</button>'
     + '<button class="tool-btn" id="fs-up" title="放大字号">A+</button>'
     + '<button class="tool-btn' + (currentView==='index'?' active':'') + '" id="ann-idx-btn" title="批注目录"><svg width="1em" height="1em" viewBox="0 0 16 16" style="image-rendering:pixelated;vertical-align:middle"><rect x="3" y="1" width="10" height="14" fill="#d4a574"/><rect x="4" y="3" width="8" height="11" fill="#f5e6d0"/><rect x="6" y="0" width="4" height="2" fill="#c8a87c"/><rect x="5" y="5" width="6" height="1" fill="#c8a87c"/><rect x="5" y="7" width="5" height="1" fill="#c8a87c"/><rect x="5" y="9" width="6" height="1" fill="#c8a87c"/><rect x="5" y="11" width="3" height="1" fill="#c8a87c"/></svg></button>'
