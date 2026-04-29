@@ -173,6 +173,63 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;fo
 .cal-who-tabs{display:flex;gap:8px;margin-bottom:12px;}
 .cal-who-tab{padding:6px 14px;font-size:.72em;border:1px solid var(--border);background:var(--bg2);color:var(--text3);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;}
 .cal-who-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+/* EMBER_GITHUB_PREVIEW_CAL_NAV_FIX_V1 */
+.cover-title{font-family:"Courier New","SF Mono",Menlo,monospace!important;font-weight:900!important;letter-spacing:.1em!important;text-transform:uppercase!important;color:#5a3425!important;text-shadow:2px 2px 0 #ffe9c6,4px 4px 0 rgba(99,69,45,.16)!important;}
+.cover-btn,.cover-btn.secondary,.cover-btn *,.bottom-nav button,.nav-btn{font-family:"Songti SC","STSong","Hiragino Mincho ProN","YuMincho",SimSun,serif!important;font-weight:900!important;letter-spacing:0!important;}
+.nav-tile{border:2px solid rgba(100,84,62,.72)!important;border-radius:0!important;box-shadow:4px 4px 0 rgba(122,101,76,.22)!important;background:#fffaf0!important;}
+.nav-tile::before{font-family:"Courier New",monospace;font-size:10px;letter-spacing:.08em;color:rgba(73,58,44,.62)!important;margin-bottom:7px;display:block;}
+.nav-tile[onclick*="memory"]::before{content:"MEMORY ROOM";}
+.nav-tile[onclick*="diary"]::before{content:"DIARY DESK";}
+.nav-tile[onclick*="timeline"]::before{content:"TIME STATION";}
+.nav-tile[onclick*="handover"]::before{content:"HANDOVER";}
+.nav-tile[onclick*="dreams"]::before{content:"DREAM LOFT";}
+.nav-tile[onclick*="songs"]::before{content:"RECORD SHOP";}
+.nav-tile[onclick*="plays"]::before{content:"THEATER";}
+.nav-tile[onclick*="books"]::before{content:"READING NOOK";}
+.nav-tile[onclick*="films"]::before{content:"SCREEN ROOM";}
+.nav-tile[onclick*="letters"]::before{content:"MAILBOX";}
+.nav-tile[onclick*="archive"]::before{content:"ARCHIVE";}
+.nav-tile[onclick*="profile"]::before{content:"PROFILE";}
+.nav-tile .tile-name{font-family:"Songti SC","STSong",SimSun,serif!important;color:#1b120d!important;font-weight:900!important;text-shadow:none!important;}
+.nav-tile .tile-count,.nav-tile .tile-desc{color:rgba(73,58,44,.62)!important;}
+.nav-tile[onclick*="memory"],.nav-tile[onclick*="books"],.nav-tile[onclick*="archive"],.nav-tile.accent-tile{background:#bd5939!important;border-color:#6f7f4f!important;color:#fff8ec!important;}
+.nav-tile[onclick*="memory"] .tile-name,.nav-tile[onclick*="books"] .tile-name,.nav-tile[onclick*="archive"] .tile-name,.nav-tile.accent-tile .tile-name{color:#fffaf0!important;text-shadow:1px 1px 0 rgba(48,29,18,.32)!important;}
+.nav-tile[onclick*="memory"] .tile-count,.nav-tile[onclick*="memory"] .tile-desc,.nav-tile[onclick*="memory"]::before,.nav-tile[onclick*="books"] .tile-count,.nav-tile[onclick*="books"] .tile-desc,.nav-tile[onclick*="books"]::before,.nav-tile[onclick*="archive"] .tile-count,.nav-tile[onclick*="archive"] .tile-desc,.nav-tile[onclick*="archive"]::before,.nav-tile.accent-tile .tile-count,.nav-tile.accent-tile .tile-desc,.nav-tile.accent-tile::before{color:rgba(255,250,240,.82)!important;}
+.nav-tile[onclick*="diary"]{background:repeating-linear-gradient(0deg,#fffaf0 0 18px,rgba(111,127,79,.13) 18px 20px)!important;}
+.nav-tile[onclick*="timeline"]{background:linear-gradient(90deg,#fffaf0 0 44%,rgba(213,183,136,.26) 44% 48%,#fffaf0 48% 100%)!important;}
+.nav-tile[onclick*="letters"]{background:linear-gradient(180deg,#fffaf0 0 48%,rgba(213,183,136,.25) 48% 54%,#fffaf0 54%)!important;}
+.nav-tile[onclick*="songs"]{background:linear-gradient(135deg,#fffaf0 0 62%,rgba(189,89,57,.16) 62% 100%)!important;}
+.calendar-page{max-width:480px!important;padding:14px 10px 92px!important;overflow-x:hidden!important;}
+.cal-month-nav,.cal-header{display:flex!important;align-items:center!important;justify-content:space-between!important;margin:8px 0 12px!important;padding:0 2px!important;}
+.cal-month-nav h2,.cal-header h2{font-family:"Songti SC","STSong","Hiragino Mincho ProN",SimSun,serif!important;font-size:1.55em!important;font-weight:900!important;color:#b95538!important;letter-spacing:.04em!important;text-shadow:1px 1px 0 #fff4db!important;}
+.cal-month-btn,.cal-nav{width:44px!important;height:44px!important;padding:0!important;display:grid!important;place-items:center!important;background:rgba(255,251,239,.72)!important;border:2px solid rgba(119,105,83,.28)!important;border-radius:0!important;box-shadow:3px 3px 0 rgba(177,150,113,.28)!important;font-family:"Courier New",monospace!important;font-size:1.35em!important;line-height:1!important;color:#5d5244!important;}
+.cal-ledger,.cal-summary-card,.cal-recent{width:100%!important;max-width:100%!important;box-sizing:border-box!important;border:2px solid rgba(99,85,65,.72)!important;background:rgba(255,251,239,.78)!important;box-shadow:4px 4px 0 rgba(122,101,76,.22)!important;padding:10px!important;margin:10px 0 12px!important;}
+.cal-ledger::before{content:"CALENDAR LOG";display:block;font-family:"Courier New",monospace;font-size:.68em;letter-spacing:.14em;color:rgba(98,84,64,.55);margin-bottom:8px;}
+.cal-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:10px;}
+.cal-stat{min-width:0;border:2px solid rgba(118,99,77,.34);background:#fffaf0;padding:8px 4px;text-align:center;box-shadow:2px 2px 0 rgba(181,152,115,.22);}
+.cal-stat b{display:block;font-family:"Courier New",monospace;font-size:.95em;color:#b95538;line-height:1.1;}
+.cal-stat span{display:block;margin-top:3px;font-size:.64em;color:rgba(68,54,42,.62);font-family:"Songti SC","STSong",SimSun,serif;}
+.cal-legend{display:flex;gap:7px;align-items:center;justify-content:center;font-family:"Songti SC","STSong",SimSun,serif;font-size:.68em;color:rgba(72,60,48,.72);}
+.cal-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px;box-shadow:1px 1px 0 rgba(0,0,0,.16);}
+.cal-grid{width:100%!important;max-width:100%!important;box-sizing:border-box!important;display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:0!important;overflow:hidden!important;background:rgba(117,100,78,.2)!important;border:2px dashed rgba(89,78,62,.58)!important;border-radius:0!important;box-shadow:4px 4px 0 rgba(150,126,94,.18)!important;}
+.cal-day-label,.cal-day{box-sizing:border-box!important;min-width:0!important;}
+.cal-day-label{font-family:"Songti SC","STSong",SimSun,serif!important;font-weight:700!important;background:rgba(255,246,226,.82)!important;color:rgba(70,57,44,.7)!important;font-size:.8em!important;padding:7px 0!important;}
+.cal-day{min-height:58px!important;aspect-ratio:auto!important;padding:4px!important;overflow:hidden!important;border-color:rgba(114,96,74,.26)!important;background:rgba(255,250,239,.64)!important;}
+.cal-day.empty{background:rgba(244,229,207,.42)!important;}
+.cal-day.today{background:linear-gradient(135deg,rgba(185,85,56,.16),rgba(255,250,239,.9))!important;outline:2px solid rgba(185,85,56,.44)!important;outline-offset:-4px!important;}
+.cal-day.has-entry{background:#fff6dc!important;}
+.cal-num{font-family:"Courier New",monospace!important;font-size:.88em!important;color:rgba(70,58,45,.68)!important;font-weight:700!important;}
+.cal-day.today .cal-num{color:#b95538!important;}
+.cal-mood{display:flex!important;flex-wrap:wrap!important;gap:4px!important;margin-top:auto!important;padding-top:2px!important;}
+.cal-mood span{display:inline-block!important;width:9px!important;height:9px!important;border-radius:2px!important;background:var(--accent)!important;box-shadow:1px 1px 0 rgba(0,0,0,.15)!important;}
+.cal-mood span[style*="#5b8fb9"]{background:#5b8fb9!important;}
+.cal-mood span[style*="#d7a15d"]{background:#d7a15d!important;}
+.cal-summary-card h3,.cal-recent h3{margin:0 0 8px;color:#4b3528;font-size:1em;font-weight:900;font-family:"Songti SC","STSong",SimSun,serif;}
+.cal-summary-card p{margin:4px 0;color:rgba(68,54,42,.72);font-size:.84em;line-height:1.6;}
+.cal-recent-list{display:grid;gap:4px;}
+.cal-recent-item{display:grid;grid-template-columns:50px minmax(0,1fr);gap:8px;align-items:start;border-top:1px dashed rgba(111,94,72,.26);padding-top:7px;}
+.cal-recent-date{font-family:"Courier New",monospace;color:#b95538;font-weight:800;font-size:.82em;}
+.cal-recent-text{color:rgba(61,48,37,.74);font-size:.78em;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
 
 </head>
@@ -1000,6 +1057,59 @@ async function loadRandomMemory(){
   if(mems.length){var m=mems[Math.floor(Math.random()*mems.length)];
   document.getElementById('randomMemory').textContent='\\uD83D\\uDCAD '+truncate(m.content,80);}}catch(e){}
 }
+/* EMBER_GITHUB_PREVIEW_CAL_NAV_FIX_V1_JS */
+(function(){
+  function entryText(e){return e?(String(e.mood||'')+(e.note?' · '+String(e.note):'')):'未打卡';}
+  function ensureCalShell(){
+    var grid=document.getElementById('calGrid');if(!grid)return{};
+    var ledger=document.getElementById('calLedger');
+    if(!ledger){ledger=document.createElement('div');ledger.id='calLedger';ledger.className='cal-ledger';grid.parentNode.insertBefore(ledger,grid);}
+    var summary=document.getElementById('calSummary');
+    if(!summary){summary=document.createElement('div');summary.id='calSummary';summary.className='cal-summary-card';grid.parentNode.insertBefore(summary,grid.nextSibling);}
+    var recent=document.getElementById('calRecent');
+    if(!recent){recent=document.createElement('div');recent.id='calRecent';recent.className='cal-recent';summary.parentNode.insertBefore(recent,summary.nextSibling);}
+    return {ledger:ledger,summary:summary,recent:recent};
+  }
+  renderCalendar=async function(){
+    document.getElementById('calTitle').textContent=calYear+'年'+(calMonth+1)+'月';
+    try{
+      var r1=await fetch(API+'/cal/month?y='+calYear+'&m='+(calMonth+1)+'&who=puppy');var d1=await r1.json();calData=d1.entries||{};
+      var r2=await fetch(API+'/cal/month?y='+calYear+'&m='+(calMonth+1)+'&who=daddy');var d2=await r2.json();calDataDaddy=d2.entries||{};
+    }catch(e){calData={};calDataDaddy={};}
+    var shell=ensureCalShell();
+    var pKeys=Object.keys(calData).filter(function(k){return calData[k];}).sort();
+    var dKeys=Object.keys(calDataDaddy).filter(function(k){return calDataDaddy[k];}).sort();
+    var both=pKeys.filter(function(k){return calDataDaddy[k];});
+    if(shell.ledger){shell.ledger.innerHTML='<div class="cal-stats"><div class="cal-stat"><b>'+pKeys.length+'</b><span>小狗狗</span></div><div class="cal-stat"><b>'+dKeys.length+'</b><span>爸爸</span></div><div class="cal-stat"><b>'+both.length+'</b><span>同日</span></div></div><div class="cal-legend"><span><i style="background:var(--accent)"></i>小狗狗</span><span><i style="background:#5b8fb9"></i>爸爸</span><span><i style="background:#d7a15d"></i>今天</span></div>';}
+    var today=new Date();
+    var todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    var latest=[].concat(pKeys.map(function(k){return {date:k,who:'小狗狗',entry:calData[k]};}),dKeys.map(function(k){return {date:k,who:'爸爸',entry:calDataDaddy[k]};})).sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,4);
+    if(shell.summary){shell.summary.innerHTML='<h3>今日台账</h3><p><b>'+todayStr+'</b></p><p>小狗狗：'+entryText(calData[todayStr])+'</p><p>爸爸：'+entryText(calDataDaddy[todayStr])+'</p>';}
+    if(shell.recent){shell.recent.innerHTML='<h3>最近亮起的小格子</h3><div class="cal-recent-list">'+(latest.length?latest.map(function(x){return '<div class="cal-recent-item"><div class="cal-recent-date">'+x.date.slice(5)+'</div><div class="cal-recent-text">'+x.who+'：'+entryText(x.entry)+'</div></div>';}).join(''):'<div class="cal-recent-text">这个月还在等第一枚小方块。</div>')+'</div>';}
+    var grid=document.getElementById('calGrid');
+    grid.innerHTML='';
+    ['日','一','二','三','四','五','六'].forEach(function(l){var d=document.createElement('div');d.className='cal-day-label';d.textContent=l;grid.appendChild(d);});
+    var first=new Date(calYear,calMonth,1);var startDay=first.getDay();
+    var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+    Array.from({length:startDay}).forEach(function(){var d=document.createElement('div');d.className='cal-day empty';grid.appendChild(d);});
+    Array.from({length:daysInMonth}).forEach(function(_,idx){
+      var i=idx+1;var d=document.createElement('div');d.className='cal-day';
+      var ds=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(i).padStart(2,'0');
+      if(ds===todayStr)d.classList.add('today');
+      var ep=calData[ds];var ed=calDataDaddy[ds];
+      if(ep||ed)d.classList.add('has-entry');
+      var dots='';
+      if(ep)dots+='<span title="小狗狗"></span>';
+      if(ed)dots+='<span title="爸爸" style="background:#5b8fb9"></span>';
+      if(ds===todayStr&&!dots)dots+='<span title="今天" style="background:#d7a15d"></span>';
+      d.innerHTML='<span class="cal-num">'+i+'</span>'+(dots?'<span class="cal-mood">'+dots+'</span>':'');
+      d.onclick=function(){openCalEntry(ds);};
+      grid.appendChild(d);
+    });
+    document.getElementById('calDetail').style.display='none';
+    document.getElementById('calForm').style.display='none';
+  };
+})();
 initCover();initTabs();loadStats();loadRandomMemory();loadPanel('memory');
 </script>
 </body></html>`;
