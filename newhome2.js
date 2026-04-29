@@ -328,6 +328,20 @@ html:not([data-theme="latte"]) .nav-tile[onclick*="letters"]{background:linear-g
 html:not([data-theme="latte"]) .nav-tile[onclick*="diary"] .tile-name,html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"] .tile-name,html:not([data-theme="latte"]) .nav-tile[onclick*="letters"] .tile-name{color:#20150e!important;text-shadow:none!important;}
 html:not([data-theme="latte"]) .nav-tile[onclick*="diary"] .tile-count,html:not([data-theme="latte"]) .nav-tile[onclick*="diary"] .tile-desc,html:not([data-theme="latte"]) .nav-tile[onclick*="diary"]::before,html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"] .tile-count,html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"] .tile-desc,html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"]::before,html:not([data-theme="latte"]) .nav-tile[onclick*="letters"] .tile-count,html:not([data-theme="latte"]) .nav-tile[onclick*="letters"] .tile-desc,html:not([data-theme="latte"]) .nav-tile[onclick*="letters"]::before{color:rgba(37,24,16,.68)!important;text-shadow:none!important;}
 html:not([data-theme="latte"]) .nav-tile[onclick*="diary"]::after,html:not([data-theme="latte"]) .nav-tile[onclick*="timeline"]::after,html:not([data-theme="latte"]) .nav-tile[onclick*="letters"]::after{background:repeating-linear-gradient(90deg,rgba(125,148,97,.24) 0 7px,rgba(255,255,255,.32) 7px 13px)!important;opacity:.65!important;}
+/* EMBER_DARK_WHITE_TEXT_FORCE_V1 */
+html:not([data-theme="latte"]) .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-name,
+html:not([data-theme="latte"]) .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-count,
+html:not([data-theme="latte"]) .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-desc,
+html:not([data-theme="latte"]) .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"])::before{color:#fff!important;text-shadow:none!important;opacity:1!important;}
+html:not([data-theme="latte"]) .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-count,
+html:not([data-theme="latte"]) .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-desc,
+html:not([data-theme="latte"]) .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"])::before{color:rgba(255,255,255,.78)!important;}
+html[data-theme=""] .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-name,
+html[data-theme=""] .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-count,
+html[data-theme=""] .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]) .tile-desc,
+html[data-theme=""] .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"])::before{color:#fff!important;text-shadow:none!important;opacity:1!important;}
+html:not([data-theme="latte"]) .nav-tile:not([onclick*="diary"]):not([onclick*="timeline"]):not([onclick*="letters"]){background:#2a1b15!important;background-image:none!important;}
+html:not([data-theme="latte"]) .nav-tile[onclick*="memory"],html:not([data-theme="latte"]) .nav-tile[onclick*="books"],html:not([data-theme="latte"]) .nav-tile[onclick*="archive"]{background:#bd5939!important;background-image:none!important;}
 </style>
 
 </head>
