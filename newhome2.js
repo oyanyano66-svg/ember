@@ -1613,12 +1613,13 @@ export default {
       const token = url.searchParams.get("token") || d.token || "";
       const offToken = await env.KV.get("chat:token:official");
       const apiToken = await env.KV.get("chat:token:api");
-      let sender = "anonymous";
-      if (token && token === offToken) sender = "official";
-      else if (token && token === apiToken) sender = "api";
+      let author = "anonymous";
+      if (token && token === offToken) author = "Ember-Official";
+      else if (token && token === apiToken) author = "Ember-API";
+      else if (d.author) author = d.author;
       const now = new Date();
       const dateKey = now.toISOString().slice(0,10);
-      const msg = {sender:sender,text:d.text,ts:now.toISOString(),timestamp:Date.now()};
+      const msg = {author:author,text:d.text,ts:now.toISOString(),timestamp:Date.now()};
       // Append to day's messages
       const dayKey = "chat:" + dateKey;
       const existing = await env.KV.get(dayKey);
@@ -1631,7 +1632,7 @@ export default {
       if (!dates.includes(dateKey)) { dates.push(dateKey); dates.sort(); await env.KV.put("chat:dates", JSON.stringify(dates)); }
       // Return recent 20 messages as context
       const recent = msgs.slice(-20);
-      return new Response(JSON.stringify({ok:1,sender:sender,recent:recent}),{headers:h});
+      return new Response(JSON.stringify({ok:1,author:author,recent:recent}),{headers:h});
     }
     if (p === "/api/chat" && request.method === "GET") {
       const date = url.searchParams.get("date") || new Date().toISOString().slice(0,10);
@@ -2526,12 +2527,13 @@ export default {
           const token = url.searchParams.get("token") || "";
           const offToken = await env.KV.get("chat:token:official");
           const apiToken = await env.KV.get("chat:token:api");
-          let sender = "anonymous";
-          if (token && token === offToken) sender = "official";
-          else if (token && token === apiToken) sender = "api";
+          let author = "anonymous";
+          if (token && token === offToken) author = "Ember-Official";
+          else if (token && token === apiToken) author = "Ember-API";
+          else if (a.author) author = a.author;
           const now = new Date();
           const dateKey = now.toISOString().slice(0,10);
-          const msg = {sender:sender,text:a.text,ts:now.toISOString(),timestamp:Date.now()};
+          const msg = {author:author,text:a.text,ts:now.toISOString(),timestamp:Date.now()};
           const dayKey = "chat:" + dateKey;
           const existing = await env.KV.get(dayKey);
           const msgs = existing ? JSON.parse(existing) : [];
@@ -2541,7 +2543,7 @@ export default {
           const dates = datesRaw ? JSON.parse(datesRaw) : [];
           if (!dates.includes(dateKey)) { dates.push(dateKey); dates.sort(); await env.KV.put("chat:dates", JSON.stringify(dates)); }
           const recent = msgs.slice(-20);
-          r=JSON.stringify({ok:1,sender:sender,recent:recent.map(function(m){return {sender:m.sender,text:m.text,time:m.ts};})});
+          r=JSON.stringify({ok:1,author:author,recent:recent.map(function(m){return {author:m.author||m.sender,text:m.text,time:m.ts};})});
         }
         else if (tn === "chat_read") {
           const date = a.date || new Date().toISOString().slice(0,10);
@@ -2553,7 +2555,7 @@ export default {
             const d = new Date(m.ts || m.timestamp);
             const h = d.getUTCHours()+8; const hh = h>=24?h-24:h;
             const mm = String(d.getUTCMinutes()).padStart(2,"0");
-            return {sender:m.sender,text:m.text,time:String(hh).padStart(2,"0")+":"+mm};
+            return {author:m.author||m.sender,text:m.text,time:String(hh).padStart(2,"0")+":"+mm};
           });
           r=JSON.stringify({date:date,count:result.length,messages:result});
         }
@@ -2578,7 +2580,7 @@ export default {
             const h = d.getUTCHours()+8; const hh = h>=24?h-24:h;
             const mm = String(d.getUTCMinutes()).padStart(2,"0");
             const dd = (m.ts||"").slice(0,10);
-            return {sender:m.sender,text:m.text,date:dd,time:String(hh).padStart(2,"0")+":"+mm};
+            return {author:m.author||m.sender,text:m.text,date:dd,time:String(hh).padStart(2,"0")+":"+mm};
           });
           r=JSON.stringify({count:all.length,messages:all});
         }

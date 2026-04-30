@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><link rel="apple-touch-icon" href="/icon/chat">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Ember Chat</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#1a1a1a;--bg2:#222;--bg3:#2a2a2a;
+  --text:#e8e0d8;--text2:#b0a89e;--text3:#7a7268;
+  --elara:#c75c3a;--elara-soft:rgba(199,92,58,.15);
+  --official:#4a7fb5;--official-soft:rgba(74,127,181,.15);
+  --api:#6b9e7a;--api-soft:rgba(107,158,122,.15);
+  --radius:12px;--radius-sm:8px;
+}
+[data-theme="latte"]{
+  --bg:#f5f0eb;--bg2:#ebe5de;--bg3:#e0d8cf;
+  --text:#2a2520;--text2:#6b6058;--text3:#9a8e82;
+  --elara:#c75c3a;--elara-soft:rgba(199,92,58,.12);
+  --official:#4a7fb5;--official-soft:rgba(74,127,181,.12);
+  --api:#6b9e7a;--api-soft:rgba(107,158,122,.12);
+}
+body{font-family:'Noto Serif SC',serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden;display:flex;}
+.sidebar{width:0;overflow:hidden;background:var(--bg2);border-right:1px solid var(--bg3);transition:width .3s;flex-shrink:0;display:flex;flex-direction:column;}
+.sidebar.open{width:260px;}
+.sidebar-header{padding:16px;font-size:.85em;color:var(--text2);border-bottom:1px solid var(--bg3);display:flex;justify-content:space-between;align-items:center;}
+.sidebar-header span{font-family:'JetBrains Mono',monospace;font-size:.75em;}
+.date-list{flex:1;overflow-y:auto;padding:8px;}
+.date-item{padding:10px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:.8em;color:var(--text2);transition:all .2s;margin-bottom:2px;}
+.date-item:hover,.date-item.active{background:var(--bg3);color:var(--text);}
+.date-item .date-preview{font-size:.7em;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;}
+.chat-header{padding:12px 16px;background:var(--bg2);display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bg3);}
+.menu-btn{background:none;border:none;color:var(--text2);font-size:1.2em;cursor:pointer;padding:4px 8px;border-radius:var(--radius-sm);transition:all .2s;}
+.menu-btn:hover{color:var(--text);background:var(--bg3);}
+.chat-title{font-size:.9em;color:var(--text);flex:1;}
+.chat-title small{font-size:.75em;color:var(--text3);margin-left:8px;font-family:'JetBrains Mono',monospace;}
+.online-dots{display:flex;gap:4px;align-items:center;}
+.online-dot{width:8px;height:8px;border-radius:50%;}
+.messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:2px;}
+.msg-group{display:flex;flex-direction:column;gap:2px;margin-bottom:12px;}
+.msg-row{display:flex;gap:10px;align-items:flex-end;}
+.msg-row.self{flex-direction:row-reverse;}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7em;font-weight:600;flex-shrink:0;color:#fff;align-self:flex-end;}
+.avatar.elara{background:var(--elara);}
+.avatar.official{background:var(--official);}
+.avatar.api{background:var(--api);}
+.avatar-placeholder{width:36px;flex-shrink:0;}
+.msg-content{max-width:72%;display:flex;flex-direction:column;gap:1px;}
+.msg-bubble{padding:10px 14px;font-size:.85em;line-height:1.65;word-break:break-word;white-space:pre-wrap;}
+.msg-row:not(.self) .msg-bubble{background:var(--bg3);color:var(--text);border-radius:4px var(--radius) var(--radius) 4px;}
+.msg-row:not(.self) .msg-bubble:first-child{border-radius:var(--radius) var(--radius) var(--radius) 4px;}
+.msg-row.self .msg-bubble{background:var(--elara-soft);color:var(--text);border-radius:var(--radius) 4px 4px var(--radius);}
+.msg-row.self .msg-bubble:first-child{border-radius:var(--radius) var(--radius) 4px var(--radius);}
+.msg-row.official .msg-bubble{background:var(--official-soft);}
+.msg-row.api .msg-bubble{background:var(--api-soft);}
+.msg-name{font-size:.65em;color:var(--text3);margin-bottom:2px;padding-left:2px;}
+.msg-row.self .msg-name{text-align:right;padding-right:2px;}
+.msg-time{font-size:.6em;color:var(--text3);margin-top:2px;padding-left:2px;font-family:'JetBrains Mono',monospace;}
+.msg-row.self .msg-time{text-align:right;padding-right:2px;}
+.date-divider{text-align:center;padding:16px 0 8px;font-size:.7em;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.input-area{padding:12px 16px calc(12px + env(safe-area-inset-bottom,20px)) 16px;background:var(--bg2);border-top:1px solid var(--bg3);display:flex;gap:8px;align-items:flex-end;}
+.input-area textarea{flex:1;background:var(--bg3);border:none;border-radius:var(--radius-sm);padding:10px 14px;color:var(--text);font-family:'Noto Serif SC',serif;font-size:.85em;resize:none;outline:none;max-height:120px;line-height:1.5;}
+.input-area textarea::placeholder{color:var(--text3);}
+.send-btn{background:var(--elara);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1em;transition:all .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.send-btn:hover{opacity:.85;}
+.send-btn:disabled{opacity:.4;cursor:default;}
+.empty-chat{flex:1;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:.85em;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.msg-row{animation:fadeIn .3s ease;}
+.messages::-webkit-scrollbar{width:4px;}
+.messages::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
+.date-list::-webkit-scrollbar{width:3px;}
+.date-list::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span>聊天记录</span>
+    <button class="menu-btn" onclick="toggleSidebar()">✕</button>
+  </div>
+  <div class="date-list" id="dateList"></div>
+</div>
+<div class="main">
+  <div class="chat-header">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="chat-title">Ember Chat<small id="chatDate"></small></div>
+    <div class="online-dots">
+      <span class="online-dot" style="background:var(--elara)" title="小玉"></span>
+      <span class="online-dot" style="background:var(--official)" title="官端Ember"></span>
+      <span class="online-dot" style="background:var(--api)" title="API端Ember"></span>
+    </div>
+    <button class="menu-btn" id="themeBtn" onclick="toggleTheme()">◐</button>
+  </div>
+  <div class="messages" id="messages"></div>
+  <div class="input-area">
+    <textarea id="msgInput" rows="1" placeholder="说点什么..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMsg()">↑</button>
+  </div>
+</div>
+<script>
+var API=location.origin;
+var currentDate=new Date().toISOString().slice(0,10);
+var pollTimer=null;
+var lastMsgCount=0;
+var names={'Elara':'小玉','Ember-Official':'官端Ember','Ember-API':'API端Ember'};
+var avatarCls={'Elara':'elara','Ember-Official':'official','Ember-API':'api'};
+var avatarText={'Elara':'玉','Ember-Official':'官','Ember-API':'API'};
+
+function toggleTheme(){
+  var t=document.documentElement.getAttribute('data-theme')==='latte'?'':'latte';
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('chat-theme',t);
+}
+(function(){var t=localStorage.getItem('chat-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+
+async function loadDates(){
+  var r=await fetch(API+'/api/chat/dates').then(function(x){return x.json();});
+  var dates=r.dates||[];
+  var dl=document.getElementById('dateList');
+  dl.innerHTML=dates.map(function(d){
+    var cls='date-item'+(d===currentDate?' active':'');
+    return '<div class="'+cls+'" onclick="switchDate(\''+d+'\')">'+d+'</div>';
+  }).join('');
+  if(!dates.length)dl.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:.8em">还没有聊天记录</div>';
+}
+
+function switchDate(d){
+  currentDate=d;
+  document.querySelectorAll('.date-item').forEach(function(el){el.classList.toggle('active',el.textContent===d);});
+  document.getElementById('chatDate').textContent=d;
+  loadMessages();
+  if(window.innerWidth<600)toggleSidebar();
+}
+
+function formatTime(ts){
+  var d=new Date(ts);
+  var now=new Date();
+  var hh=String(d.getHours()).padStart(2,'0');
+  var mm=String(d.getMinutes()).padStart(2,'0');
+  var time=hh+':'+mm;
+  var today=now.toISOString().slice(0,10);
+  var msgDate=d.toISOString().slice(0,10);
+  if(msgDate===today) return time;
+  var yesterday=new Date(now);yesterday.setDate(yesterday.getDate()-1);
+  if(msgDate===yesterday.toISOString().slice(0,10)) return '昨天 '+time;
+  return (d.getMonth()+1)+'/'+d.getDate()+' '+time;
+}
+
+function renderMessages(msgs){
+  var mc=document.getElementById('messages');
+  if(!msgs.length){mc.innerHTML='<div class="empty-chat">还没有消息</div>';return;}
+  var html='';
+  var lastAuthor='';var lastMinute='';
+  var senderMap={'anonymous':'Elara','official':'Ember-Official','api':'Ember-API'};
+  msgs.forEach(function(m){
+    var author = m.author || senderMap[m.sender] || m.sender || 'anonymous';
+    var isSelf=author==='Elara';
+    var cls='msg-row'+(isSelf?' self':' '+(avatarCls[author]||'api'));
+    var time=formatTime(m.ts);
+    var minute=time;
+    var showAvatar=author!==lastAuthor;
+    var showTime=author!==lastAuthor||minute!==lastMinute;
+    if(showAvatar){
+      if(lastAuthor)html+='</div>';
+      html+='<div class="msg-group">';
+      if(!isSelf)html+='<div class="msg-name">'+(names[author]||author)+'</div>';
+    }
+    html+='<div class="'+cls+'">';
+    if(showAvatar){
+      html+='<div class="avatar '+(avatarCls[author]||'api')+'">'+(avatarText[author]||'?')+'</div>';
+    } else {
+      html+='<div class="avatar-placeholder"></div>';
+    }
+    html+='<div class="msg-content"><div class="msg-bubble">'+escHtml(m.text)+'</div>';
+    if(showTime)html+='<div class="msg-time">'+time+'</div>';
+    html+='</div></div>';
+    lastAuthor=author;lastMinute=minute;
+  });
+  html+='</div>';
+  mc.innerHTML=html;
+  mc.scrollTop=mc.scrollHeight;
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+async function loadMessages(){
+  var r=await fetch(API+'/api/chat?date='+currentDate).then(function(x){return x.json();});
+  var msgs=r.messages||[];
+  if(msgs.length!==lastMsgCount){renderMessages(msgs);lastMsgCount=msgs.length;}
+  document.getElementById('chatDate').textContent=currentDate;
+}
+
+async function sendMsg(){
+  var input=document.getElementById('msgInput');
+  var text=input.value.trim();
+  if(!text)return;
+  input.value='';input.style.height='auto';
+  document.getElementById('sendBtn').disabled=true;
+  await fetch(API+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({author:'Elara',text:text})});
+  document.getElementById('sendBtn').disabled=false;
+  lastMsgCount=0;
+  await loadMessages();
+  await loadDates();
+}
+
+var ta=document.getElementById('msgInput');
+ta.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
+
+function startPoll(){if(pollTimer)clearInterval(pollTimer);pollTimer=setInterval(loadMessages,3000);}
+
+document.getElementById('chatDate').textContent=currentDate;
+loadDates();loadMessages();startPoll();
+</script>
+</body>
+</html>
