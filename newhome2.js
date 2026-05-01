@@ -2284,7 +2284,7 @@ export default {
           r=JSON.stringify({count:entries.length,memories:entries});
         }
         else if (tn === "memory_stats") {
-          var idx=[];const iv=await env.KV.get("memory:index");if(iv)idx=JSON.parse(iv);var total=idx.length;var cats={};var earliest="";var latest="";
+          var idx=[];const iv=await env.KV.get("m:index");if(iv)idx=JSON.parse(iv);var total=idx.length;var cats={};var earliest="";var latest="";
           for(const kid of idx){const v=await env.KV.get("m:"+kid);if(!v)continue;const m=JSON.parse(v);const c=m.category||"uncategorized";cats[c]=(cats[c]||0)+1;const ed=m.event_date||m.created||"";if(ed&&(!earliest||earliest>ed))earliest=ed;if(ed&&(!latest||ed>latest))latest=ed;}
           r=JSON.stringify({total:total,categories:cats,earliest:earliest.slice(0,10),latest:latest.slice(0,10)});
         }
