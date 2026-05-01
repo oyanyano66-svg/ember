@@ -2579,7 +2579,7 @@ export default {
             const d = new Date(m.ts || m.timestamp);
             const h = d.getUTCHours()+8; const hh = h>=24?h-24:h;
             const mm = String(d.getUTCMinutes()).padStart(2,"0");
-            const dd = (m.ts||"").slice(0,10);
+            const dd = (typeof m.ts === "string" ? m.ts : new Date(m.ts||m.timestamp).toISOString()).slice(0,10);
             return {author:m.author||m.sender,text:m.text,date:dd,time:String(hh).padStart(2,"0")+":"+mm};
           });
           r=JSON.stringify({count:all.length,messages:all});
