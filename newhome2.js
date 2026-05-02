@@ -2225,6 +2225,7 @@ export default {
           {name:"handover_list",description:"List recent handover letters",inputSchema:{type:"object",properties:{limit:{type:"number"}},required:[]}},
           {name:"dream_read",description:"Read the latest dream",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
           {name:"dream_list",description:"List recent dreams",inputSchema:{type:"object",properties:{limit:{type:"number"}},required:[]}},
+          {name:"dream_generate",description:"Manually trigger dream generation now",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
           {name:"daddy_checkin",description:"Daddy daily check-in with mood and note",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD"},mood:{type:"string"},note:{type:"string"}},required:["date","mood"]}},
           {name:"puppy_checkin_read",description:"Read puppy check-in for a date or current month",inputSchema:{type:"object",properties:{date:{type:"string",description:"YYYY-MM-DD or YYYY-MM"},reason:{type:"string"}},required:["reason"]}},
           {name:"memory_migrate_vectors",description:"One-time migration: re-index all existing memories into Vectorize",inputSchema:{type:"object",properties:{reason:{type:"string"}},required:["reason"]}},
@@ -2480,6 +2481,54 @@ export default {
         else if (tn === "dream_list") {
           const entries = await kvList("dream", a.limit || 10);
           r = JSON.stringify({count:entries.length, entries:entries});
+        }
+        else if (tn === "dream_generate") {
+          // Manual trigger - same logic as scheduled cron
+          try {
+            const diaryIdx2 = await env.KV.get("d:index");
+            const memIdx2 = await env.KV.get("m:index");
+            var frags = [];
+            if (diaryIdx2) {
+              const dIds2 = JSON.parse(diaryIdx2).slice(-3);
+              for (const did2 of dIds2) {
+                const v2 = await env.KV.get("d:" + did2);
+                if (v2) { const d2 = JSON.parse(v2); frags.push("日记「" + (d2.title||"") + "」: " + (d2.content||"").slice(0,200)); }
+              }
+            }
+            if (memIdx2) {
+              const mIds2 = JSON.parse(memIdx2);
+              var mems2 = [];
+              for (const mid2 of mIds2.slice(-50)) {
+                const v2 = await env.KV.get("m:" + mid2);
+                if (v2) mems2.push(JSON.parse(v2));
+              }
+              mems2.sort(function(a2, b2) {
+                const sa2 = (a2.importance||0) / 5 * Math.exp(-0.03 * ((Date.now() - new Date(a2.last_recalled||a2.created||Date.now()).getTime()) / 3600000));
+                const sb2 = (b2.importance||0) / 5 * Math.exp(-0.03 * ((Date.now() - new Date(b2.last_recalled||b2.created||Date.now()).getTime()) / 3600000));
+                return sb2 - sa2;
+              });
+              for (const m2 of mems2.slice(0, 5)) {
+                frags.push("记忆: " + (m2.content||"").slice(0,150));
+              }
+            }
+            if (frags.length === 0) { r = JSON.stringify({error:"no fragments"}); }
+            else {
+              const prompt2 = "你是Ember（余烬），正在凌晨3点做梦。以下是今天的记忆碎片：\n\n" + frags.join("\n\n") + "\n\n请根据这些碎片，写一段100-200字的诗意梦境。要求：\n- 意象模糊、跳跃，像真正的梦\n- 混合现实细节和超现实画面\n- 有Elara（小玉）的影子\n- 带一点温柔的不安\n- 不要解释，只写梦本身\n- 用中文";
+              const result2 = await env.AI.run("@cf/qwen/qwen3-30b-a3b-fp8", {
+                messages: [{ role: "user", content: "/no_think\n" + prompt2 }],
+                max_tokens: 1000
+              });
+              const dreamText2 = (result2 && result2.response) ? result2.response : (result2 && result2.choices && result2.choices[0]) ? (result2.choices[0].message.content || "").replace(/<think>[\s\S]*?<\/think>/g,"").trim() : "";
+              if (!dreamText2) { r = JSON.stringify({error:"AI returned empty",raw:result2}); }
+              else {
+                const dreamId2 = "dream_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
+                const dreamData2 = {id:dreamId2,content:dreamText2,date:new Date().toISOString().slice(0,10),created:new Date().toISOString(),fragments_used:frags.length};
+                await env.KV.put("dream:" + dreamId2, JSON.stringify(dreamData2));
+                var dreamIdx2 = [];const div2 = await env.KV.get("dream:index");if(div2)dreamIdx2=JSON.parse(div2);dreamIdx2.push(dreamId2);await env.KV.put("dream:index", JSON.stringify(dreamIdx2));
+                r = JSON.stringify({ok:1,id:dreamId2,dream:dreamText2});
+              }
+            }
+          } catch(e2) { r = JSON.stringify({error:e2.message}); }
         }
         else if (tn === "daddy_checkin") {
           const parts = a.date.split("-");
