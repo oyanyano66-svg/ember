@@ -2652,11 +2652,11 @@ export default {
 
       // 用Workers AI免费模型，不需要API key
       const result = await env.AI.run("@cf/qwen/qwen3-30b-a3b-fp8", {
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 500
+        messages: [{ role: "user", content: "/no_think\n" + prompt }],
+        max_tokens: 1000
       });
 
-      const dreamText = result && result.response ? result.response : "";
+      const dreamText = (result && result.response) ? result.response : (result && result.choices && result.choices[0]) ? (result.choices[0].message.content || "").replace(/<think>[\s\S]*?<\/think>/g,"").trim() : "";
       if (!dreamText) return;
 
       // 3. 存入dream KV
